@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
-#
+
+cp /etc/default/keyboard /etc/default/keyboard.bk
+sed  -i '/XKBLAYOUT/s/gb/us/g' /etc/default/keyboard
+cp /boot/cmdline.txt /boot/cmdline.txt.bk
+cp /boot/config.txt /boot/config.txt.bk
+
+sed  -i 's/console=serial0,115200 //g' /boot/cmdline.txt
+sed  -i 's/fsck.repair=yes/fsck.repair=yes fsck.mode=force/g' /boot/cmdline.txt
+echo "dtparam=i2c_arm=on" >> /boot/config.txt
+echo "enable_uart=1" >> /boot/config.txt
+echo "dtoverlay=pi3-disable-bt" >> /boot/config.txt
 
 read -p "Model sensora, np SDS021, SDS011, PMS7003, którego używasz, użyj wielkich liter: " sensor_model
 read -p "Szerokość geograficzna umiejscowienia sensora, np 58.0000, pamiętaj użyj kropki a nie przecinka!: " lat
@@ -10,10 +20,11 @@ echo "Wprowadziłeś następujący model sensora " $sensor_model
 echo "Wprowadziłeś następującą długość geograficzną "$lat
 echo "Wprowadziłeś następującą szerokość geograficzną "$long
 
+rm -fr /etc/configuration
 mkdir /etc/configuration/
 cd /etc/configuration/
 wget https://raw.githubusercontent.com/airmonitor/home_air_monitor/master/configuration.data
-wget https://gitlab.com/frankrich/sds011_particle_sensor/raw/master/Code/sds011.py
+wget https://raw.githubusercontent.com/airmonitor/home_air_monitor/master/sds011.py
 wget https://raw.githubusercontent.com/airmonitor/home_air_monitor/master/smog_monitor.py
 chmod +x *.py
 
@@ -21,10 +32,10 @@ sed  -i "/sensor_model/s/SDS021/${sensor_model}/g" /etc/configuration/configurat
 sed  -i "/lat/s/000000/${lat}/g" /etc/configuration/configuration.data
 sed  -i "/long/s/000000/${long}/g" /etc/configuration/configuration.data
 
-locale-gen en_US.UTF-8
+read -p "Nastąpi konfiguracja strefy czasowej oraz czasu systemowego, wybierz lokalizację Europa a następnie Warsaw"
 dpkg-reconfigure tzdata
-sed  -i '/XKBLAYOUT/s/gb/us/g' /etc/default/keyboard
 
+read -p "Aktualizacja systemu oraz instalacja potrzebnego oprogramowania, uzbrój się w cierpliwość. Cała procedura może zająć nawet godzinę"
 
 apt-get update
 sudo apt-mark hold raspberrypi-kernel
@@ -41,6 +52,8 @@ pip3 install -U configparser
 
 mkdir /mnt/ramdisk_ram0
 echo "tmpfs                   /mnt/ramdisk_ram0       tmpfs   nodev,nosuid,size=1M 0 0" >> /etc/fstab
-
 echo "*/5 * * * * /etc/configuration/smog_monitor.py > /tmp/smog_monitor" >> /var/spool/cron/crontabs/root
 
+read -p "Za moment twoje raspberry pi zostanie wyłączone, po wyłączeniu systemu odłącz źródło zasilania a następnie podłącz sensor SDS021 jak przedstawiono w instrukcji
+
+poweroff
