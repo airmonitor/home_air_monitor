@@ -1,4 +1,5 @@
 [airmonitor]
 sensor_model=SDS021
+sensor_model_temp=BME280
 lat=0000000
 long=000000
