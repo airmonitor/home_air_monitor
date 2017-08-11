@@ -5,12 +5,16 @@ import time
 from influxdb import InfluxDBClient
 from sds011 import SDS011
 import os
+import base64
+from configparser import ConfigParser
 
+parser = ConfigParser(allow_no_value=False)
+parser = ConfigParser()
+parser.read('/etc/configuration/configuration.data')
+sensor_model=(parser.get('airmonitor', 'sensor_model'))
+lat=(parser.get('airmonitor', 'lat'))
+long=(parser.get('airmonitor', 'long'))
 
-
-sensor_model = 'SDS021'
-lat = '54.8956'
-long = '18.0011'
 
 # Nie zmieniaj niczego poniżej tej linii!##
 #####################################################
@@ -22,18 +26,6 @@ long = '18.0011'
 #####################################################
 #####################################################
 #####################################################
-
-
-
-
-
-
-
-
-
-
-
-
 # Create an instance of your sensor
 sensor = SDS011('/dev/ttyAMA0')
 
@@ -50,6 +42,7 @@ time.sleep(30)
 
 os.system('rm /mnt/ramdisk_ram0/ppm10_average_sensor0')
 os.system('rm /mnt/ramdisk_ram0/ppm25_average_sensor0')
+
 count = 0
 while (count < 30):
 
@@ -122,7 +115,9 @@ json_body_public = [
 		}
 	}
 ]
-client = InfluxDBClient(host="db.airmonitor.pl", port=8086, username="airmonitor_public_write", password="jfsde028upjlfa9o8wyh2398y09uASDFDFGAGGDFGE2341eaadf", database="airmonitor", ssl=True, verify_ssl=False, timeout=10)
+
+
+client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")), username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")), database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
 client.write_points(json_body_public)
 
 sensor.workstate = SDS011.WorkStates.Sleeping
