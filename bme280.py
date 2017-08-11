@@ -5,6 +5,7 @@ from smbus2 import SMBus
 from influxdb import InfluxDBClient
 import base64
 from configparser import ConfigParser
+import urllib3
 
 parser = ConfigParser(allow_no_value=False)
 parser = ConfigParser()
@@ -12,7 +13,8 @@ parser.read('/etc/configuration/configuration.data')
 sensor_model_temp=(parser.get('airmonitor', 'sensor_model_temp'))
 lat=(parser.get('airmonitor', 'lat'))
 long=(parser.get('airmonitor', 'long'))
-pd = base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")
+urllib3.disable_warnings()
+
 
 bus_number  = 1
 i2c_address = 0x76
