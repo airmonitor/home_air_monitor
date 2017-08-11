@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-date
+apt-mark hold raspberrypi-kernel
+apt-get udate
+apt-get upgrade -y
