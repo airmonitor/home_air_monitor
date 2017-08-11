@@ -179,7 +179,7 @@ def compensate_H(adc_H):
         }
     ]
 
-    client = InfluxDBClient(host="db.airmonitor.pl", port=8086, username="airmonitor_public_write", password=pd, database="airmonitor", ssl=True, verify_ssl=False, timeout=10)
+    client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")), username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")), database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
     client.write_points(json_body_public)
 
 def setup():
