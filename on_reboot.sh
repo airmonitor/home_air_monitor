@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-chown -R pi:pi /mnt/ramdisk_ram0
+/bin/chown -R pi:pi /mnt/ramdisk_ram0
 
