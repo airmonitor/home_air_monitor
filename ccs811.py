@@ -116,11 +116,11 @@ while (start_iteration < stop_iteration):
         temperature = hdc1000.readTemperature()
         ccs811.setCompensation(temperature, humidity)
     else:
-        proc = subprocess.Popen('/etc/configuration/bme280.py.humidity', stdout=subprocess.PIPE)
+        proc = subprocess.Popen('/etc/configuration/bme280.py.humidity.py', stdout=subprocess.PIPE)
         humidity = proc.stdout.read()
         humidity = float(humidity)
 
-        proc = subprocess.Popen('/etc/configuration/bme280.py.temperature', stdout=subprocess.PIPE)
+        proc = subprocess.Popen('/etc/configuration/bme280.py.temperature.py', stdout=subprocess.PIPE)
         temperature = proc.stdout.read()
         temperature = float(temperature)
 
