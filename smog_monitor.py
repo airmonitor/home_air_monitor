@@ -9,7 +9,6 @@ import base64
 from configparser import ConfigParser
 import urllib3
 
-parser = ConfigParser(allow_no_value=False)
 parser = ConfigParser()
 parser.read('/etc/configuration/configuration.data')
 sensor_model=(parser.get('airmonitor', 'sensor_model'))
@@ -47,20 +46,20 @@ os.system('rm /mnt/ramdisk_ram0/ppm25_average_sensor0')
 count = 0
 while (count < 30):
 
-	values = sensor.get_values()
-	print("Values measured: PPM10:", values[0], "PPM2.5:", values[1])
-	count = count + 1
-	time.sleep(1)
+    values = sensor.get_values()
+    print("Values measured: PPM10:", values[0], "PPM2.5:", values[1])
+    count += 1
+    time.sleep(1)
 
-	f_average_PM10 = open('/mnt/ramdisk_ram0/ppm10_average_sensor0', 'a')
-	ppm10 = str(values[0])
-	f_average_PM10.write(ppm10 + '\n')
-	f_average_PM10.close()
+    f_average_PM10 = open('/mnt/ramdisk_ram0/ppm10_average_sensor0', 'a')
+    ppm10 = str(values[0])
+    f_average_PM10.write(ppm10 + '\n')
+    f_average_PM10.close()
 
-	f_average_PM25 = open('/mnt/ramdisk_ram0/ppm25_average_sensor0', 'a')
-	ppm25 = str(values[1])
-	f_average_PM25.write(ppm25 + '\n')
-	f_average_PM25.close()
+    f_average_PM25 = open('/mnt/ramdisk_ram0/ppm25_average_sensor0', 'a')
+    ppm25 = str(values[1])
+    f_average_PM25.write(ppm25 + '\n')
+    f_average_PM25.close()
 
 ##PM10 Average##
 total_PM10 = 0.0
@@ -68,12 +67,10 @@ length_PM10 = 0.0
 infile = open('/mnt/ramdisk_ram0/ppm10_average_sensor0', 'r')
 contents_PM10 = infile.read().strip().split()
 for num in contents_PM10:
-	amount = float(num)
-	total_PM10 += amount
-	length_PM10 = length_PM10 + 1
+    total_PM10 += float(num)
+    length_PM10 += 1
 average_PM10 = total_PM10 / len(contents_PM10)
-average_PM10 = (format(average_PM10, ',.2f'))
-average_PM10 = float(average_PM10)
+average_PM10 = float(format(average_PM10, ',.2f'))
 print("Average PM10 from 30 last measurements: ", average_PM10)
 infile.close()
 
@@ -83,38 +80,36 @@ length_PM25 = 0.0
 infile = open('/mnt/ramdisk_ram0/ppm25_average_sensor0', 'r')
 contents_PM25 = infile.read().strip().split()
 for num in contents_PM25:
-	amount = float(num)
-	total_PM25 += amount
-	length_PM25 = length_PM25 + 1
+    total_PM25 += float(num)
+    length_PM25 += 1
 average_PM25 = total_PM25 / len(contents_PM25)
-average_PM25 = (format(average_PM25, ',.2f'))
-average_PM25 = float(average_PM25)
+average_PM25 = float(format(average_PM25, ',.2f'))
 print("Average PM25 from 30 last measurements: ", average_PM25)
 infile.close()
 
 json_body_public = [
-	{
-		"measurement": "ppm25",
-		"tags": {
-			"lat": lat,
-			"long": long,
-			"sensor_model": sensor_model
-		},
-		"fields": {
-			"value": average_PM25
-		}
-	},
-	{
-		"measurement": "ppm10",
-		"tags": {
-			"lat": lat,
-			"long": long,
-			"sensor_model": sensor_model
-		},
-		"fields": {
-			"value": average_PM10
-		}
-	}
+    {
+        "measurement": "ppm25",
+        "tags": {
+            "lat": lat,
+            "long": long,
+            "sensor_model": sensor_model
+        },
+        "fields": {
+            "value": average_PM25
+        }
+    },
+    {
+        "measurement": "ppm10",
+        "tags": {
+            "lat": lat,
+            "long": long,
+            "sensor_model": sensor_model
+        },
+        "fields": {
+            "value": average_PM10
+        }
+    }
 ]
 
 
