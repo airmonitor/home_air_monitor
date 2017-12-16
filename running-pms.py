@@ -75,7 +75,7 @@ while (count < 9 ):
                     "sensor_model": pms_sensor_model
                 },
                 "fields": {
-                    "value": res['ppm10']
+                    "value": res['pm10']
                 }
             },
             {
