@@ -4,4 +4,4 @@ sensor_model_temp=BME280
 sensor_model_co2=CCS811
 pms_sensor_model=PMS7003
 lat=55.0000
-long=16.0000
+long=15.0000
