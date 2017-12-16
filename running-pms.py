@@ -108,7 +108,7 @@ while (count < 9 ):
                                 database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
         client.write_points(json_body_public)
         print('Logged to database. {} documents totally.'.format(len(rcv_list)))
-        count = count + 1
+        count += 1
         time.sleep(5)
     except KeyboardInterrupt:
         break
