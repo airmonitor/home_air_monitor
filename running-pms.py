@@ -75,7 +75,7 @@ while (count < 9 ):
                     "sensor_model": pms_sensor_model
                 },
                 "fields": {
-                    "value": res['pm10']
+                    "value": float(res['pm10'])
                 }
             },
             {
@@ -86,7 +86,7 @@ while (count < 9 ):
                     "sensor_model": pms_sensor_model
                 },
                 "fields": {
-                    "value": res['pm25']
+                    "value": float(res['pm25'])
                 }
             },
             {
@@ -97,7 +97,7 @@ while (count < 9 ):
                     "sensor_model": pms_sensor_model
                 },
                 "fields": {
-                    "value": res['pm100']
+                    "value": float(res['pm100'])
                 }
             }
         ]
