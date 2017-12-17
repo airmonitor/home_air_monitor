@@ -32,6 +32,10 @@ def read_pm_line(_port):
 
 count = 0
 rcv_list = []
+pm10_values = []
+pm25_values = []
+pm100_values = []
+
 while (count < 9 ):
     try:
         rcv = read_pm_line(port)
@@ -65,8 +69,63 @@ while (count < 9 ):
                                        res['pm10'], res['pm25'], res['pm100'],
                                        res['gt03um'], res['gt05um'], res['gt10um'],
                                        res['gt25um'], res['gt50um'], res['gt100um']))
+
+        pm10_values.append(res['pm10'])
+        pm25_values.append(res['pm25'])
+        pm100_values.append(res['pm100'])
+
         rcv_list.append(res.copy())
-        json_body_public = [
+
+        print(''.format(len(rcv_list)))
+        count += 1
+        time.sleep(1)
+    except KeyboardInterrupt:
+        break
+
+
+print("List of PM1 values from sensor", pm10_values)
+pm10_values_avg = (sum(pm10_values) / len(pm10_values))
+print("PM1 Average", pm10_values_avg)
+
+for i in pm10_values:
+    if pm10_values_avg > i * 3:
+        pm10_values.remove(max(pm10_values))
+        pm10_values_avg = (sum(pm10_values) / len(pm10_values))
+        print("Something is not quite right, PM1 value is bigger 3x than average from last 9 measurements\n")
+    elif pm10_values_avg < i *3:
+        print(i, "multiplied by 3: ", i * 3, "is bigger than average from last 9 measurements", pm10_values_avg)
+        print("Every PM1 value multiplied by 3 is bigger than average from last 9 measurements\n")
+print(pm10_values)
+
+print("List of PM2,5 values from sensor", pm25_values)
+pm25_values_avg = (sum(pm25_values) / len(pm25_values))
+print("PM2,5 Average", pm25_values_avg)
+
+for i in pm25_values:
+    if pm25_values_avg > i * 3:
+        pm25_values.remove(max(pm25_values))
+        pm25_values_avg = (sum(pm25_values) / len(pm25_values))
+        print("Something is not quite right, PM2,5 value is bigger 3x than average from last 9 measurements\n")
+    elif pm25_values_avg < i *3:
+        print(i, "multiplied by 3: ", i * 3, "is bigger than average from last 9 measurements", pm25_values_avg)
+        print("Every PM2,5 value multiplied by 3 is bigger than average from last 9 measurements\n")
+print(pm25_values)
+
+print("List of PM10 values from sensor", pm100_values)
+pm100_values_avg = (sum(pm100_values) / len(pm100_values))
+print("PM10 Average", pm100_values_avg)
+
+for i in pm100_values:
+    if pm100_values_avg > i * 3:
+        pm100_values.remove(max(pm100_values))
+        pm100_values_avg = (sum(pm100_values) / len(pm100_values))
+        print("Something is not quite right, value", i, "PM10 value is bigger 3x than average from last 9 measurements\n")
+    elif pm100_values_avg < i *3:
+        print(i, "multiplied by 3: ", i * 3, "is bigger than average from last 9 measurements", pm100_values_avg)
+        print("Every PM10 value multiplied by 3 is bigger than average from last 9 measurements\n")
+print(pm100_values)
+
+json_body_public = [
             {
                 "measurement": "ppm1",
                 "tags": {
@@ -75,7 +134,7 @@ while (count < 9 ):
                     "sensor_model": pms_sensor_model
                 },
                 "fields": {
-                    "value": float(res['pm10'])
+                    "value": float('%.2f' % pm10_values_avg)
                 }
             },
             {
@@ -86,7 +145,7 @@ while (count < 9 ):
                     "sensor_model": pms_sensor_model
                 },
                 "fields": {
-                    "value": float(res['pm25'])
+                    "value": float('%.2f' % pm25_values_avg)
                 }
             },
             {
@@ -97,19 +156,14 @@ while (count < 9 ):
                     "sensor_model": pms_sensor_model
                 },
                 "fields": {
-                    "value": float(res['pm100'])
+                    "value": float('%.2f' % pm100_values_avg)
                 }
             }
         ]
 
-        client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
+client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
                                 username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
             base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
                                 database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
-        client.write_points(json_body_public)
-        print(json_body_public)
-        print('Logged to database. {} documents totally.'.format(len(rcv_list)))
-        count += 1
-        time.sleep(5)
-    except KeyboardInterrupt:
-        break
+client.write_points(json_body_public)
+print(json_body_public)
