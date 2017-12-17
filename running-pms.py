@@ -107,6 +107,7 @@ while (count < 9 ):
             base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
                                 database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
         client.write_points(json_body_public)
+        print(json_body_public)
         print('Logged to database. {} documents totally.'.format(len(rcv_list)))
         count += 1
         time.sleep(5)
