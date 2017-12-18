@@ -35,9 +35,9 @@ rcv_list = []
 pm10_values = []
 pm25_values = []
 pm100_values = []
-FACTOR=1.5
+FACTOR = 1.5
 
-while (count < 9 ):
+while count < 9:
     try:
         rcv = read_pm_line(port)
         res = {'timestamp': datetime.datetime.now(),
