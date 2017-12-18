@@ -35,6 +35,7 @@ rcv_list = []
 pm10_values = []
 pm25_values = []
 pm100_values = []
+FACTOR=1.5
 
 while (count < 9 ):
     try:
@@ -88,13 +89,12 @@ pm10_values_avg = (sum(pm10_values) / len(pm10_values))
 print("PM1 Average", pm10_values_avg)
 
 for i in pm10_values:
-    if pm10_values_avg > i * 3:
+    if pm10_values_avg > i * FACTOR:
         pm10_values.remove(max(pm10_values))
         pm10_values_avg = (sum(pm10_values) / len(pm10_values))
-        print("Something is not quite right, PM1 value is bigger 3x than average from last 9 measurements\n")
-    elif pm10_values_avg < i *3:
-        print(i, "multiplied by 3: ", i * 3, "is bigger than average from last 9 measurements", pm10_values_avg)
-        print("Every PM1 value multiplied by 3 is bigger than average from last 9 measurements\n")
+        print("Something is not quite right, some PM1 value is by 50% than average from last 9 measurements\n")
+    elif pm10_values_avg < i * FACTOR:
+        print("OK")
 print(pm10_values)
 
 print("List of PM2,5 values from sensor", pm25_values)
@@ -102,13 +102,12 @@ pm25_values_avg = (sum(pm25_values) / len(pm25_values))
 print("PM2,5 Average", pm25_values_avg)
 
 for i in pm25_values:
-    if pm25_values_avg > i * 3:
+    if pm25_values_avg > i * 1.5:
         pm25_values.remove(max(pm25_values))
         pm25_values_avg = (sum(pm25_values) / len(pm25_values))
-        print("Something is not quite right, PM2,5 value is bigger 3x than average from last 9 measurements\n")
-    elif pm25_values_avg < i *3:
-        print(i, "multiplied by 3: ", i * 3, "is bigger than average from last 9 measurements", pm25_values_avg)
-        print("Every PM2,5 value multiplied by 3 is bigger than average from last 9 measurements\n")
+        print("Something is not quite right, some PM2,5 value is by 50% than average from last 9 measurements\n")
+    elif pm25_values_avg < i * FACTOR:
+        print("OK")
 print(pm25_values)
 
 print("List of PM10 values from sensor", pm100_values)
@@ -116,13 +115,12 @@ pm100_values_avg = (sum(pm100_values) / len(pm100_values))
 print("PM10 Average", pm100_values_avg)
 
 for i in pm100_values:
-    if pm100_values_avg > i * 3:
+    if pm100_values_avg > i * FACTOR:
         pm100_values.remove(max(pm100_values))
         pm100_values_avg = (sum(pm100_values) / len(pm100_values))
-        print("Something is not quite right, value", i, "PM10 value is bigger 3x than average from last 9 measurements\n")
-    elif pm100_values_avg < i *3:
-        print(i, "multiplied by 3: ", i * 3, "is bigger than average from last 9 measurements", pm100_values_avg)
-        print("Every PM10 value multiplied by 3 is bigger than average from last 9 measurements\n")
+        print("Something is not quite right, some value PM10 value is by 50% than average from last 9 measurements\n")
+    elif pm100_values_avg < i * FACTOR:
+        print("OK")
 print(pm100_values)
 
 json_body_public = [
