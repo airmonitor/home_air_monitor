@@ -42,6 +42,7 @@ time.sleep(30)
 
 
 COUNT = 0
+FACTOR = 1.5
 pm25_values = []
 pm10_values = []
 
@@ -55,29 +56,33 @@ while (COUNT < 30):
     time.sleep(1)
 
 
-##PM10 Average##
-total_PM10 = 0.0
-length_PM10 = 0.0
+print("List of PM2,5 values from sensor", pm25_values)
+pm25_values_avg = (sum(pm25_values) / len(pm25_values))
+print("PM2,5 Average", pm25_values_avg)
 
-for num in pm10_values:
-    amount = float(num)
-    total_PM10 += amount
+for i in pm25_values:
+    if pm25_values_avg > i * 1.5:
+        pm25_values.remove(max(pm25_values))
+        pm25_values_avg = (sum(pm25_values) / len(pm25_values))
+        print("Something is not quite right, some PM2,5 value is by 50% than average from last 9 measurements\n")
+    elif pm25_values_avg < i * FACTOR:
+        print("OK")
+print(pm25_values)
 
-average_PM10 = total_PM10 / len(pm10_values)
-average_PM10 = float(format(average_PM10, ',.2f'))
-print("Average PM10 from 30 last measurements: ", average_PM10)
+print("List of PM10 values from sensor", pm10_values)
+pm10_values_avg = (sum(pm10_values) / len(pm10_values))
+print("PM10 Average", pm10_values_avg)
+
+for i in pm10_values:
+    if pm10_values_avg > i * FACTOR:
+        pm10_values.remove(max(pm10_values))
+        pm10_values_avg = (sum(pm10_values) / len(pm10_values))
+        print("Something is not quite right, some value PM10 value is by 50% than average from last 9 measurements\n")
+    elif pm10_values_avg < i * FACTOR:
+        print("OK")
+print(pm10_values)
 
 
-##PM25 Average##
-total_PM25 = 0.0
-
-for num in pm25_values:
-    amount = float(num)
-    total_PM25 += amount
-
-average_PM25 = total_PM25 / len(pm25_values)
-average_PM25 = float(format(average_PM25, ',.2f'))
-print("Average PM25 from 30 last measurements: ", average_PM25)
 
 json_body_public = [
     {
@@ -88,7 +93,7 @@ json_body_public = [
             "sensor_model": sensor_model
         },
         "fields": {
-            "value": average_PM25
+            "value": float('%.2f' % pm25_values_avg)
         }
     },
     {
@@ -99,13 +104,15 @@ json_body_public = [
             "sensor_model": sensor_model
         },
         "fields": {
-            "value": average_PM10
+            "value": float('%.2f' % pm10_values_avg)
         }
     }
 ]
 
 
+
 client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")), username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")), database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
 client.write_points(json_body_public)
+print(json_body_public)
 
 sensor.workstate = SDS011.WorkStates.Sleeping
