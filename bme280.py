@@ -1,7 +1,28 @@
 #!/usr/bin/python3.4
-#coding: utf-8
-
+# --------------------------------------
+#    ___  ___  _ ____
+#   / _ \/ _ \(_) __/__  __ __
+#  / , _/ ___/ /\ \/ _ \/ // /
+# /_/|_/_/  /_/___/ .__/\_, /
+#                /_/   /___/
+#
+#           bme280.py
+#  Read data from a digital pressure sensor.
+#
+#  Official datasheet available from :
+#  https://www.bosch-sensortec.com/bst/products/all_products/bme280
+#
+# Author : Matt Hawkins
+# Date   : 25/07/2016
+#
+# http://www.raspberrypi-spy.co.uk/
+#
+# --------------------------------------
 from smbus2 import SMBus
+import time
+from ctypes import c_short
+from ctypes import c_byte
+from ctypes import c_ubyte
 from influxdb import InfluxDBClient
 import base64
 from configparser import ConfigParser
@@ -10,103 +31,198 @@ import urllib3
 parser = ConfigParser(allow_no_value=False)
 parser = ConfigParser()
 parser.read('/etc/configuration/configuration.data')
-sensor_model_temp=(parser.get('airmonitor', 'sensor_model_temp'))
-lat=(parser.get('airmonitor', 'lat'))
-long=(parser.get('airmonitor', 'long'))
+sensor_model_temp = (parser.get('airmonitor', 'sensor_model_temp'))
+lat = (parser.get('airmonitor', 'lat'))
+long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
 
+client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
+                                username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
+            base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
+                                database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
 
-bus_number  = 1
-i2c_address = 0x76
+COUNT = 0
+DEVICE = 0x76  # Default device I2C address
 
-bus = SMBus(bus_number)
+#bus = smbus.SMBus(1)  # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
+bus = SMBus(1)
 
-digT = []
-digP = []
-digH = []
 
-t_fine = 0.0
-client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")), username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")), database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
+# Rev 1 Pi uses bus 0
 
-def writeReg(reg_address, data):
-    bus.write_byte_data(i2c_address,reg_address,data)
+def getShort(data, index):
+    # return two bytes from data as a signed 16-bit value
+    return c_short((data[index + 1] << 8) + data[index]).value
 
-def get_calib_param():
-    calib = []
 
-    for i in range (0x88,0x88+24):
-        calib.append(bus.read_byte_data(i2c_address,i))
-    calib.append(bus.read_byte_data(i2c_address,0xA1))
-    for i in range (0xE1,0xE1+7):
-        calib.append(bus.read_byte_data(i2c_address,i))
+def getUShort(data, index):
+    # return two bytes from data as an unsigned 16-bit value
+    return (data[index + 1] << 8) + data[index]
 
-    digT.append((calib[1] << 8) | calib[0])
-    digT.append((calib[3] << 8) | calib[2])
-    digT.append((calib[5] << 8) | calib[4])
-    digP.append((calib[7] << 8) | calib[6])
-    digP.append((calib[9] << 8) | calib[8])
-    digP.append((calib[11]<< 8) | calib[10])
-    digP.append((calib[13]<< 8) | calib[12])
-    digP.append((calib[15]<< 8) | calib[14])
-    digP.append((calib[17]<< 8) | calib[16])
-    digP.append((calib[19]<< 8) | calib[18])
-    digP.append((calib[21]<< 8) | calib[20])
-    digP.append((calib[23]<< 8) | calib[22])
-    digH.append( calib[24] )
-    digH.append((calib[26]<< 8) | calib[25])
-    digH.append( calib[27] )
-    digH.append((calib[28]<< 4) | (0x0F & calib[29]))
-    digH.append((calib[30]<< 4) | ((calib[29] >> 4) & 0x0F))
-    digH.append( calib[31] )
 
-    for i in range(1,2):
-        if digT[i] & 0x8000:
-            digT[i] = (-digT[i] ^ 0xFFFF) + 1
+def getChar(data, index):
+    # return one byte from data as a signed char
+    result = data[index]
+    if result > 127:
+        result -= 256
+    return result
 
-    for i in range(1,8):
-        if digP[i] & 0x8000:
-            digP[i] = (-digP[i] ^ 0xFFFF) + 1
 
-    for i in range(0,6):
-        if digH[i] & 0x8000:
-            digH[i] = (-digH[i] ^ 0xFFFF) + 1
+def getUChar(data, index):
+    # return one byte from data as an unsigned char
+    result = data[index] & 0xFF
+    return result
 
-def readData():
-    data = []
-    for i in range (0xF7, 0xF7+8):
-        data.append(bus.read_byte_data(i2c_address,i))
+
+def readBME280ID(addr=DEVICE):
+    # Chip ID Register Address
+    REG_ID = 0xD0
+    (chip_id, chip_version) = bus.read_i2c_block_data(addr, REG_ID, 2)
+    return (chip_id, chip_version)
+
+
+def readBME280All(addr=DEVICE):
+    # Register Addresses
+    REG_DATA = 0xF7
+    REG_CONTROL = 0xF4
+    REG_CONFIG = 0xF5
+
+    REG_CONTROL_HUM = 0xF2
+    REG_HUM_MSB = 0xFD
+    REG_HUM_LSB = 0xFE
+
+    # Oversample setting - page 27
+    OVERSAMPLE_TEMP = 2
+    OVERSAMPLE_PRES = 2
+    MODE = 1
+
+    # Oversample setting for humidity register - page 26
+    OVERSAMPLE_HUM = 2
+    bus.write_byte_data(addr, REG_CONTROL_HUM, OVERSAMPLE_HUM)
+
+    control = OVERSAMPLE_TEMP << 5 | OVERSAMPLE_PRES << 2 | MODE
+    bus.write_byte_data(addr, REG_CONTROL, control)
+
+    # Read blocks of calibration data from EEPROM
+    # See Page 22 data sheet
+    cal1 = bus.read_i2c_block_data(addr, 0x88, 24)
+    cal2 = bus.read_i2c_block_data(addr, 0xA1, 1)
+    cal3 = bus.read_i2c_block_data(addr, 0xE1, 7)
+
+    # Convert byte data to word values
+    dig_T1 = getUShort(cal1, 0)
+    dig_T2 = getShort(cal1, 2)
+    dig_T3 = getShort(cal1, 4)
+
+    dig_P1 = getUShort(cal1, 6)
+    dig_P2 = getShort(cal1, 8)
+    dig_P3 = getShort(cal1, 10)
+    dig_P4 = getShort(cal1, 12)
+    dig_P5 = getShort(cal1, 14)
+    dig_P6 = getShort(cal1, 16)
+    dig_P7 = getShort(cal1, 18)
+    dig_P8 = getShort(cal1, 20)
+    dig_P9 = getShort(cal1, 22)
+
+    dig_H1 = getUChar(cal2, 0)
+    dig_H2 = getShort(cal3, 0)
+    dig_H3 = getUChar(cal3, 2)
+
+    dig_H4 = getChar(cal3, 3)
+    dig_H4 = (dig_H4 << 24) >> 20
+    dig_H4 = dig_H4 | (getChar(cal3, 4) & 0x0F)
+
+    dig_H5 = getChar(cal3, 5)
+    dig_H5 = (dig_H5 << 24) >> 20
+    dig_H5 = dig_H5 | (getUChar(cal3, 4) >> 4 & 0x0F)
+
+    dig_H6 = getChar(cal3, 6)
+
+    # Wait in ms (Datasheet Appendix B: Measurement time and current calculation)
+    wait_time = 1.25 + (2.3 * OVERSAMPLE_TEMP) + ((2.3 * OVERSAMPLE_PRES) + 0.575) + ((2.3 * OVERSAMPLE_HUM) + 0.575)
+    time.sleep(wait_time / 1000)  # Wait the required time
+
+    # Read temperature/pressure/humidity
+    data = bus.read_i2c_block_data(addr, REG_DATA, 8)
     pres_raw = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4)
     temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
-    hum_raw  = (data[6] << 8)  |  data[7]
+    hum_raw = (data[6] << 8) | data[7]
 
-    compensate_T(temp_raw)
-    compensate_P(pres_raw)
-    compensate_H(hum_raw)
+    # Refine temperature
+    var1 = ((((temp_raw >> 3) - (dig_T1 << 1))) * (dig_T2)) >> 11
+    var2 = (((((temp_raw >> 4) - (dig_T1)) * ((temp_raw >> 4) - (dig_T1))) >> 12) * (dig_T3)) >> 14
+    t_fine = var1 + var2
+    temperature = float(((t_fine * 5) + 128) >> 8);
 
-def compensate_P(adc_P):
-    global  t_fine
-    pressure = 0.0
-
-    v1 = (t_fine / 2.0) - 64000.0
-    v2 = (((v1 / 4.0) * (v1 / 4.0)) / 2048) * digP[5]
-    v2 = v2 + ((v1 * digP[4]) * 2.0)
-    v2 = (v2 / 4.0) + (digP[3] * 65536.0)
-    v1 = (((digP[2] * (((v1 / 4.0) * (v1 / 4.0)) / 8192)) / 8)  + ((digP[1] * v1) / 2.0)) / 262144
-    v1 = ((32768 + v1) * digP[0]) / 32768
-
-    if v1 == 0:
-        return 0
-    pressure = ((1048576 - adc_P) - (v2 / 4096)) * 3125
-    if pressure < 0x80000000:
-        pressure = (pressure * 2.0) / v1
+    # Refine pressure and adjust for temperature
+    var1 = t_fine / 2.0 - 64000.0
+    var2 = var1 * var1 * dig_P6 / 32768.0
+    var2 = var2 + var1 * dig_P5 * 2.0
+    var2 = var2 / 4.0 + dig_P4 * 65536.0
+    var1 = (dig_P3 * var1 * var1 / 524288.0 + dig_P2 * var1) / 524288.0
+    var1 = (1.0 + var1 / 32768.0) * dig_P1
+    if var1 == 0:
+        pressure = 0
     else:
-        pressure = (pressure / v1) * 2
-    v1 = (digP[8] * (((pressure / 8.0) * (pressure / 8.0)) / 8192.0)) / 4096
-    v2 = ((pressure / 4.0) * digP[7]) / 8192.0
-    pressure = pressure + ((v1 + v2 + digP[6]) / 16.0)
-    print("pressure : %7.2f hPa" % (pressure/100))
-    pressure_out_hPa = float('%.2f' % (pressure/100))
-    pressure_inches = ((pressure * 0.02952998751) / 100)
+        pressure = 1048576.0 - pres_raw
+        pressure = ((pressure - var2 / 4096.0) * 6250.0) / var1
+        var1 = dig_P9 * pressure * pressure / 2147483648.0
+        var2 = pressure * dig_P8 / 32768.0
+        pressure = pressure + (var1 + var2 + dig_P7) / 16.0
+
+    # Refine humidity
+    humidity = t_fine - 76800.0
+    humidity = (hum_raw - (dig_H4 * 64.0 + dig_H5 / 16384.0 * humidity)) * (
+            dig_H2 / 65536.0 * (1.0 + dig_H6 / 67108864.0 * humidity * (1.0 + dig_H3 / 67108864.0 * humidity)))
+    humidity = humidity * (1.0 - dig_H1 * humidity / 524288.0)
+    if humidity > 100:
+        humidity = 100
+    elif humidity < 0:
+        humidity = 0
+
+    return temperature / 100.0, pressure / 100.0, humidity
+
+
+temperature_values = []
+pressure_values = []
+humidity_values = []
+
+
+def main():
+    COUNT = 0
+    while COUNT < 9:
+        (chip_id, chip_version) = readBME280ID()
+        print("Chip ID     :", chip_id)
+        print("Version     :", chip_version)
+
+        temperature, pressure, humidity = readBME280All()
+
+        print("Temperature : ", (temperature - 3), "C")
+        print("Pressure : ", pressure, "hPa")
+        print("Humidity : ", humidity, "%")
+        temperature -= 3
+
+        temperature_values.append(temperature)
+        pressure_values.append(pressure)
+        humidity_values.append(humidity)
+
+        # print("Temperature values: ", temperature_values)
+        # print("Pressure values: ", pressure_values)
+        # print("Humidity values: ", humidity_values)
+        COUNT += 1
+        time.sleep(1)
+    print("\n\n")
+    print("List of temp values from sensor", temperature_values)
+    temp_values_avg = (sum(temperature_values) / len(temperature_values))
+    print("Temp Average", temp_values_avg)
+    print("\n\n")
+    print("List of pressure values from sensor", pressure_values)
+    pressure_values_avg = (sum(pressure_values) / len(pressure_values))
+    print("pressure Average", pressure_values_avg)
+    print("\n\n")
+    print("List of humidity values from sensor", humidity_values)
+    humidity_values_avg = (sum(humidity_values) / len(humidity_values))
+    print("humidity Average", humidity_values_avg)
 
     json_body_public = [
         {
@@ -117,23 +233,9 @@ def compensate_P(adc_P):
                 "sensor_model": sensor_model_temp
             },
             "fields": {
-                "value": pressure_out_hPa
+                "value": float('%.2f' % pressure_values_avg)
             }
-        }
-    ]
-    client.write_points(json_body_public)
-
-def compensate_T(adc_T):
-    global t_fine
-    v1 = (adc_T / 16384.0 - digT[0] / 1024.0) * digT[1]
-    v2 = (adc_T / 131072.0 - digT[0] / 8192.0) * (adc_T / 131072.0 - digT[0] / 8192.0) * digT[2]
-    t_fine = v1 + v2
-    temperature = t_fine / 5120.0
-    print("temp : %-6.2f ℃" % (temperature))
-    temp_out = float('%.2f' % (temperature))
-    temp_out_f = (temperature * 1.8 + 32)
-
-    json_body_public = [
+        },
         {
             "measurement": "temperature",
             "tags": {
@@ -142,28 +244,9 @@ def compensate_T(adc_T):
                 "sensor_model": sensor_model_temp
             },
             "fields": {
-                "value": temp_out
+                "value": float('%.2f' % temp_values_avg)
             }
-        }
-    ]
-    client.write_points(json_body_public)
-
-def compensate_H(adc_H):
-    global t_fine
-    var_h = t_fine - 76800.0
-    if var_h != 0:
-        var_h = (adc_H - (digH[3] * 64.0 + digH[4]/16384.0 * var_h)) * (digH[1] / 65536.0 * (1.0 + digH[5] / 67108864.0 * var_h * (1.0 + digH[2] / 67108864.0 * var_h)))
-    else:
-        return 0
-    var_h = var_h * (1.0 - digH[0] * var_h / 524288.0)
-    if var_h > 100.0:
-        var_h = 100.0
-    elif var_h < 0.0:
-        var_h = 0.0
-    print("hum : %6.2f ％" % (var_h))
-    humidity_out = float('%.2f' % (var_h))
-
-    json_body_public = [
+        },
         {
             "measurement": "humidity",
             "tags": {
@@ -172,37 +255,15 @@ def compensate_H(adc_H):
                 "sensor_model": sensor_model_temp
             },
             "fields": {
-                "value": humidity_out
+                "value": float('%.2f' % humidity_values_avg)
             }
         }
     ]
 
     client.write_points(json_body_public)
-
-def setup():
-    osrs_t = 1			#Temperature oversampling x 1
-    osrs_p = 1			#Pressure oversampling x 1
-    osrs_h = 1			#Humidity oversampling x 1
-    mode   = 3			#Normal mode
-    t_sb   = 5			#Tstandby 1000ms
-    filter = 0			#Filter off
-    spi3w_en = 0			#3-wire SPI Disable
-
-    ctrl_meas_reg = (osrs_t << 5) | (osrs_p << 2) | mode
-    config_reg    = (t_sb << 5) | (filter << 2) | spi3w_en
-    ctrl_hum_reg  = osrs_h
-
-    writeReg(0xF2,ctrl_hum_reg)
-    writeReg(0xF4,ctrl_meas_reg)
-    writeReg(0xF5,config_reg)
+    print("\n\n")
+    print(json_body_public)
 
 
-setup()
-get_calib_param()
-
-
-if __name__ == '__main__':
-    try:
-        readData()
-    except KeyboardInterrupt:
-        pass
+if __name__ == "__main__":
+    main()
