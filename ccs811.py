@@ -8,6 +8,7 @@
 # Version 1.0
 
 import time  # comment this line if you don't need ThinkSpeak connection
+import SDL_Pi_HDC1000  # comment this line if you don't use HDC sensor
 import subprocess
 from influxdb import InfluxDBClient
 import base64
@@ -16,14 +17,17 @@ import urllib3
 import json
 from CCS811_RPi import CCS811_RPi
 import time
+current_milli_time = lambda: int(round(time.time() * 1000))
 urllib3.disable_warnings()
-
-
+client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
+                        username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
+        base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
+                        database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False,
+                        timeout=4)
 
 ccs811 = CCS811_RPi()
 parser = ConfigParser()
 parser.read('/etc/configuration/configuration.data')
-
 voivodeship = (parser.get('airmonitor', 'voivodeship'))
 city = (parser.get('airmonitor', 'city'))
 street = (parser.get('airmonitor', 'street'))
@@ -32,6 +36,8 @@ placement = (parser.get('airmonitor', 'placement'))
 lat = (parser.getfloat('airmonitor', 'lat'))
 long = (parser.getfloat('airmonitor', 'long'))
 sensor_model_co2 = (parser.get('airmonitor', 'sensor_model_co2'))
+co2_values = []
+tvoc_values = []
 
 # Do you want to send data to thingSpeak? If yes set WRITE API KEY, otherwise set False
 THINGSPEAK = False  # or type 'YOURAPIKEY'
@@ -41,7 +47,7 @@ INITIALBASELINE = False
 
 # Do you want to use integrated temperature meter to compensate temp/RH (CJMCU-8118 board)?
 # If not pre-set sensor compensation temperature is 25 C and RH is 50 %
-# You can compensate manually by method ccs811.setCompensation(temperature,humidity) 
+# You can compensate manually by method ccs811.setCompensation(temperature,humidity)
 HDC1080 = False
 
 '''
@@ -56,9 +62,9 @@ MEAS MODE REGISTER AND DRIVE MODE CONFIGURATION
 configuration = 0b10000
 
 # Set read interval for retriveving last measurement data from the sensor
-pause = 6
+pause = 1
 start_iteration = 0
-stop_iteration = 11
+stop_iteration = 29
 
 
 def thingSpeak(eCO2, TVOC, baseline, temperature, humidity):
@@ -116,13 +122,12 @@ while (start_iteration < stop_iteration):
         temperature = hdc1000.readTemperature()
         ccs811.setCompensation(temperature, humidity)
     else:
-        proc = subprocess.Popen('/etc/configuration/bme280.py.humidity.py', stdout=subprocess.PIPE)
-        humidity = proc.stdout.read()
-        humidity = float(humidity)
+        proc = subprocess.Popen('/etc/configuration/bme280.py.humidity', stdout=subprocess.PIPE)
+        humidity = float(proc.stdout.read())
 
-        proc = subprocess.Popen('/etc/configuration/bme280.py.temperature.py', stdout=subprocess.PIPE)
-        temperature = proc.stdout.read()
-        temperature = float(temperature)
+        proc = subprocess.Popen('/etc/configuration/bme280.py.temperature', stdout=subprocess.PIPE)
+        temperature = float(proc.stdout.read())
+        temperature -= 2.5
 
     statusbyte = ccs811.readStatus()
     print('STATUS: ', bin(statusbyte))
@@ -143,7 +148,39 @@ while (start_iteration < stop_iteration):
         continue;
     baseline = ccs811.readBaseline()
 
-    json_body_public = [
+    print('Temp: ', temperature, ' StC')
+    print('Hum: ', humidity, ' %')
+    print('eCO2: ', result['eCO2'], ' ppm')
+    print('TVOC: ', result['TVOC'], 'ppb')
+    print('Status register: ', bin(result['status']))
+    print('Last error ID: ', result['errorid'])
+    print('RAW data: ', result['raw'])
+    print('Baseline: ', baseline)
+    print('---------------------------------')
+
+
+    if result['eCO2'] > 0:
+        co2_values.append(result['eCO2'])
+
+    tvoc_values.append(result['TVOC'])
+
+    if (THINGSPEAK is not False):
+        thingSpeak(result['eCO2'], result['TVOC'], baseline, temperature, humidity)
+    time.sleep(pause)
+    start_iteration += 1
+
+print("\n\n\nList of CO2 values from sensor", co2_values)
+co2_values_avg = (sum(co2_values) / len(co2_values))
+print("CO2 Average: ", co2_values_avg)
+print(co2_values)
+
+
+print("\n\n\nList of TVOC values from sensor", tvoc_values)
+tvoc_values_avg = (sum(tvoc_values) / len(tvoc_values))
+print("TVOC Average: ", tvoc_values_avg)
+
+
+json_body_public = [
         {
             "measurement": "CO2",
             "tags": {
@@ -158,7 +195,7 @@ while (start_iteration < stop_iteration):
                 "sensor_model": sensor_model_co2
             },
             "fields": {
-                "value": float(result['eCO2'])
+                "value": float('%.2f' % co2_values_avg)
             }
         },
         {
@@ -175,28 +212,9 @@ while (start_iteration < stop_iteration):
                 "sensor_model": sensor_model_co2
             },
             "fields": {
-                "value": float(result['TVOC'])
+                "value": float('%.2f' % tvoc_values_avg)
             }
         }
     ]
-    client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
-                            username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
-            base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
-                            database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False,
-                            timeout=4)
-    client.write_points(json_body_public)
-
-    print('Temp: ', temperature, ' StC')
-    print('Hum: ', humidity, ' %')
-    print('eCO2: ', result['eCO2'], ' ppm')
-    print('TVOC: ', result['TVOC'], 'ppb')
-    print('Status register: ', bin(result['status']))
-    print('Last error ID: ', result['errorid'])
-    print('RAW data: ', result['raw'])
-    print('Baseline: ', baseline)
-    print('---------------------------------')
-
-    if (THINGSPEAK is not False):
-        thingSpeak(result['eCO2'], result['TVOC'], baseline, temperature, humidity)
-    time.sleep(pause)
-    start_iteration = start_iteration + 1
+client.write_points(json_body_public)
+print("\n\n\n", json_body_public)
