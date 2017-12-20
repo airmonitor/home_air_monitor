@@ -1,19 +1,18 @@
 #!/usr/bin/python3.4
-#coding: utf-8
+# coding: utf-8
 
 import time
 from influxdb import InfluxDBClient
 from sds011 import SDS011
-import os
 import base64
 from configparser import ConfigParser
 import urllib3
 
 parser = ConfigParser()
 parser.read('/etc/configuration/configuration.data')
-sensor_model=(parser.get('airmonitor', 'sensor_model'))
-lat=(parser.get('airmonitor', 'lat'))
-long=(parser.get('airmonitor', 'long'))
+sensor_model = (parser.get('airmonitor', 'sensor_model'))
+lat = (parser.get('airmonitor', 'lat'))
+long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
 
 # Nie zmieniaj niczego poniżej tej linii!##
@@ -46,7 +45,7 @@ FACTOR = 1.5
 pm25_values = []
 pm10_values = []
 
-while (COUNT < 30):
+while COUNT < 30:
 
     values = sensor.get_values()
     print("Values measured: PPM10:", values[0], "PPM2.5:", values[1])
@@ -82,8 +81,6 @@ for i in pm10_values:
         print("OK")
 print(pm10_values)
 
-
-
 json_body_public = [
     {
         "measurement": "ppm25",
@@ -109,10 +106,7 @@ json_body_public = [
     }
 ]
 
-
-
 client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")), username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")), database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
 client.write_points(json_body_public)
 print(json_body_public)
-
 sensor.workstate = SDS011.WorkStates.Sleeping
