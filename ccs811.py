@@ -7,17 +7,14 @@
 #
 # Version 1.0
 
-import time  # comment this line if you don't need ThinkSpeak connection
 import SDL_Pi_HDC1000  # comment this line if you don't use HDC sensor
 import subprocess
 from influxdb import InfluxDBClient
 import base64
 from configparser import ConfigParser
 import urllib3
-import json
 from CCS811_RPi import CCS811_RPi
 import time
-current_milli_time = lambda: int(round(time.time() * 1000))
 urllib3.disable_warnings()
 client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
                         username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
@@ -93,7 +90,7 @@ def thingSpeak(eCO2, TVOC, baseline, temperature, humidity):
 
 print('Checking hardware ID...')
 hwid = ccs811.checkHWID()
-if (hwid == hex(129)):
+if hwid == hex(129):
     print('Hardware ID is correct')
 else:
     print('Incorrect hardware ID ', hwid, ', should be 0x81')
@@ -105,19 +102,19 @@ print('STATUS: ', bin(ccs811.readStatus()))
 print('---------------------------------')
 
 # Use these lines if you need to pre-set and check sensor baseline value
-if (INITIALBASELINE > 0):
+if INITIALBASELINE > 0:
     ccs811.setBaseline(INITIALBASELINE)
     print(ccs811.readBaseline())
 
 # Use these lines if you use CJMCU-8118 which has HDC1080 temp/RH sensor
-if (HDC1080):
+if HDC1080:
     hdc1000 = SDL_Pi_HDC1000.SDL_Pi_HDC1000()
     hdc1000.turnHeaterOff()
     hdc1000.setTemperatureResolution(SDL_Pi_HDC1000.HDC1000_CONFIG_TEMPERATURE_RESOLUTION_14BIT)
     hdc1000.setHumidityResolution(SDL_Pi_HDC1000.HDC1000_CONFIG_HUMIDITY_RESOLUTION_14BIT)
 
-while (start_iteration < stop_iteration):
-    if (HDC1080):
+while start_iteration < stop_iteration:
+    if HDC1080:
         humidity = hdc1000.readHumidity()
         temperature = hdc1000.readTemperature()
         ccs811.setCompensation(temperature, humidity)
@@ -133,19 +130,19 @@ while (start_iteration < stop_iteration):
     print('STATUS: ', bin(statusbyte))
 
     error = ccs811.checkError(statusbyte)
-    if (error):
+    if error:
         print('ERROR:', ccs811.checkError(statusbyte))
 
-    if (not ccs811.checkDataReady(statusbyte)):
+    if not ccs811.checkDataReady(statusbyte):
         print('No new samples are ready')
         print('---------------------------------')
         time.sleep(pause)
-        continue;
-    result = ccs811.readAlg();
-    if (not result):
+        continue
+    result = ccs811.readAlg()
+    if not result:
         # print('Invalid result received')
         time.sleep(pause)
-        continue;
+        continue
     baseline = ccs811.readBaseline()
 
     print('Temp: ', temperature, ' StC')
@@ -158,13 +155,12 @@ while (start_iteration < stop_iteration):
     print('Baseline: ', baseline)
     print('---------------------------------')
 
-
-    if result['eCO2'] > 0:
+    if result['eCO2'] >= 400:
         co2_values.append(result['eCO2'])
 
     tvoc_values.append(result['TVOC'])
 
-    if (THINGSPEAK is not False):
+    if THINGSPEAK is not False:
         thingSpeak(result['eCO2'], result['TVOC'], baseline, temperature, humidity)
     time.sleep(pause)
     start_iteration += 1
@@ -174,11 +170,9 @@ co2_values_avg = (sum(co2_values) / len(co2_values))
 print("CO2 Average: ", co2_values_avg)
 print(co2_values)
 
-
 print("\n\n\nList of TVOC values from sensor", tvoc_values)
 tvoc_values_avg = (sum(tvoc_values) / len(tvoc_values))
 print("TVOC Average: ", tvoc_values_avg)
-
 
 json_body_public = [
         {
