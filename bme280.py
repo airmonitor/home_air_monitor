@@ -21,15 +21,12 @@
 from smbus2 import SMBus
 import time
 from ctypes import c_short
-from ctypes import c_byte
-from ctypes import c_ubyte
 from influxdb import InfluxDBClient
 import base64
 from configparser import ConfigParser
 import urllib3
 
 parser = ConfigParser(allow_no_value=False)
-parser = ConfigParser()
 parser.read('/etc/configuration/configuration.data')
 sensor_model_temp = (parser.get('airmonitor', 'sensor_model_temp'))
 lat = (parser.get('airmonitor', 'lat'))
@@ -37,18 +34,13 @@ long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
 
 client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
-                                username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
-            base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
-                                database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
-
-COUNT = 0
+                        username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
+    base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
+                        database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
 DEVICE = 0x76  # Default device I2C address
 
-#bus = smbus.SMBus(1)  # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 bus = SMBus(1)
 
-
-# Rev 1 Pi uses bus 0
 
 def getShort(data, index):
     # return two bytes from data as a signed 16-bit value
@@ -78,18 +70,14 @@ def readBME280ID(addr=DEVICE):
     # Chip ID Register Address
     REG_ID = 0xD0
     (chip_id, chip_version) = bus.read_i2c_block_data(addr, REG_ID, 2)
-    return (chip_id, chip_version)
+    return chip_id, chip_version
 
 
 def readBME280All(addr=DEVICE):
     # Register Addresses
     REG_DATA = 0xF7
     REG_CONTROL = 0xF4
-    REG_CONFIG = 0xF5
-
     REG_CONTROL_HUM = 0xF2
-    REG_HUM_MSB = 0xFD
-    REG_HUM_LSB = 0xFE
 
     # Oversample setting - page 27
     OVERSAMPLE_TEMP = 2
@@ -149,10 +137,10 @@ def readBME280All(addr=DEVICE):
     hum_raw = (data[6] << 8) | data[7]
 
     # Refine temperature
-    var1 = ((((temp_raw >> 3) - (dig_T1 << 1))) * (dig_T2)) >> 11
-    var2 = (((((temp_raw >> 4) - (dig_T1)) * ((temp_raw >> 4) - (dig_T1))) >> 12) * (dig_T3)) >> 14
+    var1 = (((temp_raw >> 3) - (dig_T1 << 1)) * dig_T2) >> 11
+    var2 = (((((temp_raw >> 4) - dig_T1) * ((temp_raw >> 4) - dig_T1)) >> 12) * dig_T3) >> 14
     t_fine = var1 + var2
-    temperature = float(((t_fine * 5) + 128) >> 8);
+    temperature = float(((t_fine * 5) + 128) >> 8)
 
     # Refine pressure and adjust for temperature
     var1 = t_fine / 2.0 - 64000.0
@@ -184,23 +172,24 @@ def readBME280All(addr=DEVICE):
 
 
 temperature_values = []
+
 pressure_values = []
+
 humidity_values = []
 
 
 def main():
-    COUNT = 0
-    while COUNT < 9:
+    count = 0
+    while count < 9:
         (chip_id, chip_version) = readBME280ID()
         print("Chip ID     :", chip_id)
         print("Version     :", chip_version)
 
         temperature, pressure, humidity = readBME280All()
 
-        print("Temperature : ", (temperature - 3), "C")
+        print("Temperature : ", temperature, "C")
         print("Pressure : ", pressure, "hPa")
         print("Humidity : ", humidity, "%")
-        temperature -= 3
 
         temperature_values.append(temperature)
         pressure_values.append(pressure)
@@ -209,7 +198,7 @@ def main():
         # print("Temperature values: ", temperature_values)
         # print("Pressure values: ", pressure_values)
         # print("Humidity values: ", humidity_values)
-        COUNT += 1
+        count += 1
         time.sleep(1)
     print("\n\n")
     print("List of temp values from sensor", temperature_values)
