@@ -9,18 +9,18 @@
 import struct, array, time, io, fcntl
 
 # I2C Address
-CCS811_ADDRESS =  (0x5A)
+CCS811_ADDRESS = (0x5A)
 
 # Registers
-CCS811_HW_ID            =  (0x20)
-CSS811_STATUS           =  (0x00)
-CSS811_APP_START        =  (0xF4)
-CSS811_MEAS_MODE        =  (0x01)
-CSS811_ERROR_ID         =  (0xE0)
-CSS811_RAW_DATA         =  (0x03)
-CSS811_ALG_RESULT_DATA  =  (0x02)
-CSS811_BASELINE         =  (0x11)
-CSS811_ENV_DATA         =  (0x05)
+CCS811_HW_ID = (0x20)
+CSS811_STATUS = (0x00)
+CSS811_APP_START = (0xF4)
+CSS811_MEAS_MODE = (0x01)
+CSS811_ERROR_ID = (0xE0)
+CSS811_RAW_DATA = (0x03)
+CSS811_ALG_RESULT_DATA = (0x02)
+CSS811_BASELINE = (0x11)
+CSS811_ENV_DATA = (0x05)
 
 # Errors ID
 ERROR = {}
@@ -31,10 +31,10 @@ ERROR[3] = 'MAX_RESISTANCE'
 ERROR[4] = 'HEATER_FAULT'
 ERROR[5] = 'HEATER_SUPPLY'
 
-I2C_SLAVE=0x0703
+I2C_SLAVE = 0x0703
 
-CCS811_fw= 0
-CCS811_fr= 0
+CCS811_fw = 0
+CCS811_fr = 0
 
 class CCS811_RPi:
         def __init__(self, twi=1, addr=CCS811_ADDRESS ):
