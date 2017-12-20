@@ -124,7 +124,7 @@ while start_iteration < stop_iteration:
 
         proc = subprocess.Popen('/etc/configuration/bme280.py.temperature', stdout=subprocess.PIPE)
         temperature = float(proc.stdout.read())
-        temperature -= 2.5
+        temperature -= 2.0
 
     statusbyte = ccs811.readStatus()
     print('STATUS: ', bin(statusbyte))
