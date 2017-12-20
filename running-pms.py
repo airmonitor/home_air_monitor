@@ -11,12 +11,13 @@ import urllib3
 
 parser = ConfigParser(allow_no_value=False)
 parser.read('/etc/configuration/configuration.data')
-pms_sensor_model=(parser.get('airmonitor', 'pms_sensor_model'))
-lat=(parser.get('airmonitor', 'lat'))
-long=(parser.get('airmonitor', 'long'))
+pms_sensor_model = (parser.get('airmonitor', 'pms_sensor_model'))
+lat = (parser.get('airmonitor', 'lat'))
+long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
 
 port = serial.Serial('/dev/ttyAMA0', baudrate=9600, timeout=2.0)
+
 
 def read_pm_line(_port):
     rv = b''
