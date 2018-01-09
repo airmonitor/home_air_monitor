@@ -2,11 +2,11 @@
 # coding: utf-8
 
 import time
-from influxdb import InfluxDBClient
 from sds011 import SDS011
-import base64
 from configparser import ConfigParser
 import urllib3
+import json
+import requests
 
 parser = ConfigParser()
 parser.read('/etc/configuration/configuration.data')
@@ -26,7 +26,7 @@ urllib3.disable_warnings()
 #####################################################
 #####################################################
 # Create an instance of your sensor
-sensor = SDS011('/dev/ttyAMA0')
+sensor = SDS011('/dev/ttyUSB0')
 
 # Now we have some details about it
 print(sensor.device_id)
@@ -37,7 +37,7 @@ print(sensor.reportmode)
 # Set dutycyle to nocycle (permanent)
 sensor.reset()
 sensor.workstate = SDS011.WorkStates.Measuring
-time.sleep(30)
+time.sleep(1)
 
 
 COUNT = 0
@@ -81,32 +81,23 @@ for i in pm10_values:
         print("OK")
 print(pm10_values)
 
-json_body_public = [
-    {
-        "measurement": "ppm25",
-        "tags": {
-            "lat": lat,
-            "long": long,
-            "sensor_model": sensor_model
-        },
-        "fields": {
-            "value": float('%.2f' % pm25_values_avg)
-        }
-    },
-    {
-        "measurement": "ppm10",
-        "tags": {
-            "lat": lat,
-            "long": long,
-            "sensor_model": sensor_model
-        },
-        "fields": {
-            "value": float('%.2f' % pm10_values_avg)
-        }
-    }
-]
 
-client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")), username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")), database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
-client.write_points(json_body_public)
-print(json_body_public)
+data = [
+        {
+            "lat": lat,
+            "long": long,
+            "pm2,5": float('%.2f' % pm25_values_avg),
+            "pm10": float('%.2f' % pm10_values_avg),
+            "pm_sensor_model": str(sensor_model)
+        }
+       ]
+print(data)
+
+url = ('http://api.airmonitor.pl:5000/api')
+resp = requests.post(url,
+                     timeout=10,
+                     data=json.dumps(data),
+                     headers={"Content-Type": "application/json"})
+resp.status_code
+
 sensor.workstate = SDS011.WorkStates.Sleeping
