@@ -101,3 +101,4 @@ resp = requests.post(url,
 resp.status_code
 
 sensor.workstate = SDS011.WorkStates.Sleeping
+
