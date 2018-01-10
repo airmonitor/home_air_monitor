@@ -82,23 +82,21 @@ for i in pm10_values:
 print(pm10_values)
 
 
-data = [
-        {
-            "lat": lat,
-            "long": long,
-            "pm2,5": float('%.2f' % pm25_values_avg),
-            "pm10": float('%.2f' % pm10_values_avg),
-            "pm_sensor_model": str(sensor_model)
-        }
-       ]
-
-
-data = '{"lat": lat, "long": "15.000", "pm1": 1, "pm2,5": 25, "pm10": 10, "pm_sensor_model": "SDS021"}'
-
+data = '{"lat": "' + str(lat) + '", ' \
+        '"long": "'+ str(long) + '", ' \
+        '"pm2,5": ' + str(float('%.2f' % pm25_values_avg)) + ', ' \
+        '"pm10":' + str(float('%.2f' % pm10_values_avg)) + ', ' \
+        '"pm_sensor_model": "' + str(sensor_model) + '"}'
 
 print(data)
+parsed_json = json.loads(data)
+print(parsed_json)
+print(parsed_json['lat'])
+print(parsed_json['long'])
+print(parsed_json['pm2,5'])
+print(parsed_json['pm_sensor_model'])
 
-url = ('http://api.airmonitor.pl:5000/api')
+url = ('http://192.168.1.30:5000/api')
 resp = requests.post(url,
                      timeout=10,
                      data=json.dumps(data),
