@@ -37,7 +37,7 @@ print(sensor.reportmode)
 # Set dutycyle to nocycle (permanent)
 sensor.reset()
 sensor.workstate = SDS011.WorkStates.Measuring
-time.sleep(1)
+time.sleep(30)
 
 
 COUNT = 0
@@ -86,9 +86,9 @@ data = '{"lat": "' + str(lat) + '", ' \
         '"long": "'+ str(long) + '", ' \
         '"pm2,5": ' + str(float('%.2f' % pm25_values_avg)) + ', ' \
         '"pm10":' + str(float('%.2f' % pm10_values_avg)) + ', ' \
-        '"pm_sensor_model": "' + str(sensor_model) + '"}'
+        '"sensor": "' + str(sensor_model) + '"}'
 
-url = ('http://api.airmonitor.pl:5000/api')
+url = 'http://api.airmonitor.pl:5000/api'
 resp = requests.post(url,
                      timeout=10,
                      data=json.dumps(data),

@@ -21,22 +21,18 @@
 from smbus2 import SMBus
 import time
 from ctypes import c_short
-from influxdb import InfluxDBClient
-import base64
+import requests
 from configparser import ConfigParser
 import urllib3
+import json
 
 parser = ConfigParser(allow_no_value=False)
 parser.read('/etc/configuration/configuration.data')
-sensor_model_temp = (parser.get('airmonitor', 'sensor_model_temp'))
+sensor = (parser.get('airmonitor', 'sensor_model_temp'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
 
-client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
-                        username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
-    base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
-                        database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
 DEVICE = 0x76  # Default device I2C address
 
 bus = SMBus(1)
@@ -213,45 +209,21 @@ def main():
     humidity_values_avg = (sum(humidity_values) / len(humidity_values))
     print("humidity Average", humidity_values_avg)
 
-    json_body_public = [
-        {
-            "measurement": "pressure",
-            "tags": {
-                "lat": lat,
-                "long": long,
-                "sensor_model": sensor_model_temp
-            },
-            "fields": {
-                "value": float('%.2f' % pressure_values_avg)
-            }
-        },
-        {
-            "measurement": "temperature",
-            "tags": {
-                "lat": lat,
-                "long": long,
-                "sensor_model": sensor_model_temp
-            },
-            "fields": {
-                "value": float('%.2f' % temp_values_avg)
-            }
-        },
-        {
-            "measurement": "humidity",
-            "tags": {
-                "lat": lat,
-                "long": long,
-                "sensor_model": sensor_model_temp
-            },
-            "fields": {
-                "value": float('%.2f' % humidity_values_avg)
-            }
-        }
-    ]
+    data = '{"lat": "' + str(lat) + '", ' \
+            '"long": "' + str(long) + '", ' \
+            '"pressure": ' + str(float('%.2f' % pressure_values_avg)) + ', ' \
+            '"temperature": ' + str(float('%.2f' % temp_values_avg)) + ', ' \
+            '"humidity": ' + str(float('%.2f' % humidity_values_avg)) + ', ' \
+            '"sensor": "' + str(sensor) + '"}'
 
-    client.write_points(json_body_public)
+    url = 'http://api.airmonitor.pl:5000/api'
+    resp = requests.post(url,
+                         timeout=10,
+                         data=json.dumps(data),
+                         headers={"Content-Type": "application/json"})
+    resp.status_code
     print("\n\n")
-    print(json_body_public)
+    print(data)
 
 
 if __name__ == "__main__":
