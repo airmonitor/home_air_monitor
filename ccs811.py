@@ -14,8 +14,11 @@ from CCS811_RPi import CCS811_RPi
 import time
 import json
 import requests
+from bme280 import readBME280All
 urllib3.disable_warnings()
 
+temperature, pressure, humidity = readBME280All(addr=0x76)
+# temperature -= 5.2
 
 ccs811 = CCS811_RPi()
 parser = ConfigParser()
@@ -26,16 +29,9 @@ sensor = (parser.get('airmonitor', 'sensor_model_co2'))
 co2_values = []
 tvoc_values = []
 
-# Do you want to send data to thingSpeak? If yes set WRITE API KEY, otherwise set False
-THINGSPEAK = False  # or type 'YOURAPIKEY'
-
 # Do you want to preset sensor baseline? If yes set the value here, otherwise set False
 INITIALBASELINE = False
 
-# Do you want to use integrated temperature meter to compensate temp/RH (CJMCU-8118 board)?
-# If not pre-set sensor compensation temperature is 25 C and RH is 50 %
-# You can compensate manually by method ccs811.setCompensation(temperature,humidity)
-HDC1080 = False
 
 '''
 MEAS MODE REGISTER AND DRIVE MODE CONFIGURATION
@@ -72,10 +68,9 @@ if INITIALBASELINE > 0:
     print(ccs811.readBaseline())
 
 while start_iteration < stop_iteration:
-    proc = subprocess.Popen('/etc/configuration/bme280.py.humidity', stdout=subprocess.PIPE)
-    humidity = float(proc.stdout.read())
-    proc = subprocess.Popen('/etc/configuration/bme280.py.temperature', stdout=subprocess.PIPE)
-    temperature = float(proc.stdout.read())
+    humidity = float(humidity)
+    temperature = float(temperature)
+    print(humidity, temperature)
 
     statusbyte = ccs811.readStatus()
     print('STATUS: ', bin(statusbyte))
