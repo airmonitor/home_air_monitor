@@ -84,7 +84,7 @@ print(pm10_values)
 
 data = '{"lat": "' + str(lat) + '", ' \
         '"long": "'+ str(long) + '", ' \
-        '"pm2,5": ' + str(float('%.2f' % pm25_values_avg)) + ', ' \
+        '"pm25": ' + str(float('%.2f' % pm25_values_avg)) + ', ' \
         '"pm10":' + str(float('%.2f' % pm10_values_avg)) + ', ' \
         '"sensor": "' + str(sensor_model) + '"}'
 
