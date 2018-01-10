@@ -91,6 +91,11 @@ data = [
             "pm_sensor_model": str(sensor_model)
         }
        ]
+
+
+data = '{"lat": lat, "long": "15.000", "pm1": 1, "pm2,5": 25, "pm10": 10, "pm_sensor_model": "SDS021"}'
+
+
 print(data)
 
 url = ('http://api.airmonitor.pl:5000/api')
