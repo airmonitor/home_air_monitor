@@ -7,32 +7,22 @@
 #
 # Version 1.0
 
-import SDL_Pi_HDC1000  # comment this line if you don't use HDC sensor
 import subprocess
-from influxdb import InfluxDBClient
-import base64
 from configparser import ConfigParser
 import urllib3
 from CCS811_RPi import CCS811_RPi
 import time
+import json
+import requests
 urllib3.disable_warnings()
-client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
-                        username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
-        base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
-                        database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False,
-                        timeout=4)
+
 
 ccs811 = CCS811_RPi()
 parser = ConfigParser()
 parser.read('/etc/configuration/configuration.data')
-voivodeship = (parser.get('airmonitor', 'voivodeship'))
-city = (parser.get('airmonitor', 'city'))
-street = (parser.get('airmonitor', 'street'))
-box = (parser.get('airmonitor', 'box'))
-placement = (parser.get('airmonitor', 'placement'))
 lat = (parser.getfloat('airmonitor', 'lat'))
 long = (parser.getfloat('airmonitor', 'long'))
-sensor_model_co2 = (parser.get('airmonitor', 'sensor_model_co2'))
+sensor = (parser.get('airmonitor', 'sensor_model_co2'))
 co2_values = []
 tvoc_values = []
 
@@ -63,31 +53,6 @@ pause = 1
 start_iteration = 0
 stop_iteration = 29
 
-
-def thingSpeak(eCO2, TVOC, baseline, temperature, humidity):
-    print('Sending to ThingSpeak API...')
-    url = "https://api.thingspeak.com/update?api_key="
-    url += THINGSPEAK
-    url += "&field1="
-    url += str(eCO2)
-    url += "&field2="
-    url += str(TVOC)
-    url += "&field3="
-    url += str(baseline)
-    url += "&field4="
-    url += str(temperature)
-    url += "&field5="
-    url += str(humidity)
-    # print url
-    try:
-        content = urllib3.urlopen(url).read()
-    except urllib3.HTTPError:
-        print("Invalid HTTP response")
-        return False
-    print('Done')
-    # print content
-
-
 print('Checking hardware ID...')
 hwid = ccs811.checkHWID()
 if hwid == hex(129):
@@ -106,25 +71,11 @@ if INITIALBASELINE > 0:
     ccs811.setBaseline(INITIALBASELINE)
     print(ccs811.readBaseline())
 
-# Use these lines if you use CJMCU-8118 which has HDC1080 temp/RH sensor
-if HDC1080:
-    hdc1000 = SDL_Pi_HDC1000.SDL_Pi_HDC1000()
-    hdc1000.turnHeaterOff()
-    hdc1000.setTemperatureResolution(SDL_Pi_HDC1000.HDC1000_CONFIG_TEMPERATURE_RESOLUTION_14BIT)
-    hdc1000.setHumidityResolution(SDL_Pi_HDC1000.HDC1000_CONFIG_HUMIDITY_RESOLUTION_14BIT)
-
 while start_iteration < stop_iteration:
-    if HDC1080:
-        humidity = hdc1000.readHumidity()
-        temperature = hdc1000.readTemperature()
-        ccs811.setCompensation(temperature, humidity)
-    else:
-        proc = subprocess.Popen('/etc/configuration/bme280.py.humidity', stdout=subprocess.PIPE)
-        humidity = float(proc.stdout.read())
-
-        proc = subprocess.Popen('/etc/configuration/bme280.py.temperature', stdout=subprocess.PIPE)
-        temperature = float(proc.stdout.read())
-        temperature -= 2.0
+    proc = subprocess.Popen('/etc/configuration/bme280.py.humidity', stdout=subprocess.PIPE)
+    humidity = float(proc.stdout.read())
+    proc = subprocess.Popen('/etc/configuration/bme280.py.temperature', stdout=subprocess.PIPE)
+    temperature = float(proc.stdout.read())
 
     statusbyte = ccs811.readStatus()
     print('STATUS: ', bin(statusbyte))
@@ -160,8 +111,6 @@ while start_iteration < stop_iteration:
 
     tvoc_values.append(result['TVOC'])
 
-    if THINGSPEAK is not False:
-        thingSpeak(result['eCO2'], result['TVOC'], baseline, temperature, humidity)
     time.sleep(pause)
     start_iteration += 1
 
@@ -174,41 +123,17 @@ print("\n\n\nList of TVOC values from sensor", tvoc_values)
 tvoc_values_avg = (sum(tvoc_values) / len(tvoc_values))
 print("TVOC Average: ", tvoc_values_avg)
 
-json_body_public = [
-        {
-            "measurement": "CO2",
-            "tags": {
-                "voivodeship": voivodeship,
-                "city": city,
-                "street": street,
-                "box": box,
-                "placement": placement,
-                "lat": lat,
-                "long": long,
-                "sensor": "0",
-                "sensor_model": sensor_model_co2
-            },
-            "fields": {
-                "value": float('%.2f' % co2_values_avg)
-            }
-        },
-        {
-            "measurement": "TVOC",
-            "tags": {
-                "voivodeship": voivodeship,
-                "city": city,
-                "street": street,
-                "box": box,
-                "placement": placement,
-                "lat": lat,
-                "long": long,
-                "sensor": "0",
-                "sensor_model": sensor_model_co2
-            },
-            "fields": {
-                "value": float('%.2f' % tvoc_values_avg)
-            }
-        }
-    ]
-client.write_points(json_body_public)
-print("\n\n\n", json_body_public)
+data = '{"lat": "' + str(lat) + '", ' \
+        '"long": "'+ str(long) + '", ' \
+        '"co2": ' + str(float('%.2f' % co2_values_avg)) + ', ' \
+        '"tvoc":' + str(float('%.2f' % tvoc_values_avg)) + ', ' \
+        '"sensor": "' + str(sensor) + '"}'
+
+url = 'http://api.airmonitor.pl:5000/api'
+resp = requests.post(url,
+                     timeout=10,
+                     data=json.dumps(data),
+                     headers={"Content-Type": "application/json"})
+resp.status_code
+
+print("\n\n\n", data)
