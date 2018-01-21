@@ -4,10 +4,10 @@
 import serial
 import datetime
 import time
-from influxdb import InfluxDBClient
-import base64
 from configparser import ConfigParser
 import urllib3
+import requests
+import json
 
 parser = ConfigParser(allow_no_value=False)
 parser.read('/etc/configuration/configuration.data')
@@ -124,45 +124,17 @@ for i in pm100_values:
         print("OK")
 print(pm100_values)
 
-json_body_public = [
-            {
-                "measurement": "ppm1",
-                "tags": {
-                    "lat": lat,
-                    "long": long,
-                    "sensor_model": pms_sensor_model
-                },
-                "fields": {
-                    "value": float('%.2f' % pm10_values_avg)
-                }
-            },
-            {
-                "measurement": "ppm25",
-                "tags": {
-                    "lat": lat,
-                    "long": long,
-                    "sensor_model": pms_sensor_model
-                },
-                "fields": {
-                    "value": float('%.2f' % pm25_values_avg)
-                }
-            },
-            {
-                "measurement": "ppm10",
-                "tags": {
-                    "lat": lat,
-                    "long": long,
-                    "sensor_model": pms_sensor_model
-                },
-                "fields": {
-                    "value": float('%.2f' % pm100_values_avg)
-                }
-            }
-        ]
 
-client = InfluxDBClient(host='db.airmonitor.pl', port=(base64.b64decode("ODA4Ng==")),
-                                username=(base64.b64decode("YWlybW9uaXRvcl9wdWJsaWNfd3JpdGU=")), password=(
-            base64.b64decode("amZzZGUwMjh1cGpsZmE5bzh3eWgyMzk4eTA5dUFTREZERkdBR0dERkdFMjM0MWVhYWRm")),
-                                database=(base64.b64decode("YWlybW9uaXRvcg==")), ssl=True, verify_ssl=False, timeout=10)
-client.write_points(json_body_public)
-print(json_body_public)
+data = '{"lat": "' + str(lat) + '", ' \
+        '"long": "'+ str(long) + '", ' \
+        '"pm1":' + str(float('%.2f' % pm10_values_avg)) + ', ' \
+        '"pm25": ' + str(float('%.2f' % pm25_values_avg)) + ', ' \
+        '"pm10":' + str(float('%.2f' % pm100_values_avg)) + ', ' \
+        '"sensor": "' + str(pms_sensor_model) + '"}'
+
+url = 'http://api.airmonitor.pl:5000/api'
+resp = requests.post(url,
+                     timeout=10,
+                     data=json.dumps(data),
+                     headers={"Content-Type": "application/json"})
+
