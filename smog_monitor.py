@@ -26,7 +26,7 @@ urllib3.disable_warnings()
 #####################################################
 #####################################################
 # Create an instance of your sensor
-sensor = SDS011('/dev/ttyUSB0')
+sensor = SDS011('/dev/ttyAMA0')
 
 # Now we have some details about it
 print(sensor.device_id)
