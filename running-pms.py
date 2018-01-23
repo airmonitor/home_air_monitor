@@ -10,8 +10,8 @@ import requests
 import json
 
 parser = ConfigParser(allow_no_value=False)
-parser.read('/etc/configuration/configuration.data')
-pms_sensor_model = (parser.get('airmonitor', 'pms_sensor_model'))
+parser.read('/boot/configuration.data')
+sensor_model = (parser.get('airmonitor', 'sensor_model'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
@@ -130,7 +130,7 @@ data = '{"lat": "' + str(lat) + '", ' \
         '"pm1":' + str(float('%.2f' % pm10_values_avg)) + ', ' \
         '"pm25": ' + str(float('%.2f' % pm25_values_avg)) + ', ' \
         '"pm10":' + str(float('%.2f' % pm100_values_avg)) + ', ' \
-        '"sensor": "' + str(pms_sensor_model) + '"}'
+        '"sensor": "' + str(sensor_model) + '"}'
 
 url = 'http://api.airmonitor.pl:5000/api'
 resp = requests.post(url,

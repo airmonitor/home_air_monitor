@@ -9,7 +9,7 @@ import json
 import requests
 
 parser = ConfigParser()
-parser.read('/etc/configuration/configuration.data')
+parser.read('/boot/configuration.data')
 sensor_model = (parser.get('airmonitor', 'sensor_model'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
