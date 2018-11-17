@@ -18,7 +18,7 @@ from bme280 import readBME280All
 urllib3.disable_warnings()
 
 temperature, pressure, humidity = readBME280All(addr=0x76)
-# temperature -= 5.2
+
 
 ccs811 = CCS811_RPi()
 parser = ConfigParser()
@@ -29,7 +29,6 @@ sensor = (parser.get('airmonitor', 'sensor_model_co2'))
 co2_values = []
 tvoc_values = []
 
-# Do you want to preset sensor baseline? If yes set the value here, otherwise set False
 INITIALBASELINE = False
 
 
@@ -56,7 +55,6 @@ if hwid == hex(129):
 else:
     print('Incorrect hardware ID ', hwid, ', should be 0x81')
 
-# print 'MEAS_MODE:',ccs811.readMeasMode()
 ccs811.configureSensor(configuration)
 print('MEAS_MODE:', ccs811.readMeasMode())
 print('STATUS: ', bin(ccs811.readStatus()))
@@ -86,7 +84,6 @@ while start_iteration < stop_iteration:
         continue
     result = ccs811.readAlg()
     if not result:
-        # print('Invalid result received')
         time.sleep(pause)
         continue
     baseline = ccs811.readBaseline()
@@ -118,17 +115,14 @@ print("\n\n\nList of TVOC values from sensor", tvoc_values)
 tvoc_values_avg = (sum(tvoc_values) / len(tvoc_values))
 print("TVOC Average: ", tvoc_values_avg)
 
-data = '{"lat": "' + str(lat) + '", ' \
-        '"long": "'+ str(long) + '", ' \
-        '"co2": ' + str(float('%.2f' % co2_values_avg)) + ', ' \
-        '"tvoc":' + str(float('%.2f' % tvoc_values_avg)) + ', ' \
-        '"sensor": "' + str(sensor) + '"}'
+data = {
+    "lat": str(lat),
+    "long": str(long),
+    "co2": str(float('%.2f' % co2_values_avg)),
+    "tvoc": str(float('%.2f' % tvoc_values_avg)),
+    "sensor": sensor
+}
 
 url = 'http://api.airmonitor.pl:5000/api'
-resp = requests.post(url,
-                     timeout=10,
-                     data=json.dumps(data),
-                     headers={"Content-Type": "application/json"})
-resp.status_code
-
-print("\n\n\n", data)
+resp = requests.post(url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+print("Response code from AirMonitor API {}", resp.status_code)

@@ -25,8 +25,10 @@ urllib3.disable_warnings()
 #####################################################
 #####################################################
 #####################################################
+
 # Create an instance of your sensor
 sensor = SDS011('/dev/ttyAMA0')
+api_url = 'http://api.airmonitor.pl:5000/api'
 
 # Now we have some details about it
 print(sensor.device_id)
@@ -46,7 +48,6 @@ pm25_values = []
 pm10_values = []
 
 while COUNT < 30:
-
     values = sensor.get_values()
     print("Values measured: PPM10:", values[0], "PPM2.5:", values[1])
     pm25_values.append(values[1])
@@ -66,7 +67,7 @@ for i in pm25_values:
         print("Something is not quite right, some PM2,5 value is by 50% than average from last 9 measurements\n")
     elif pm25_values_avg < i * FACTOR:
         print("OK")
-print(pm25_values)
+print("PM25 values {}", pm25_values)
 
 print("List of PM10 values from sensor", pm10_values)
 pm10_values_avg = (sum(pm10_values) / len(pm10_values))
@@ -79,21 +80,21 @@ for i in pm10_values:
         print("Something is not quite right, some value PM10 value is by 50% than average from last 9 measurements\n")
     elif pm10_values_avg < i * FACTOR:
         print("OK")
-print(pm10_values)
+print("PM10 values {}", pm10_values)
+
+data = {
+    "lat": str(lat),
+    "long": str(long),
+    "pm25": str(float('%.2f' % pm25_values_avg)),
+    "pm10": str(float('%.2f' % pm10_values_avg)),
+    "sensor": sensor_model
+}
 
 
-data = '{"lat": "' + str(lat) + '", ' \
-        '"long": "'+ str(long) + '", ' \
-        '"pm25": ' + str(float('%.2f' % pm25_values_avg)) + ', ' \
-        '"pm10":' + str(float('%.2f' % pm10_values_avg)) + ', ' \
-        '"sensor": "' + str(sensor_model) + '"}'
+resp = requests.post( api_url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"}
+)
 
-url = 'http://api.airmonitor.pl:5000/api'
-resp = requests.post(url,
-                     timeout=10,
-                     data=json.dumps(data),
-                     headers={"Content-Type": "application/json"})
-resp.status_code
+print("Response code from AirMonitor API {}", resp.status_code)
 
 sensor.workstate = SDS011.WorkStates.Sleeping
 

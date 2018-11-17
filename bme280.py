@@ -31,6 +31,7 @@ parser.read('/etc/configuration/configuration.data')
 sensor = (parser.get('airmonitor', 'sensor_model_temp'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
+api_url = 'http://api.airmonitor.pl:5000/api'
 urllib3.disable_warnings()
 
 DEVICE = 0x76  # Default device I2C address
@@ -191,11 +192,9 @@ def main():
         pressure_values.append(pressure)
         humidity_values.append(humidity)
 
-        # print("Temperature values: ", temperature_values)
-        # print("Pressure values: ", pressure_values)
-        # print("Humidity values: ", humidity_values)
         count += 1
         time.sleep(1)
+
     print("\n\n")
     print("List of temp values from sensor", temperature_values)
     temp_values_avg = (sum(temperature_values) / len(temperature_values))
@@ -209,22 +208,17 @@ def main():
     humidity_values_avg = (sum(humidity_values) / len(humidity_values))
     print("humidity Average", humidity_values_avg)
 
-    data = '{"lat": "' + str(lat) + '", ' \
-            '"long": "' + str(long) + '", ' \
-            '"pressure": ' + str(float('%.2f' % pressure_values_avg)) + ', ' \
-            '"temperature": ' + str(float('%.2f' % temp_values_avg)) + ', ' \
-            '"humidity": ' + str(float('%.2f' % humidity_values_avg)) + ', ' \
-            '"sensor": "' + str(sensor) + '"}'
+    data = {
+        "lat": str(lat),
+        "long": str(long),
+        "pressure": str(float('%.2f' % pressure_values_avg)),
+        "temperature": str(float('%.2f' % temp_values_avg)),
+        "humidity": str(float('%.2f' % humidity_values_avg)),
+        "sensor": sensor
+    }
 
-    url = 'http://api.airmonitor.pl:5000/api'
-    resp = requests.post(url,
-                         timeout=10,
-                         data=json.dumps(data),
-                         headers={"Content-Type": "application/json"})
-    resp.status_code
-    print("\n\n")
-    print(data)
-
+    resp = requests.post(api_url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    print("Response code from AirMonitor API {}", resp.status_code)
 
 if __name__ == "__main__":
     main()

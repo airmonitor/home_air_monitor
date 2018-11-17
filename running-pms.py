@@ -17,6 +17,7 @@ long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
 
 port = serial.Serial('/dev/ttyAMA0', baudrate=9600, timeout=2.0)
+api_url = 'http://api.airmonitor.pl:5000/api'
 
 
 def read_pm_line(_port):
@@ -125,16 +126,14 @@ for i in pm100_values:
 print(pm100_values)
 
 
-data = '{"lat": "' + str(lat) + '", ' \
-        '"long": "'+ str(long) + '", ' \
-        '"pm1":' + str(float('%.2f' % pm10_values_avg)) + ', ' \
-        '"pm25": ' + str(float('%.2f' % pm25_values_avg)) + ', ' \
-        '"pm10":' + str(float('%.2f' % pm100_values_avg)) + ', ' \
-        '"sensor": "' + str(sensor_model) + '"}'
+data = {
+    "lat": str(lat),
+    "long": str(long),
+    "pm1": str(float('%.2f' % pm10_values_avg)),
+    "pm25": str(float('%.2f' % pm25_values_avg)),
+    "pm10": str(float('%.2f' % pm100_values_avg)),
+    "sensor": sensor_model
+}
 
-url = 'http://api.airmonitor.pl:5000/api'
-resp = requests.post(url,
-                     timeout=10,
-                     data=json.dumps(data),
-                     headers={"Content-Type": "application/json"})
-
+resp = requests.post(api_url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+print("Response code from AirMonitor API {}", resp.status_code)
