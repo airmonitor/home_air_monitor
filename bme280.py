@@ -168,15 +168,13 @@ def readBME280All(addr=DEVICE):
     return temperature / 100.0, pressure / 100.0, humidity
 
 
-temperature_values = []
-
-pressure_values = []
-
-humidity_values = []
-
-
 def main():
+    temperature_values = []
+    pressure_values = []
+    humidity_values = []
+    temp_calibration_factor = 5
     count = 0
+
     while count < 9:
         (chip_id, chip_version) = readBME280ID()
         print("Chip ID     :", chip_id)
@@ -184,29 +182,31 @@ def main():
 
         temperature, pressure, humidity = readBME280All()
 
-        print("Temperature : ", temperature, "C")
+        print("Temperature : ", temperature - temp_calibration_factor, "C")
         print("Pressure : ", pressure, "hPa")
         print("Humidity : ", humidity, "%")
 
-        temperature_values.append(temperature)
+        temperature_values.append(temperature - temp_calibration_factor)
         pressure_values.append(pressure)
         humidity_values.append(humidity)
 
         count += 1
         time.sleep(1)
 
-    print("\n\n")
-    print("List of temp values from sensor", temperature_values)
+    print("\n\n"
+          "List of temp values from sensor {0}".format(temperature_values))
     temp_values_avg = (sum(temperature_values) / len(temperature_values))
-    print("Temp Average", temp_values_avg)
-    print("\n\n")
-    print("List of pressure values from sensor", pressure_values)
+    print("Temp Average {0}".format(temp_values_avg))
+
+    print("\n\n"
+          "List of pressure values from sensor {0}".format(pressure_values) )
     pressure_values_avg = (sum(pressure_values) / len(pressure_values))
-    print("pressure Average", pressure_values_avg)
-    print("\n\n")
-    print("List of humidity values from sensor", humidity_values)
+    print("pressure Average {0}".format(pressure_values_avg))
+
+    print("\n\n"
+          "List of humidity values from sensor {0}".format(humidity_values))
     humidity_values_avg = (sum(humidity_values) / len(humidity_values))
-    print("humidity Average", humidity_values_avg)
+    print("humidity Average {0}".format(humidity_values_avg))
 
     data = {
         "lat": str(lat),
@@ -216,9 +216,10 @@ def main():
         "humidity": str(float('%.2f' % humidity_values_avg)),
         "sensor": sensor
     }
-
+    print("Data to be sent {0}".format(data))
     resp = requests.post(api_url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
-    print("Response code from AirMonitor API {}", resp.status_code)
+    print("Response code from AirMonitor API {0}".format(resp.status_code))
+
 
 if __name__ == "__main__":
     main()
