@@ -119,8 +119,8 @@ if __name__ == "__main__":
     factor = 1.5
 
     get_measurements(count=0)
-    pm10_values_avg = calculate_pm_averages(PM10_VALUES, factor=factor)
-    pm25_values_avg = calculate_pm_averages(PM25_VALUES, factor=factor)
-    pm100_values_avg = calculate_pm_averages(PM100_VALUES, factor=factor)
+    pm10_values_avg = int(calculate_pm_averages(PM10_VALUES, factor=factor))
+    pm25_values_avg = int(calculate_pm_averages(PM25_VALUES, factor=factor))
+    pm100_values_avg = int(calculate_pm_averages(PM100_VALUES, factor=factor))
 
     send_data(pm10_values=pm10_values_avg, pm25_values=pm25_values_avg, pm100_values=pm100_values_avg)
