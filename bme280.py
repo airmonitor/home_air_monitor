@@ -27,7 +27,7 @@ import urllib3
 import json
 
 parser = ConfigParser(allow_no_value=False)
-parser.read('/etc/configuration/configuration.data')
+parser.read('/boot/configuration.data')
 sensor = (parser.get('airmonitor', 'sensor_model_temp'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))

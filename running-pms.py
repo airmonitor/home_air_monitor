@@ -10,7 +10,7 @@ import requests
 import json
 
 parser = ConfigParser(allow_no_value=False)
-parser.read('/etc/configuration/configuration.data')
+parser.read('/boot/configuration.data')
 sensor_model = (parser.get('airmonitor', 'sensor_model'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
@@ -119,8 +119,8 @@ if __name__ == "__main__":
     factor = 1.5
 
     get_measurements(count=0)
-    pm10_values_avg = int(calculate_pm_averages(PM10_VALUES, factor=factor))
-    pm25_values_avg = int(calculate_pm_averages(PM25_VALUES, factor=factor))
-    pm100_values_avg = int(calculate_pm_averages(PM100_VALUES, factor=factor))
+    pm10_values_avg = round((calculate_pm_averages(PM10_VALUES, factor=factor)), 0)
+    pm25_values_avg = round((calculate_pm_averages(PM25_VALUES, factor=factor)), 0)
+    pm100_values_avg = round((calculate_pm_averages(PM100_VALUES, factor=factor)), 0)
 
     send_data(pm10_values=pm10_values_avg, pm25_values=pm25_values_avg, pm100_values=pm100_values_avg)

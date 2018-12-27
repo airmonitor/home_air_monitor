@@ -22,7 +22,7 @@ temperature, pressure, humidity = readBME280All(addr=0x76)
 
 ccs811 = CCS811_RPi()
 parser = ConfigParser()
-parser.read('/etc/configuration/configuration.data')
+parser.read('/boot/configuration.data')
 lat = (parser.getfloat('airmonitor', 'lat'))
 long = (parser.getfloat('airmonitor', 'long'))
 sensor = (parser.get('airmonitor', 'sensor_model_co2'))
