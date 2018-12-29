@@ -1,4 +1,4 @@
-#!/usr/bin/python3.4
+#!/usr/bin/python3.5
 #
 # CCS811_RPi class usage example
 #
