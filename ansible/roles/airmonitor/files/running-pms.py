@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3.6
 # coding: utf-8
 
 import serial
@@ -115,12 +115,42 @@ def send_data(pm10_values, pm25_values, pm100_values):
     print("Response code from AirMonitor API {}", resp.status_code)
 
 
+def send_data_to_domoticz(domoticz_ip, domoticz_port, pm25_idx, pm25_values):
+    pm25_inside = requests.get("http://{0}:{1}/json.htm?type=command&param=udevice&idx={2}&nvalue=0&svalue={3}".format(
+        domoticz_ip, domoticz_port, pm25_idx, pm25_values), timeout=10)
+    return pm25_inside.status_code
+
+
 if __name__ == "__main__":
     factor = 1.5
+    domoticz_ip_address = "192.168.1.145"
+    domoticz_port = "8080"
+    inside_pm25_idx = "38"
+    inside_pm10_idx = "39"
 
     get_measurements(count=0)
     pm10_values_avg = round((calculate_pm_averages(PM10_VALUES, factor=factor)), 0)
     pm25_values_avg = round((calculate_pm_averages(PM25_VALUES, factor=factor)), 0)
     pm100_values_avg = round((calculate_pm_averages(PM100_VALUES, factor=factor)), 0)
 
-    send_data(pm10_values=pm10_values_avg, pm25_values=pm25_values_avg, pm100_values=pm100_values_avg)
+    send_data(
+        pm10_values=pm10_values_avg,
+        pm25_values=pm25_values_avg,
+        pm100_values=pm100_values_avg
+    )
+
+    pm25 = send_data_to_domoticz(
+        domoticz_ip=domoticz_ip_address,
+        domoticz_port=domoticz_port,
+        pm25_idx=inside_pm25_idx,
+        pm25_values=pm25_values_avg
+    )
+    print("Response from domoticz - PM25 - {}".format(pm25))
+
+    pm10 = send_data_to_domoticz(
+        domoticz_ip=domoticz_ip_address,
+        domoticz_port=domoticz_port,
+        pm25_idx=inside_pm10_idx,
+        pm25_values=pm10_values_avg
+    )
+    print("Response from domoticz - PM10 - {}".format(pm10))

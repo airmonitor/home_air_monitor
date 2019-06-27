@@ -1,0 +1,19 @@
+---
+- include: python-installation.yml
+  tags: [python, install]
+
+
+- name: Create /etc/configuration directory
+  file:
+    path: /etc/configuration
+    state: directory
+    mode: '0755'
+
+- name: Create configuration.data file from template
+  template:
+    src: configuration.data.j2
+    dest: /boot/configuration.data
+    mode: 0644
+
+- include: sensors.yml
+  tags: [sensors, install]

@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3.6
 #
 # CCS811_RPi class usage example
 #
@@ -7,14 +7,13 @@
 #
 # Version 1.0
 
-import subprocess
 from configparser import ConfigParser
 import urllib3
-from CCS811_RPi import CCS811_RPi
+from ansible.roles.airmonitor.files.CCS811_RPi import CCS811_RPi
 import time
 import json
 import requests
-from bme280 import readBME280All
+from ansible.roles.airmonitor.files.bme280 import readBME280All
 urllib3.disable_warnings()
 
 temperature, pressure, humidity = readBME280All(addr=0x76)

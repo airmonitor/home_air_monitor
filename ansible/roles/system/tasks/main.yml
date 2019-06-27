@@ -1,0 +1,68 @@
+
+- name: Default keyboard changed go US from GB
+  lineinfile:
+    dest: /etc/default/keyboard
+    regexp: 'XKBLAYOUT="gb"'
+    line: 'XKBLAYOUT="us"'
+    backup: yes
+
+
+- name: Kernel parameters in /boot/config.txt
+  blockinfile:
+    dest: /boot/config.txt
+    block: |
+      dtparam=i2c_arm=on
+      enable_uart=1
+      dtoverlay=pi3-disable-bt
+
+
+- name: Install deb packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - dos2unix
+      - nfs-common
+      - psmisc
+      - vim
+      - ssl-cert
+      - libnet-ssleay-perl
+      - libauthen-pam-perl
+      - libio-pty-perl
+      - apt-show-versions
+      - mailutils
+      - libusb-dev
+      - mc
+      - exfat-fuse
+      - exfat-utils
+      - screen
+      - cmake
+      - make
+      - gcc
+      - g++
+      - curl
+      - libcurl4-openssl-dev
+      - libusb-dev
+      - wiringpi
+      - cmake
+      - libboost-dev
+      - libboost-thread-dev
+      - libboost-system-dev
+      - subversion
+      - libudev-dev
+      - mlocate
+      - bc
+      - nano
+      - libc6-dev
+      - i2c-tools
+      - aptitude
+      - watchdog
+
+- name: Copy timezone file
+  copy:
+    src: /usr/share/zoneinfo/Europe/Warsaw
+    dest: /etc/localtime
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: yes

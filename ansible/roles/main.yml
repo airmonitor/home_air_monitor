@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  remote_user: pi
+  become: yes
+  become_method: sudo
+  connection: ssh
+  gather_facts: yes
+  vars_prompt:
+  - name: "latitude"
+    prompt: "Enter your domain password, needed for git clone etc..."
+    private: no
+    default: 55.0000
+  - name: "longitude"
+    prompt: "Enter your cert password, needed for ipsec..."
+    private: no
+    default: 15.0000
+  - name: "particle_sensor_model"
+    prompt: "Enter sensor model, example SDS021, SDS011, PMS7003, PMS5003"
+    default: "SDS021"
+  - name: "temperature_sensor_model"
+    prompt: "Enter temperature sensor model, example BME280"
+    default: "BME280"
+  - name: "co2_sensor_model"
+    prompt: "Enter CO2 sensor model, example CCS811"
+    default: "CCS811"
+  roles:
+    - system
+    - airmonitor
+
