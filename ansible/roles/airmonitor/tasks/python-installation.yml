@@ -44,7 +44,6 @@
     dest: "/home/pi/"
     copy: no
     creates: "/home/pi/Python-{{python_version}}"
-   when: python_installed.stat.exists == False
 
 - name: "configure python{{python_version}} build"
   command: ./configure
