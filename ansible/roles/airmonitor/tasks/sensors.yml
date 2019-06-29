@@ -91,4 +91,4 @@
     hour: "*"
     user: pi
     job: "/etc/configuration/bme280.py"
-  when: co2_sensor_model=="BME280"
+  when: temperature_sensor_model=="BME280"

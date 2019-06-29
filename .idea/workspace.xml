@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="1. bme280 refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/tasks/sensors.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/tasks/sensors.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ansible/roles/system/tasks/main.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/system/tasks/main.yml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -115,7 +113,7 @@
       <workItem from="1561413737100" duration="675000" />
       <workItem from="1561438172266" duration="2430000" />
       <workItem from="1561672836386" duration="4712000" />
-      <workItem from="1561805527078" duration="3355000" />
+      <workItem from="1561805527078" duration="4370000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -194,7 +192,21 @@
       <option name="project" value="LOCAL" />
       <updated>1561838290637</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Changed location of downloaded python archive to /home/pi">
+      <created>1561840146230</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1561840146230</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Changed location of downloaded python archive to /home/pi">
+      <created>1561840813867</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1561840813867</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
