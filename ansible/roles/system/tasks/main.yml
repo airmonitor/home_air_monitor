@@ -15,6 +15,38 @@
       enable_uart=1
       dtoverlay=pi3-disable-bt
 
+- name: Enable i2c-dev kernel module
+  blockinfile:
+    dest: /etc/modules
+    block: |
+      i2c-dev
+      bcm2835_wdt
+
+- name: Reconfigure watchdog configuration file
+  blockinfile:
+    dest: /etc/watchdog.conf
+    block: |
+      max-load-1		= 24
+      watchdog-device	= /dev/watchdog
+      watchdog-timeout  = 15
+
+- name: Reconfigure watchdog service configuration file
+  blockinfile:
+    dest: /lib/systemd/system/watchdog.service
+    block: |
+      WantedBy=multi-user.target
+
+- name: Add entry to sysctl.conf
+  blockinfile:
+    dest: /etc/sysctl.conf
+    block: |
+      kernel.panic = 10
+
+- name: Start the watchdog service
+  service:
+    name: watchdog
+    state: started
+    enabled: yes
 
 - name: Install deb packages
   apt:

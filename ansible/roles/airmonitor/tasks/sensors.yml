@@ -19,7 +19,6 @@
     - { src: "bme280.py"}
   when: temperature_sensor_model=="BME280"
 
-
 - name: Copy sds python script
   copy:
     src: "{{ item.src }}"
@@ -33,7 +32,6 @@
     - { src: "smog_monitor.py"}
   when: particle_sensor_model=="SDS011" or particle_sensor_model=="SDS021"
 
-
 - name: Copy pms python script
   copy:
     src: "{{ item.src }}"
@@ -45,7 +43,6 @@
   with_items:
     - { src: "running-pms.py"}
   when: particle_sensor_model=="PMS7003" or particle_sensor_model=="PMS5003"
-
 
 - name: Copy ccs811 python script
   copy:
@@ -59,3 +56,6 @@
     - { src: "ccs811.py"}
     - { src: "CCS811_RPi.py"}
   when: co2_sensor_model=="CCS811"
+
+
+  (crontab -l 2>/dev/null; echo "*/5 * * * * /etc/configuration/smog_monitor.py") | crontab -
