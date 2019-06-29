@@ -2,30 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="1. bme280 refactoring">
-      <change afterPath="$PROJECT_DIR$/ansible/install.bash" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/defaults/main.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/tasks/main.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/tasks/python-installation.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/tasks/sensors.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/templates/configuration.data.j2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ansible/roles/main.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ansible/roles/system/tasks/main.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/HomeAirMonitor.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/HomeAirMonitor.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CCS811_RPi.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/CCS811_RPi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OTA.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/OTA1.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bme280.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/bme280.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ccs811.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configuration.data" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/install.sh" beforeDir="false" afterPath="$PROJECT_DIR$/install.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/on_reboot.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/recipe_short.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/running-pms.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/running-pms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sds011.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/sds011.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smog_monitor.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/smog_monitor.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -48,6 +25,7 @@
   <component name="ProjectId" id="1N45goJYfoE8MJn1KvMwRivQOIT" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TF_FMT" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/ansible/roles/airmonitor/files" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -134,7 +112,7 @@
       <workItem from="1561327644654" duration="2554000" />
       <workItem from="1561413737100" duration="675000" />
       <workItem from="1561438172266" duration="2430000" />
-      <workItem from="1561672836386" duration="4531000" />
+      <workItem from="1561672836386" duration="4712000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -157,7 +135,14 @@
       <option name="project" value="LOCAL" />
       <updated>1544299673567</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Initial upload.&#10;Ansible and changed python scripts not tested yet.">
+      <created>1561678446151</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1561678446151</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,6 +179,7 @@
     <MESSAGE value="Minor syntax updates." />
     <MESSAGE value="1. Code refactoring." />
     <MESSAGE value="1. bme280 refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="1. bme280 refactoring" />
+    <MESSAGE value="Initial upload.&#10;Ansible and changed python scripts not tested yet." />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial upload.&#10;Ansible and changed python scripts not tested yet." />
   </component>
 </project>

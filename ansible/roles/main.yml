@@ -7,11 +7,11 @@
   gather_facts: yes
   vars_prompt:
   - name: "latitude"
-    prompt: "Enter your domain password, needed for git clone etc..."
+    prompt: "Enter latitude..."
     private: no
     default: 55.0000
   - name: "longitude"
-    prompt: "Enter your cert password, needed for ipsec..."
+    prompt: "Enter longitude"
     private: no
     default: 15.0000
   - name: "particle_sensor_model"
