@@ -31,7 +31,7 @@
 - name: "Unarchive python{{python_version}}"
   unarchive:
     src="/home/pi/Python-{{python_version}}.tar.xz"
-    dest="/tmp/"
+    dest="/home/pi/"
     copy=no
     creates="/home/pi/Python-{{python_version}}"
 
