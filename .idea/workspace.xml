@@ -113,7 +113,7 @@
       <workItem from="1561413737100" duration="675000" />
       <workItem from="1561438172266" duration="2430000" />
       <workItem from="1561672836386" duration="4712000" />
-      <workItem from="1561805527078" duration="1641000" />
+      <workItem from="1561805527078" duration="1916000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -164,7 +164,14 @@
       <option name="project" value="LOCAL" />
       <updated>1561832834874</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Changed location of downloaded python archive to /home/pi">
+      <created>1561837907969</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1561837907969</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

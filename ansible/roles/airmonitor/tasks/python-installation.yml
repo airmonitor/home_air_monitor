@@ -34,16 +34,16 @@
 
 - name: "Download python{{python_version}}"
   get_url:
-    url="https://www.python.org/ftp/python/{{python_version}}/Python-{{python_version}}.tar.xz"
-    dest="/home/pi/Python-{{python_version}}.tar.xz"
+    url: "https://www.python.org/ftp/python/{{python_version}}/Python-{{python_version}}.tar.xz"
+    dest: "/home/pi/Python-{{python_version}}.tar.xz"
   when: python_archive.stat.exists == False
 
 - name: "Unarchive python{{python_version}}"
   unarchive:
-    src="/home/pi/Python-{{python_version}}.tar.xz"
-    dest="/home/pi/"
-    copy=no
-    creates="/home/pi/Python-{{python_version}}"
+    src: "/home/pi/Python-{{python_version}}.tar.xz"
+    dest: "/home/pi/"
+    copy: no
+    creates: "/home/pi/Python-{{python_version}}"
    when: python_installed.stat.exists == False
 
 - name: "configure python{{python_version}} build"
