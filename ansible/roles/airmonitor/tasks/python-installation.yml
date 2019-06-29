@@ -16,31 +16,42 @@
     - libexpat1-dev
     - liblzma-dev
     - zlib1g-dev
+
+- name: Check if python archive exists
+  stat:
+    path: /home/pi/Python-{{python_version}}.tar.xz
+  register: python_archive
+
 - name: "Download python{{python_version}}"
   get_url:
     url="https://www.python.org/ftp/python/{{python_version}}/Python-{{python_version}}.tar.xz"
-    dest="/tmp/Python-{{python_version}}.tar.xz"
+    dest="/home/pi/Python-{{python_version}}.tar.xz"
+  when: python_archive.stat.exists == False
+
 - name: "Unarchive python{{python_version}}"
   unarchive:
-    src="/tmp/Python-{{python_version}}.tar.xz"
+    src="/home/pi/Python-{{python_version}}.tar.xz"
     dest="/tmp/"
     copy=no
-    creates="/tmp/Python-{{python_version}}"
+    creates="/home/pi/Python-{{python_version}}"
+
 - name: "configure python{{python_version}} build"
   command: ./configure
   args:
-    chdir: "/tmp/Python-{{python_version}}"
-    creates: "/tmp/Python-{{python_version}}/Makefile"
+    chdir: "/home/pi/Python-{{python_version}}"
+    creates: "/home/pi/Python-{{python_version}}/Makefile"
+
 - name: "build python{{python_version}}"
   # not using make module to be able to use -j and creates option to fully skip step
   command: make -j4
   args:
-    chdir: "/tmp/Python-{{python_version}}"
-    creates: "/tmp/Python-{{python_version}}/python"
+    chdir: "/home/pi/Python-{{python_version}}"
+    creates: "/home/pi/Python-{{python_version}}/python"
+
 - name: "install python{{python_version}}"
   become: yes
   make:
-    chdir: "/tmp/Python-{{python_version}}"
+    chdir: "/home/pi/Python-{{python_version}}"
     target: altinstall
 
 - name: "Install pip modules"

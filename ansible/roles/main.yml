@@ -8,21 +8,24 @@
   vars_prompt:
   - name: "latitude"
     prompt: "Enter latitude..."
-    private: no
     default: 55.0000
+    private: no
   - name: "longitude"
     prompt: "Enter longitude"
-    private: no
     default: 15.0000
+    private: no
   - name: "particle_sensor_model"
     prompt: "Enter sensor model, example SDS021, SDS011, PMS7003, PMS5003"
     default: "SDS021"
+    private: no
   - name: "temperature_sensor_model"
     prompt: "Enter temperature sensor model, example BME280"
     default: "BME280"
+    private: no
   - name: "co2_sensor_model"
     prompt: "Enter CO2 sensor model, example CCS811"
     default: "CCS811"
+    private: no
   roles:
     - system
     - airmonitor
