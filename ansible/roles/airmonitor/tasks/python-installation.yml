@@ -22,6 +22,16 @@
     path: /home/pi/Python-{{python_version}}.tar.xz
   register: python_archive
 
+- name: Check if python3.6 is installed
+  stat:
+    path: /usr/local/bin/python3.6
+  register: python_installed
+
+- name: Check if pip3.6 is installed
+  stat:
+    path: /usr/local/bin/pip3.6
+  register: pip_installed
+
 - name: "Download python{{python_version}}"
   get_url:
     url="https://www.python.org/ftp/python/{{python_version}}/Python-{{python_version}}.tar.xz"
@@ -34,12 +44,14 @@
     dest="/home/pi/"
     copy=no
     creates="/home/pi/Python-{{python_version}}"
+   when: python_installed.stat.exists == False
 
 - name: "configure python{{python_version}} build"
   command: ./configure
   args:
     chdir: "/home/pi/Python-{{python_version}}"
     creates: "/home/pi/Python-{{python_version}}/Makefile"
+  when: python_installed.stat.exists == False
 
 - name: "build python{{python_version}}"
   # not using make module to be able to use -j and creates option to fully skip step
@@ -47,17 +59,19 @@
   args:
     chdir: "/home/pi/Python-{{python_version}}"
     creates: "/home/pi/Python-{{python_version}}/python"
+  when: python_installed.stat.exists == False
 
 - name: "install python{{python_version}}"
   become: yes
   make:
     chdir: "/home/pi/Python-{{python_version}}"
     target: altinstall
+  when: python_installed.stat.exists == False
 
 - name: "Install pip modules"
   pip:
     name: "{{ item }}"
-    executable: pip3
+    executable: /usr/local/bin/pip3.6
   with_items:
     - pyserial
     - smbus2
@@ -67,3 +81,4 @@
     - requests
     - RPi.bme280
     - configparser
+  when: pip_installed.stat.exists == True
