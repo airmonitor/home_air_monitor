@@ -57,5 +57,38 @@
     - { src: "CCS811_RPi.py"}
   when: co2_sensor_model=="CCS811"
 
+- name: Schedule for PMS sensor
+  cron:
+    name: Schedule for PMS sensor
+    minute: "*/10"
+    hour: "*"
+    user: pi
+    job: "/etc/configuration/running-pms.py"
+  when: particle_sensor_model=="PMS7003" or particle_sensor_model=="PMS5003"
 
-  (crontab -l 2>/dev/null; echo "*/5 * * * * /etc/configuration/smog_monitor.py") | crontab -
+- name: Schedule for SDS sensor
+  cron:
+    name: Schedule for SDS sensor
+    minute: "*/10"
+    hour: "*"
+    user: pi
+    job: "/etc/configuration/smog_monitor.py"
+  when: particle_sensor_model=="SDS011" or particle_sensor_model=="SDS021"
+
+- name: Schedule for CCS811 sensor
+  cron:
+    name: Schedule for CCS811 sensor
+    minute: "*/10"
+    hour: "*"
+    user: pi
+    job: "/etc/configuration/cs811.py"
+  when: co2_sensor_model=="CCS811"
+
+- name: Schedule for BME280 sensor
+  cron:
+    name: Schedule for BME280 sensor
+    minute: "*/10"
+    hour: "*"
+    user: pi
+    job: "/etc/configuration/bme280.py"
+  when: co2_sensor_model=="BME280"
