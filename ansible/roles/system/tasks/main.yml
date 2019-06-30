@@ -28,12 +28,6 @@
     block: |
       kernel.panic = 10
 
-- name: Start the watchdog service
-  service:
-    name: watchdog
-    state: started
-    enabled: yes
-
 - name: Install deb packages
   apt:
     name: "{{ packages }}"
@@ -98,3 +92,9 @@
     dest: /lib/systemd/system/watchdog.service
     block: |
       WantedBy=multi-user.target
+
+- name: Start the watchdog service
+  service:
+    name: watchdog
+    state: started
+    enabled: yes
