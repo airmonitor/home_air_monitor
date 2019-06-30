@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="1. bme280 refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/system/tasks/main.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/system/tasks/main.yml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +35,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="Errors" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -114,6 +115,8 @@
       <workItem from="1561438172266" duration="2430000" />
       <workItem from="1561672836386" duration="4712000" />
       <workItem from="1561805527078" duration="5368000" />
+      <workItem from="1561892875003" duration="1943000" />
+      <workItem from="1561930493342" duration="785000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -213,7 +216,14 @@
       <option name="project" value="LOCAL" />
       <updated>1561841101071</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Changed python interpreter location.">
+      <created>1561892938481</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1561892938481</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -253,6 +263,7 @@
     <MESSAGE value="Initial upload.&#10;Ansible and changed python scripts not tested yet." />
     <MESSAGE value="Typo fixes." />
     <MESSAGE value="Changed location of downloaded python archive to /home/pi" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed location of downloaded python archive to /home/pi" />
+    <MESSAGE value="Changed python interpreter location." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed python interpreter location." />
   </component>
 </project>

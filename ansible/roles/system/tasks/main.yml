@@ -22,20 +22,6 @@
       i2c-dev
       bcm2835_wdt
 
-- name: Reconfigure watchdog configuration file
-  blockinfile:
-    dest: /etc/watchdog.conf
-    block: |
-      max-load-1		= 24
-      watchdog-device	= /dev/watchdog
-      watchdog-timeout  = 15
-
-- name: Reconfigure watchdog service configuration file
-  blockinfile:
-    dest: /lib/systemd/system/watchdog.service
-    block: |
-      WantedBy=multi-user.target
-
 - name: Add entry to sysctl.conf
   blockinfile:
     dest: /etc/sysctl.conf
@@ -98,3 +84,17 @@
     group: root
     mode: 0644
     remote_src: yes
+
+- name: Reconfigure watchdog configuration file
+  blockinfile:
+    dest: /etc/watchdog.conf
+    block: |
+      max-load-1		= 24
+      watchdog-device	= /dev/watchdog
+      watchdog-timeout  = 15
+
+- name: Reconfigure watchdog service configuration file
+  blockinfile:
+    dest: /lib/systemd/system/watchdog.service
+    block: |
+      WantedBy=multi-user.target
