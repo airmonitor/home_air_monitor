@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6
+#!/usr/local/bin/python3.6
 # -*- coding: utf-8 -*-
 """
 Copyright 2016, Frank Heuer, Germany
