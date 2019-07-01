@@ -9,11 +9,11 @@
 
 from configparser import ConfigParser
 import urllib3
-from ansible.roles.airmonitor.files.CCS811_RPi import CCS811_RPi
+from CCS811_RPi import CCS811_RPi
 import time
 import json
 import requests
-from ansible.roles.airmonitor.files.bme280 import readBME280All
+from bme280 import readBME280All
 urllib3.disable_warnings()
 
 temperature, pressure, humidity = readBME280All(addr=0x76)

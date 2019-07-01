@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="1. bme280 refactoring" />
+    <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="1. bme280 refactoring">
+      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,7 +116,7 @@
       <workItem from="1561805527078" duration="5368000" />
       <workItem from="1561892875003" duration="1943000" />
       <workItem from="1561930493342" duration="1357000" />
-      <workItem from="1562016466898" duration="2397000" />
+      <workItem from="1562016466898" duration="3070000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -277,7 +279,14 @@
       <option name="project" value="LOCAL" />
       <updated>1562018194327</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="typo fix">
+      <created>1562019562951</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1562019562951</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -322,6 +331,7 @@
     <MESSAGE value="Upgrade pip module" />
     <MESSAGE value="delete console definition from cmdline.txt" />
     <MESSAGE value="added force fsck" />
-    <option name="LAST_COMMIT_MESSAGE" value="added force fsck" />
+    <MESSAGE value="typo fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="typo fix" />
   </component>
 </project>
