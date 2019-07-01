@@ -1,3 +1,8 @@
+- name: Ansible remove console configuration from cmdline.txt
+  replace:
+    dest: /boot/cmdline.txt
+    regexp: "console=serial0,115200 console=tty1"
+    replace: " "
 
 - name: Default keyboard changed go US from GB
   lineinfile:
@@ -21,12 +26,6 @@
     block: |
       i2c-dev
       bcm2835_wdt
-
-- name: Ansible remove console configuration from cmdline.txt
-  replace:
-    dest: /boot/cmdline.txt
-    regexp: "console=serial0,115200 console=tty1"
-    replace: " "
 
 - name: Add entry to sysctl.conf
   blockinfile:
