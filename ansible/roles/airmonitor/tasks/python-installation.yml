@@ -67,6 +67,10 @@
     target: altinstall
   when: python_installed.stat.exists == False
 
+- name: "Upgrade pip package"
+  command: pip3.6 install --upgrade pip
+  when: pip_installed.stat.exists == True
+
 - name: "Install pip modules"
   pip:
     name: "{{ item }}"

@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="1. bme280 refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ansible/roles/system/tasks/main.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/system/tasks/main.yml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -116,7 +115,8 @@
       <workItem from="1561672836386" duration="4712000" />
       <workItem from="1561805527078" duration="5368000" />
       <workItem from="1561892875003" duration="1943000" />
-      <workItem from="1561930493342" duration="785000" />
+      <workItem from="1561930493342" duration="1357000" />
+      <workItem from="1562016466898" duration="260000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -223,7 +223,21 @@
       <option name="project" value="LOCAL" />
       <updated>1561892938481</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="moved watchdog reconfiguration after watchdog installation">
+      <created>1561931371239</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1561931371239</updated>
+    </task>
+    <task id="LOCAL-00017" summary="moved watchdog reconfiguration after watchdog installation">
+      <created>1561931528772</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1561931528772</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -264,6 +278,7 @@
     <MESSAGE value="Typo fixes." />
     <MESSAGE value="Changed location of downloaded python archive to /home/pi" />
     <MESSAGE value="Changed python interpreter location." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed python interpreter location." />
+    <MESSAGE value="moved watchdog reconfiguration after watchdog installation" />
+    <option name="LAST_COMMIT_MESSAGE" value="moved watchdog reconfiguration after watchdog installation" />
   </component>
 </project>
