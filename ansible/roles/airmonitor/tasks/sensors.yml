@@ -81,7 +81,7 @@
     minute: "*/10"
     hour: "*"
     user: pi
-    job: "/etc/configuration/cs811.py"
+    job: "/etc/configuration/ccs811.py"
   when: co2_sensor_model=="CCS811"
 
 - name: Schedule for BME280 sensor
