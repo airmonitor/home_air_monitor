@@ -24,7 +24,7 @@
 
 - name: Ansible remove console configuration from cmdline.txt
   replace:
-    path: /boot/cmdline.txt
+    dest: /boot/cmdline.txt
     regexp: "console=serial0,115200 console=tty1"
     replace: " "
 
