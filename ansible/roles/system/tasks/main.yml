@@ -4,6 +4,12 @@
     regexp: "console=serial0,115200 console=tty1"
     replace: " "
 
+- name: Force fsck
+  replace:
+    dest: /boot/cmdline.txt
+    regexp: "fsck.repair=yes"
+    replace: "fsck.repair=yes fsck.mode=force"
+
 - name: Default keyboard changed go US from GB
   lineinfile:
     dest: /etc/default/keyboard
