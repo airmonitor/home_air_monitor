@@ -23,10 +23,10 @@
       bcm2835_wdt
 
 - name: Ansible remove console configuration from cmdline.txt
-    replace:
-      path: /boot/cmdline.txt
-      regexp: "console=serial0,115200 console=tty1"
-      replace: " "
+  replace:
+    path: /boot/cmdline.txt
+    regexp: "console=serial0,115200 console=tty1"
+    replace: " "
 
 - name: Add entry to sysctl.conf
   blockinfile:
