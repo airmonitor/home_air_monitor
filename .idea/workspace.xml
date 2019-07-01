@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="1. bme280 refactoring">
-      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/templates/configuration.data.j2" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/templates/configuration.data.j2" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -116,7 +116,7 @@
       <workItem from="1561805527078" duration="5368000" />
       <workItem from="1561892875003" duration="1943000" />
       <workItem from="1561930493342" duration="1357000" />
-      <workItem from="1562016466898" duration="3070000" />
+      <workItem from="1562016466898" duration="3688000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -286,7 +286,14 @@
       <option name="project" value="LOCAL" />
       <updated>1562019562951</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="typo fix">
+      <created>1562020731039</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1562020731039</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
