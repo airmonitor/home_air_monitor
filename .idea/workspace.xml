@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="1. bme280 refactoring" />
+    <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="squash! typo fix">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,6 +118,7 @@
       <workItem from="1561892875003" duration="1943000" />
       <workItem from="1561930493342" duration="1357000" />
       <workItem from="1562016466898" duration="3688000" />
+      <workItem from="1562103766404" duration="1382000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -291,7 +295,21 @@
       <option name="project" value="LOCAL" />
       <updated>1562020731039</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="squash! typo fix">
+      <created>1562023242648</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1562023242648</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Added README.">
+      <created>1562104951449</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1562104951449</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -337,6 +355,8 @@
     <MESSAGE value="delete console definition from cmdline.txt" />
     <MESSAGE value="added force fsck" />
     <MESSAGE value="typo fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="typo fix" />
+    <MESSAGE value="squash! typo fix" />
+    <MESSAGE value="Added README." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added README." />
   </component>
 </project>
