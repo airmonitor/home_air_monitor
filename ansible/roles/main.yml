@@ -15,7 +15,7 @@
     default: 15.0000
     private: no
   - name: "particle_sensor_model"
-    prompt: "Enter sensor model, example SDS021, SDS011, PMS7003, PMS5003"
+    prompt: "Enter particle sensor model, example SDS021, SDS011, PMS7003, PMS5003"
     default: "SDS021"
     private: no
   - name: "temperature_sensor_model"
