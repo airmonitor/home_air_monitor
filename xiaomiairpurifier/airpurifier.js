@@ -59,7 +59,7 @@ if ( secondarg === "led" ) {
         miio.device({
         address: deviceip
 }).then(device => {
-                return device.setLedBrightness(thirdarg);
+                return device.changeLEDBrightness(thirdarg);
 })}
 
 // Switch the device buzzer on or off (specify as true or false)
