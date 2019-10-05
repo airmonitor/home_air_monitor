@@ -13,4 +13,5 @@ git clone https://github.com/airmonitor/home_air_monitor.git /home/pi/home_air_m
 
 /usr/bin/ansible-playbook /home/pi/home_air_monitor/ansible/roles/main.yml
 
-poweroff
+sudo pip3.6 install urllib3 pyserial smbus2 idna certifi chardet requests RPi.bme280 configparser
+sudo reboot
