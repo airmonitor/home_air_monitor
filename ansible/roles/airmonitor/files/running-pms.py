@@ -105,13 +105,13 @@ def send_data(pm10_values, pm25_values, pm100_values):
     data = {
         "lat": str(lat),
         "long": str(long),
-        "pm1": str(float('%.2f' % pm10_values)),
-        "pm25": str(float('%.2f' % pm25_values)),
-        "pm10": str(float('%.2f' % pm100_values)),
+        "pm1": round(pm10_values),
+        "pm25": round(pm25_values),
+        "pm10": round(pm100_values),
         "sensor": sensor_model
     }
 
-    resp = requests.post(API_URL, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    resp = requests.post(API_URL, timeout=10, data=data)
     print("Response code from AirMonitor API {}", resp.status_code)
 
 

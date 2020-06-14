@@ -211,13 +211,13 @@ def main():
     data = {
         "lat": str(lat),
         "long": str(long),
-        "pressure": str(float('%.2f' % pressure_values_avg)),
-        "temperature": str(float('%.2f' % temp_values_avg)),
-        "humidity": str(float('%.2f' % humidity_values_avg)),
+        "pressure": round(pressure_values_avg, 1),
+        "temperature": round(temp_values_avg, 1),
+        "humidity": round(humidity_values_avg, 1),
         "sensor": sensor
     }
     print("Data to be sent {0}".format(data))
-    resp = requests.post(api_url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    resp = requests.post(api_url, timeout=10, data=data)
     print("Response code from AirMonitor API {0}".format(resp.status_code))
 
 

@@ -117,8 +117,8 @@ print("TVOC Average: ", tvoc_values_avg)
 data = {
     "lat": str(lat),
     "long": str(long),
-    "co2": str(float('%.2f' % co2_values_avg)),
-    "tvoc": str(float('%.2f' % tvoc_values_avg)),
+    "co2": round(co2_values_avg),
+    "tvoc": round(tvoc_values_avg),
     "sensor": sensor
 }
 
