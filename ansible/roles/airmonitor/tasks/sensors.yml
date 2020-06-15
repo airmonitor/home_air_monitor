@@ -60,7 +60,7 @@
 - name: Schedule for PMS sensor
   cron:
     name: Schedule for PMS sensor
-    minute: "*/10"
+    minute: "*/30"
     hour: "*"
     user: pi
     job: "/etc/configuration/running-pms.py"
@@ -69,7 +69,7 @@
 - name: Schedule for SDS sensor
   cron:
     name: Schedule for SDS sensor
-    minute: "*/10"
+    minute: "*/30"
     hour: "*"
     user: pi
     job: "/etc/configuration/smog_monitor.py"
@@ -78,7 +78,7 @@
 - name: Schedule for CCS811 sensor
   cron:
     name: Schedule for CCS811 sensor
-    minute: "*/10"
+    minute: "*/30"
     hour: "*"
     user: pi
     job: "/etc/configuration/ccs811.py"
@@ -87,7 +87,7 @@
 - name: Schedule for BME280 sensor
   cron:
     name: Schedule for BME280 sensor
-    minute: "*/10"
+    minute: "*/30"
     hour: "*"
     user: pi
     job: "/etc/configuration/bme280.py"

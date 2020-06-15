@@ -17,7 +17,7 @@ long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
 
 PORT = serial.Serial('/dev/ttyAMA0', baudrate=9600, timeout=2.0)
-API_URL = 'http://api.airmonitor.pl:5000/api'
+API_URL = 'https://t0m774rak0.execute-api.eu-central-1.amazonaws.com/prod/measurements'
 
 RCV_LIST = []
 PM10_VALUES = []

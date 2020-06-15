@@ -18,20 +18,21 @@
 # http://www.raspberrypi-spy.co.uk/
 #
 # --------------------------------------
-from smbus2 import SMBus
-import time
-from ctypes import c_short
-import requests
 from configparser import ConfigParser
-import urllib3
+from ctypes import c_short
+from random import randrange
+from smbus2 import SMBus
 import json
+import requests
+import time
+import urllib3
 
 parser = ConfigParser(allow_no_value=False)
 parser.read('/boot/configuration.data')
 sensor = (parser.get('airmonitor', 'sensor_model_temp'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
-api_url = 'http://api.airmonitor.pl:5000/api'
+api_url = 'https://t0m774rak0.execute-api.eu-central-1.amazonaws.com/prod/measurements'
 urllib3.disable_warnings()
 
 DEVICE = 0x76  # Default device I2C address
@@ -222,4 +223,5 @@ def main():
 
 
 if __name__ == "__main__":
+    time.sleep(randrange(10, 300))
     main()

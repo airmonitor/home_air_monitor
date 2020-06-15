@@ -7,6 +7,7 @@ from configparser import ConfigParser
 import urllib3
 import json
 import requests
+from random import randrange
 
 
 def calculate_measurement(measurements: list, pm_factor: float = 1.0) -> float:
@@ -45,6 +46,7 @@ def send_data(pm25_values_avg: float, pm10_values_avg: float) -> str:
 
 
 if __name__ == "__main__":
+    time.sleep(randrange(10, 300))
 
     # Create an instance of your sensor
     sensor = SDS011('/dev/ttyAMA0')

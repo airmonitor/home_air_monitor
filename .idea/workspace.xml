@@ -3,9 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment="squash! typo fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/bme280.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/bme280.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/running-pms.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/running-pms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/smog_monitor.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/smog_monitor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/tasks/sensors.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/tasks/sensors.yml" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,17 +27,23 @@
     <option name="UPDATE_TYPE" value="MERGE" />
   </component>
   <component name="ProjectId" id="1N45goJYfoE8MJn1KvMwRivQOIT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="true" />
     <property name="TF_FMT" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/ansible/roles/airmonitor/files" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -49,18 +58,6 @@
       <recent name="$PROJECT_DIR$/ansible/roles/airmonitor/files" />
       <recent name="$PROJECT_DIR$/ansible/roles/airmonitor/tasks" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager">
     <configuration name="running-pms" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -118,7 +115,15 @@
       <workItem from="1561892875003" duration="1943000" />
       <workItem from="1561930493342" duration="1357000" />
       <workItem from="1562016466898" duration="3688000" />
-      <workItem from="1562103766404" duration="1382000" />
+      <workItem from="1562103766404" duration="1971000" />
+      <workItem from="1566674649338" duration="221000" />
+      <workItem from="1570316821227" duration="1411000" />
+      <workItem from="1592086360400" duration="1885000" />
+      <workItem from="1592116339901" duration="611000" />
+      <workItem from="1592119464162" duration="1213000" />
+      <workItem from="1592141508801" duration="598000" />
+      <workItem from="1592172468270" duration="78000" />
+      <workItem from="1592204496631" duration="676000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -309,20 +314,39 @@
       <option name="project" value="LOCAL" />
       <updated>1562104951449</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Added README.">
+      <created>1562105150741</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1562105150741</updated>
+    </task>
+    <task id="LOCAL-00029" summary=":bug: Fix installation of python modules&#10;&#10;Python modules were not installed via ansible using custom pip3.6&#10;executable.&#10;Now, required python modules will be installed via&#10;install.sh script after ansible-playbook finished.">
+      <created>1570318614656</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1570318614656</updated>
+    </task>
+    <task id="LOCAL-00030" summary=":wrench: Rounding values returned by bme280, ccs811 and pms sensors.">
+      <created>1592172533449</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1592172533449</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="2" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -341,6 +365,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Minor syntax updates." />
@@ -357,6 +382,22 @@
     <MESSAGE value="typo fix" />
     <MESSAGE value="squash! typo fix" />
     <MESSAGE value="Added README." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added README." />
+    <MESSAGE value=":bug: Fix installation of python modules&#10;&#10;Python modules were not installed via ansible using custom pip3.6&#10;executable.&#10;Now, required python modules will be installed via&#10;install.sh script after ansible-playbook finished." />
+    <MESSAGE value=":wrench: Rounding values returned by bme280, ccs811 and pms sensors." />
+    <option name="LAST_COMMIT_MESSAGE" value=":wrench: Rounding values returned by bme280, ccs811 and pms sensors." />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2" timestamp="1592172533314">
+      <screen x="0" y="27" width="3440" height="1413" />
+    </state>
+    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1592172533314" />
+    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2" timestamp="1592172539459">
+      <screen x="0" y="27" width="3440" height="1413" />
+    </state>
+    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1592172539459" />
+    <state x="1412" y="456" width="616" height="554" key="find.popup" timestamp="1592087858161">
+      <screen x="0" y="27" width="3440" height="1413" />
+    </state>
+    <state x="1412" y="456" width="616" height="554" key="find.popup/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1592087858161" />
   </component>
 </project>

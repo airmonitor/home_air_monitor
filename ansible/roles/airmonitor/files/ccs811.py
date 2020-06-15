@@ -7,17 +7,19 @@
 #
 # Version 1.0
 
-from configparser import ConfigParser
-import urllib3
+from bme280 import readBME280All
 from CCS811_RPi import CCS811_RPi
-import time
+from configparser import ConfigParser
+from random import randrange
 import json
 import requests
-from bme280 import readBME280All
-urllib3.disable_warnings()
+import time
+import urllib3
 
+urllib3.disable_warnings()
 temperature, pressure, humidity = readBME280All(addr=0x76)
 
+time.sleep(randrange(10, 300))
 
 ccs811 = CCS811_RPi()
 parser = ConfigParser()
@@ -122,6 +124,6 @@ data = {
     "sensor": sensor
 }
 
-url = 'http://api.airmonitor.pl:5000/api'
-resp = requests.post(url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+url = 'https://t0m774rak0.execute-api.eu-central-1.amazonaws.com/prod/measurements'
+resp = requests.post(url, timeout=10, data=data)
 print("Response code from AirMonitor API {}", resp.status_code)
