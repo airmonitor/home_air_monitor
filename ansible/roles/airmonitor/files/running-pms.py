@@ -17,7 +17,7 @@ long = (parser.get('airmonitor', 'long'))
 urllib3.disable_warnings()
 
 PORT = serial.Serial('/dev/ttyAMA0', baudrate=9600, timeout=2.0)
-API_URL = 'https://t0m774rak0.execute-api.eu-central-1.amazonaws.com/prod/measurements'
+API_URL = 'http://api.airmonitor.pl:5000/api'
 
 RCV_LIST = []
 PM10_VALUES = []
@@ -111,7 +111,8 @@ def send_data(pm10_values, pm25_values, pm100_values):
         "sensor": sensor_model
     }
 
-    resp = requests.post(API_URL, timeout=10, data=data)
+    print("Data to be sent {0}".format(data))
+    resp = requests.post(API_URL, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
     print("Response code from AirMonitor API {}", resp.status_code)
 
 
@@ -129,9 +130,9 @@ if __name__ == "__main__":
     inside_pm10_idx = "39"
 
     get_measurements(count=0)
-    pm10_values_avg = round((calculate_pm_averages(PM10_VALUES, factor=factor)), 0)
-    pm25_values_avg = round((calculate_pm_averages(PM25_VALUES, factor=factor)), 0)
-    pm100_values_avg = round((calculate_pm_averages(PM100_VALUES, factor=factor)), 0)
+    pm10_values_avg = round((calculate_pm_averages(PM10_VALUES, factor=factor)))
+    pm25_values_avg = round((calculate_pm_averages(PM25_VALUES, factor=factor)))
+    pm100_values_avg = round((calculate_pm_averages(PM100_VALUES, factor=factor)))
 
     send_data(
         pm10_values=pm10_values_avg,
@@ -139,18 +140,3 @@ if __name__ == "__main__":
         pm100_values=pm100_values_avg
     )
 
-    pm25 = send_data_to_domoticz(
-        domoticz_ip=domoticz_ip_address,
-        domoticz_port=domoticz_port,
-        pm25_idx=inside_pm25_idx,
-        pm25_values=pm25_values_avg
-    )
-    print("Response from domoticz - PM25 - {}".format(pm25))
-
-    pm10 = send_data_to_domoticz(
-        domoticz_ip=domoticz_ip_address,
-        domoticz_port=domoticz_port,
-        pm25_idx=inside_pm10_idx,
-        pm25_values=pm10_values_avg
-    )
-    print("Response from domoticz - PM10 - {}".format(pm10))

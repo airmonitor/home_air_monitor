@@ -32,7 +32,7 @@ parser.read('/boot/configuration.data')
 sensor = (parser.get('airmonitor', 'sensor_model_temp'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
-api_url = 'https://t0m774rak0.execute-api.eu-central-1.amazonaws.com/prod/measurements'
+api_url = 'http://api.airmonitor.pl:5000/api'
 urllib3.disable_warnings()
 
 DEVICE = 0x76  # Default device I2C address
@@ -212,13 +212,13 @@ def main():
     data = {
         "lat": str(lat),
         "long": str(long),
-        "pressure": round(pressure_values_avg, 1),
-        "temperature": round(temp_values_avg, 1),
-        "humidity": round(humidity_values_avg, 1),
+        "pressure": round(pressure_values_avg),
+        "temperature": round(temp_values_avg),
+        "humidity": round(humidity_values_avg),
         "sensor": sensor
     }
     print("Data to be sent {0}".format(data))
-    resp = requests.post(api_url, timeout=10, data=data)
+    resp = requests.post(api_url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
     print("Response code from AirMonitor API {0}".format(resp.status_code))
 
 

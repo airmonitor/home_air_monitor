@@ -36,8 +36,8 @@ def send_data(pm25_values_avg: float, pm10_values_avg: float) -> str:
     data = {
         "lat": str(parser.get('airmonitor', 'lat')),
         "long": str(parser.get('airmonitor', 'long')),
-        "pm25": str(float('%.2f' % pm25_values_avg)),
-        "pm10": str(float('%.2f' % pm10_values_avg)),
+        "pm25": round(pm25_values_avg),
+        "pm10": round(pm10_values_avg),
         "sensor": parser.get('airmonitor', 'sensor_model')
     }
 

@@ -124,6 +124,7 @@ data = {
     "sensor": sensor
 }
 
-url = 'https://t0m774rak0.execute-api.eu-central-1.amazonaws.com/prod/measurements'
-resp = requests.post(url, timeout=10, data=data)
+print("Data to be sent {0}".format(data))
+url = 'http://api.airmonitor.pl:5000/api'
+resp = requests.post(url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
 print("Response code from AirMonitor API {}", resp.status_code)
