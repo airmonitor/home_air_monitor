@@ -14,10 +14,11 @@ parser.read('/boot/configuration.data')
 sensor_model = (parser.get('airmonitor', 'sensor_model'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
+api_key = (parser.get('airmonitor', 'api_key'))
 urllib3.disable_warnings()
 
 PORT = serial.Serial('/dev/ttyAMA0', baudrate=9600, timeout=2.0)
-API_URL = 'http://api.airmonitor.pl:5000/api'
+API_URL = 'https://airmonitor.pl/prod/measurements'
 
 RCV_LIST = []
 PM10_VALUES = []
@@ -112,7 +113,11 @@ def send_data(pm10_values, pm25_values, pm100_values):
     }
 
     print("Data to be sent {0}".format(data))
-    resp = requests.post(API_URL, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    resp = requests.post(
+        API_URL,
+        timeout=10,
+        data=json.dumps(data),
+        headers={"Content-Type": "application/json", "X-Api-Key": parser.get('airmonitor', 'api_key')})
     print("Response code from AirMonitor API {}", resp.status_code)
 
 

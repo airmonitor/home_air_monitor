@@ -41,7 +41,11 @@ def send_data(pm25_values_avg: float, pm10_values_avg: float) -> str:
         "sensor": parser.get('airmonitor', 'sensor_model')
     }
 
-    resp = requests.post(api_url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    resp = requests.post(
+        api_url,
+        timeout=10,
+        data=json.dumps(data),
+        headers={"Content-Type": "application/json", "X-Api-Key": parser.get('airmonitor', 'api_key')})
     return resp.status_code
 
 
@@ -50,7 +54,7 @@ if __name__ == "__main__":
 
     # Create an instance of your sensor
     sensor = SDS011('/dev/ttyAMA0')
-    api_url = 'http://api.airmonitor.pl:5000/api'
+    api_url = 'https://airmonitor.pl/prod/measurements'
 
     # Now we have some details about it
     print(sensor.device_id)

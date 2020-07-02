@@ -26,6 +26,10 @@
     prompt: "Enter CO2 sensor model, example CCS811"
     default: "CCS811"
     private: no
+  - name: "api_key"
+    prompt: "API key from https://airmonitor.pl/prod/station_registration"
+    default: ""
+    private: no
   roles:
     - system
     - airmonitor

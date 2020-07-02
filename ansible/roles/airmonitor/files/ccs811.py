@@ -26,6 +26,7 @@ parser = ConfigParser()
 parser.read('/boot/configuration.data')
 lat = (parser.getfloat('airmonitor', 'lat'))
 long = (parser.getfloat('airmonitor', 'long'))
+api_key = (parser.get('airmonitor', 'api_key'))
 sensor = (parser.get('airmonitor', 'sensor_model_co2'))
 co2_values = []
 tvoc_values = []
@@ -125,6 +126,10 @@ data = {
 }
 
 print("Data to be sent {0}".format(data))
-url = 'http://api.airmonitor.pl:5000/api'
-resp = requests.post(url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+url = 'https://airmonitor.pl/prod/measurements'
+resp = requests.post(
+    url,
+    timeout=10,
+    data=json.dumps(data),
+    headers={"Content-Type": "application/json", "X-Api-Key": parser.get('airmonitor', 'api_key')})
 print("Response code from AirMonitor API {}", resp.status_code)

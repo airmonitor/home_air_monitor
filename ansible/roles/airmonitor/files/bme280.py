@@ -32,7 +32,8 @@ parser.read('/boot/configuration.data')
 sensor = (parser.get('airmonitor', 'sensor_model_temp'))
 lat = (parser.get('airmonitor', 'lat'))
 long = (parser.get('airmonitor', 'long'))
-api_url = 'http://api.airmonitor.pl:5000/api'
+api_key = (parser.get('airmonitor', 'api_key'))
+api_url = 'https://airmonitor.pl/prod/measurements'
 urllib3.disable_warnings()
 
 DEVICE = 0x76  # Default device I2C address

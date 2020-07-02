@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment=":wrench: Increased interval for sending measurements to API from 10 to 30 minutes&#10;:wrench: Added jitter with range 10-300 to every script to randomly pause execution">
-      <change beforePath="$PROJECT_DIR$/.idea/HomeAirMonitor.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/HomeAirMonitor.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment=":wrench: Reconfiguration api endpoint. Updated API endpoint.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/bme280.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/bme280.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/ccs811.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/running-pms.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/running-pms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/files/smog_monitor.py" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/files/smog_monitor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/airmonitor/templates/configuration.data.j2" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/airmonitor/templates/configuration.data.j2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ansible/roles/main.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/roles/main.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +37,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="true" />
+    <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="false" />
     <property name="TF_FMT" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -174,7 +174,9 @@
       <workItem from="1592141508801" duration="598000" />
       <workItem from="1592172468270" duration="78000" />
       <workItem from="1592204496631" duration="1370000" />
-      <workItem from="1593518954486" duration="1931000" />
+      <workItem from="1593518954486" duration="2007000" />
+      <workItem from="1593521087691" duration="61000" />
+      <workItem from="1593724737144" duration="2167000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -393,7 +395,14 @@
       <option name="project" value="LOCAL" />
       <updated>1592205254541</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary=":wrench: Reconfiguration api endpoint. Updated API endpoint.">
+      <created>1593520954906</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1593520954906</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -426,6 +435,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="Minor syntax updates." />
     <MESSAGE value="1. Code refactoring." />
     <MESSAGE value="1. bme280 refactoring" />
@@ -443,7 +453,8 @@
     <MESSAGE value=":bug: Fix installation of python modules&#10;&#10;Python modules were not installed via ansible using custom pip3.6&#10;executable.&#10;Now, required python modules will be installed via&#10;install.sh script after ansible-playbook finished." />
     <MESSAGE value=":wrench: Rounding values returned by bme280, ccs811 and pms sensors." />
     <MESSAGE value=":wrench: Increased interval for sending measurements to API from 10 to 30 minutes&#10;:wrench: Added jitter with range 10-300 to every script to randomly pause execution" />
-    <option name="LAST_COMMIT_MESSAGE" value=":wrench: Increased interval for sending measurements to API from 10 to 30 minutes&#10;:wrench: Added jitter with range 10-300 to every script to randomly pause execution" />
+    <MESSAGE value=":wrench: Reconfiguration api endpoint. Updated API endpoint." />
+    <option name="LAST_COMMIT_MESSAGE" value=":wrench: Reconfiguration api endpoint. Updated API endpoint." />
   </component>
   <component name="WindowStateProjectService">
     <state x="1702" y="407" width="925" height="684" key="#Deployment" timestamp="1593519508835">
@@ -462,42 +473,42 @@
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
     <state x="1864" y="391" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519808673" />
-    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2" timestamp="1593520590045">
+    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2" timestamp="1593520954847">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520590045" />
+    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520954847" />
     <state x="1884" y="514" width="424" height="491" key="FileChooserDialogImpl" timestamp="1593519359721">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
     <state x="1884" y="514" width="424" height="491" key="FileChooserDialogImpl/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519359721" />
-    <state width="1782" height="522" key="GridCell.Tab.0.bottom" timestamp="1593520563111">
+    <state width="1782" height="522" key="GridCell.Tab.0.bottom" timestamp="1593520965292">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state width="1782" height="522" key="GridCell.Tab.0.bottom/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520563111" />
-    <state width="1782" height="522" key="GridCell.Tab.0.center" timestamp="1593520563111">
+    <state width="1782" height="522" key="GridCell.Tab.0.bottom/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520965292" />
+    <state width="1782" height="522" key="GridCell.Tab.0.center" timestamp="1593520965292">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state width="1782" height="522" key="GridCell.Tab.0.center/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520563111" />
-    <state width="1782" height="522" key="GridCell.Tab.0.left" timestamp="1593520563110">
+    <state width="1782" height="522" key="GridCell.Tab.0.center/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520965292" />
+    <state width="1782" height="522" key="GridCell.Tab.0.left" timestamp="1593520965292">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state width="1782" height="522" key="GridCell.Tab.0.left/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520563110" />
-    <state width="1782" height="522" key="GridCell.Tab.0.right" timestamp="1593520563111">
+    <state width="1782" height="522" key="GridCell.Tab.0.left/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520965292" />
+    <state width="1782" height="522" key="GridCell.Tab.0.right" timestamp="1593520965292">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state width="1782" height="522" key="GridCell.Tab.0.right/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520563111" />
+    <state width="1782" height="522" key="GridCell.Tab.0.right/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520965292" />
     <state x="1895" y="368" width="1022" height="737" key="SettingsEditor" timestamp="1593519865477">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
     <state x="1895" y="368" width="1022" height="737" key="SettingsEditor/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519865477" />
-    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2" timestamp="1592205257234">
+    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2" timestamp="1593520958779">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1592205257234" />
-    <state x="1412" y="456" width="616" height="554" key="find.popup" timestamp="1592087858161">
+    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520958779" />
+    <state x="821" y="352" width="1264" height="743" key="find.popup" timestamp="1593727220696">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state x="1412" y="456" width="616" height="554" key="find.popup/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1592087858161" />
+    <state x="821" y="352" width="1264" height="743" key="find.popup/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593727220696" />
     <state x="2067" y="402" width="687" height="855" key="ftp.server.browser" timestamp="1593519506553">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
