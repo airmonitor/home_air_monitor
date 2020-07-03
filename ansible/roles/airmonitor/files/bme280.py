@@ -219,7 +219,13 @@ def main():
         "sensor": sensor
     }
     print("Data to be sent {0}".format(data))
-    resp = requests.post(api_url, timeout=10, data=json.dumps(data), headers={"Content-Type": "application/json"})
+
+    resp = requests.post(
+        api_url,
+        timeout=10,
+        data=json.dumps(data),
+        headers = {"Content-Type": "application/json", "X-Api-Key": parser.get('airmonitor', 'api_key')}
+    )
     print("Response code from AirMonitor API {0}".format(resp.status_code))
 
 
