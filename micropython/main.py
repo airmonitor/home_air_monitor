@@ -2,6 +2,7 @@ import connect_wifi
 import ujson
 import urequests
 import time
+from machine import Pin
 from boot import SSID, WIFI_PASSWORD, API_URL, API_KEY, LAT, LONG
 from pms7003 import PassivePms7003
 
@@ -27,9 +28,22 @@ def pms7003_measurements():
     return pms_data
 
 
-wifi_network = connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
+def blink():
+    led = Pin(2, Pin.OUT)
+    led.value(1)
+    time.sleep(0.1)
+    led.value(0)
 
-if wifi_network:
+
+if __name__ == "__main__":
+    connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
+    time.sleep(20)
     while True:
-        print(send_measurements())
+        measurements = send_measurements()
+
+        api_response = measurements[0].get("status")
+        if api_response == "Metric saved":
+            blink()
+            time.sleep(0.1)
+            blink()
         time.sleep(10)
