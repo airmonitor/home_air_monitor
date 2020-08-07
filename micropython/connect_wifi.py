@@ -16,4 +16,3 @@ def connect(ssid, password):
 
     print("Connection successful")
     print(station.ifconfig())
-

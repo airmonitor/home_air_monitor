@@ -1,31 +1,95 @@
+import time
+
+import bme680
 import connect_wifi
 import ujson
 import urequests
-import time
+from boot import (
+    API_KEY,
+    API_URL,
+    LAT,
+    LONG,
+    PARTICLE_SENSOR,
+    SSID,
+    TEMP_HUM_PRESS_SENSOR,
+    WIFI_PASSWORD,
+)
+from i2c import I2CAdapter
 from machine import Pin
-from boot import SSID, WIFI_PASSWORD, API_URL, API_KEY, LAT, LONG
-from pms7003 import PassivePms7003
 
 
-def send_measurements():
-    particle_data = pms7003_measurements()
+def send_measurements(data):
+    if data:
+        post_data = ujson.dumps(data)
+        res = urequests.post(
+            API_URL,
+            headers={"X-Api-Key": API_KEY, "Content-Type": "application/json"},
+            data=post_data,
+        ).json()
 
-    data = {"lat": str(LAT), "long": str(LONG), "pm1": particle_data["PM1_0_ATM"],
-            "pm25": particle_data["PM2_5_ATM"], "pm10": particle_data["PM10_0_ATM"], "sensor": "PMS7003"}
-    post_data = ujson.dumps(data)
-    res = urequests.post(API_URL, headers={
-        "X-Api-Key": API_KEY,
-        "Content-Type": "application/json"}, data=post_data).json()
+        return res, post_data
 
-    return res, post_data
+
+
+def get_particle_measurements():
+    data= {}
+    if PARTICLE_SENSOR == "PMS7003":
+        particle_data = pms7003_measurements()
+
+        data = {
+            "pm1": round(particle_data["PM1_0_ATM"]),
+            "pm25": round(particle_data["PM2_5_ATM"]),
+            "pm10": round(particle_data["PM10_0_ATM"]),
+        }
+
+    return data
+
+
+def get_temp_humid_pressure_measurements():
+
+    if TEMP_HUM_PRESS_SENSOR == "BME680":
+        try:
+            sensor = bme680.BME680(i2c_device=i2c_dev)
+            sensor.set_humidity_oversample(bme680.OS_2X)
+            sensor.set_pressure_oversample(bme680.OS_4X)
+            sensor.set_temperature_oversample(bme680.OS_8X)
+            sensor.set_filter(bme680.FILTER_SIZE_3)
+
+            if sensor.get_sensor_data():
+                return {
+                    "temperature": sensor.data.temperature,
+                    "humidity": sensor.data.humidity,
+                    "pressure": sensor.data.pressure,
+                    "gas_resistance": sensor.data.gas_resistance,
+                }
+        except OSError:
+            return False
+
+
+def augment_data(measurements, sensor_name):
+    data = {}
+
+    if measurements:
+        for k, v in measurements.items():
+            data[k] = round(v)
+        data["lat"] = LAT
+        data["long"] = LONG
+        data["sensor"] = sensor_name
+
+        return data
 
 
 def pms7003_measurements():
-    pms = PassivePms7003(uart=2)
-    pms.wakeup()
-    pms_data = pms.read()
-    pms.sleep()
-    return pms_data
+    from pms7003 import PassivePms7003
+
+    try:
+        pms = PassivePms7003(uart=2)
+        pms.wakeup()
+        pms_data = pms.read()
+        pms.sleep()
+        return pms_data
+    except OSError:
+        return False
 
 
 def blink():
@@ -35,15 +99,47 @@ def blink():
     led.value(0)
 
 
+def blink_api_response(message):
+    if message == "Metric saved":
+        blink()
+        time.sleep(0.1)
+        blink()
+
+
 if __name__ == "__main__":
     connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
-    time.sleep(20)
-    while True:
-        measurements = send_measurements()
 
-        api_response = measurements[0].get("status")
-        if api_response == "Metric saved":
-            blink()
-            time.sleep(0.1)
-            blink()
-        time.sleep(10)
+    if TEMP_HUM_PRESS_SENSOR:
+        i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
+
+    time.sleep(10)
+
+    while True:
+        # PARTICLE_SENSOR
+        parsed_values = augment_data(measurements=get_particle_measurements(), sensor_name=PARTICLE_SENSOR)
+        send_particle_measurements = send_measurements(
+            data=parsed_values
+        )
+        print(send_particle_measurements)
+
+        if send_particle_measurements:
+            blink_api_response(message=send_particle_measurements[0].get("status"))
+
+        time.sleep(1)
+
+        # TEMP_HUM_PRESS SENSOR
+        parsed_values = augment_data(
+            measurements=get_temp_humid_pressure_measurements(), sensor_name=TEMP_HUM_PRESS_SENSOR
+        )
+        send_temp_humid_pressure_measurements = send_measurements(
+            data=parsed_values
+        )
+        print(send_temp_humid_pressure_measurements)
+
+        if send_temp_humid_pressure_measurements:
+            blink_api_response(
+                message=send_temp_humid_pressure_measurements[0].get("status")
+            )
+
+    time.sleep(10)
+
