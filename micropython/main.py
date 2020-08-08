@@ -2,6 +2,7 @@ import time
 
 import bme680
 import bme280
+import CCS811
 import connect_wifi
 import ujson
 import urequests
@@ -13,6 +14,7 @@ from boot import (
     PARTICLE_SENSOR,
     SSID,
     TEMP_HUM_PRESS_SENSOR,
+    TVOC_CO2_SENSOR,
     WIFI_PASSWORD,
 )
 from i2c import I2CAdapter
@@ -45,8 +47,17 @@ def get_particle_measurements():
     return data
 
 
-def get_temp_humid_pressure_measurements():
+def get_tvoc_co2():
+    if TVOC_CO2_SENSOR == "CCS811":
+        try:
+            sensor = CCS811.CCS811(i2c=i2c_dev, addr=90)
+            if sensor.data_ready():
+                return {"co2": sensor.eCO2, "tvoc": sensor.tVOC}
+        except (OSError, RuntimeError):
+            return False
 
+
+def get_temp_humid_pressure_measurements():
     if TEMP_HUM_PRESS_SENSOR == "BME680":
         try:
             sensor = bme680.BME680(i2c_device=i2c_dev)
@@ -156,5 +167,25 @@ if __name__ == "__main__":
             blink_api_response(
                 message=send_temp_humid_pressure_measurements[0].get("status")
             )
+
+        time.sleep(1)
+
+
+        # CO2 TVOC SENSOR
+        parsed_values = augment_data(
+            measurements=get_tvoc_co2(), sensor_name=TVOC_CO2_SENSOR
+        )
+
+        send_co2_tvoc_measurements = send_measurements(
+            data=parsed_values
+        )
+        print(send_co2_tvoc_measurements)
+
+        if send_co2_tvoc_measurements:
+            blink_api_response(
+                message=send_co2_tvoc_measurements[0].get("status")
+            )
+
+
 
     time.sleep(10)
