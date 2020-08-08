@@ -1,8 +1,5 @@
 import time
 
-import bme680
-import bme280
-import CCS811
 import connect_wifi
 import ujson
 import urequests
@@ -19,6 +16,43 @@ from boot import (
 )
 from i2c import I2CAdapter
 from machine import Pin
+
+if TEMP_HUM_PRESS_SENSOR == "BME680":
+    import bme680
+
+elif TEMP_HUM_PRESS_SENSOR == "BME280":
+    import bme280
+
+if PARTICLE_SENSOR in ["SDS011", "SDS021"]:
+    import sds011
+    SDS = sds011.SDS011(uart=2)
+elif PARTICLE_SENSOR == "PMS7003":
+    from pms7003 import PassivePms7003
+
+if TVOC_CO2_SENSOR == "CCS811":
+    import CCS811
+
+
+def sds_measurements():
+    try:
+        SDS.read()
+        return {
+            "pm25": SDS.pm25,
+            "pm10": SDS.pm10
+        }
+    except OSError:
+        return False
+
+
+def pms7003_measurements():
+    try:
+        pms = PassivePms7003(uart=2)
+        pms.wakeup()
+        pms_data = pms.read()
+        pms.sleep()
+        return pms_data
+    except OSError:
+        return False
 
 
 def send_measurements(data):
@@ -42,6 +76,13 @@ def get_particle_measurements():
             "pm1": round(particle_data["PM1_0_ATM"]),
             "pm25": round(particle_data["PM2_5_ATM"]),
             "pm10": round(particle_data["PM10_0_ATM"]),
+        }
+
+    elif PARTICLE_SENSOR in ["SDS011", "SDS021"]:
+        particle_data = sds_measurements()
+        data = {
+            "pm25": round(particle_data["pm25"]),
+            "pm10": round(particle_data["pm10"])
         }
 
     return data
@@ -102,19 +143,6 @@ def augment_data(measurements, sensor_name):
         return data
 
 
-def pms7003_measurements():
-    from pms7003 import PassivePms7003
-
-    try:
-        pms = PassivePms7003(uart=2)
-        pms.wakeup()
-        pms_data = pms.read()
-        pms.sleep()
-        return pms_data
-    except OSError:
-        return False
-
-
 def blink():
     led = Pin(2, Pin.OUT)
     led.value(1)
@@ -169,7 +197,6 @@ if __name__ == "__main__":
             )
 
         time.sleep(1)
-
 
         # CO2 TVOC SENSOR
         parsed_values = augment_data(
