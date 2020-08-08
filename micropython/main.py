@@ -1,6 +1,7 @@
 import time
 
 import bme680
+import bme280
 import connect_wifi
 import ujson
 import urequests
@@ -30,9 +31,8 @@ def send_measurements(data):
         return res, post_data
 
 
-
 def get_particle_measurements():
-    data= {}
+    data = {}
     if PARTICLE_SENSOR == "PMS7003":
         particle_data = pms7003_measurements()
 
@@ -62,7 +62,19 @@ def get_temp_humid_pressure_measurements():
                     "pressure": sensor.data.pressure,
                     "gas_resistance": sensor.data.gas_resistance,
                 }
-        except OSError:
+        except (OSError, RuntimeError):
+            return False
+
+    elif TEMP_HUM_PRESS_SENSOR == "BME280":
+        try:
+            bme = bme280.BME280(i2c=i2c_dev)
+            if bme.values:
+                return {
+                    "temperature": bme.values["temperature"],
+                    "humidity": bme.values["humidity"],
+                    "pressure": bme.values["pressure"],
+                }
+        except (OSError, RuntimeError):
             return False
 
 
@@ -116,20 +128,24 @@ if __name__ == "__main__":
 
     while True:
         # PARTICLE_SENSOR
-        parsed_values = augment_data(measurements=get_particle_measurements(), sensor_name=PARTICLE_SENSOR)
-        send_particle_measurements = send_measurements(
-            data=parsed_values
+        parsed_values = augment_data(
+            measurements=get_particle_measurements(),
+            sensor_name=PARTICLE_SENSOR,
         )
+        send_particle_measurements = send_measurements(data=parsed_values)
         print(send_particle_measurements)
 
         if send_particle_measurements:
-            blink_api_response(message=send_particle_measurements[0].get("status"))
+            blink_api_response(
+                message=send_particle_measurements[0].get("status")
+            )
 
         time.sleep(1)
 
         # TEMP_HUM_PRESS SENSOR
         parsed_values = augment_data(
-            measurements=get_temp_humid_pressure_measurements(), sensor_name=TEMP_HUM_PRESS_SENSOR
+            measurements=get_temp_humid_pressure_measurements(),
+            sensor_name=TEMP_HUM_PRESS_SENSOR,
         )
         send_temp_humid_pressure_measurements = send_measurements(
             data=parsed_values
@@ -142,4 +158,3 @@ if __name__ == "__main__":
             )
 
     time.sleep(10)
-
