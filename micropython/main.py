@@ -25,6 +25,7 @@ elif TEMP_HUM_PRESS_SENSOR == "BME280":
 
 if PARTICLE_SENSOR in ["SDS011", "SDS021"]:
     import sds011
+
     SDS = sds011.SDS011(uart=2)
 elif PARTICLE_SENSOR == "PMS7003":
     from pms7003 import PassivePms7003
@@ -36,10 +37,7 @@ if TVOC_CO2_SENSOR == "CCS811":
 def sds_measurements():
     try:
         SDS.read()
-        return {
-            "pm25": SDS.pm25,
-            "pm10": SDS.pm10
-        }
+        return {"pm25": SDS.pm25, "pm10": SDS.pm10}
     except OSError:
         return False
 
@@ -82,7 +80,7 @@ def get_particle_measurements():
         particle_data = sds_measurements()
         data = {
             "pm25": round(particle_data["pm25"]),
-            "pm10": round(particle_data["pm10"])
+            "pm10": round(particle_data["pm10"]),
         }
 
     return data
@@ -203,9 +201,7 @@ if __name__ == "__main__":
             measurements=get_tvoc_co2(), sensor_name=TVOC_CO2_SENSOR
         )
 
-        send_co2_tvoc_measurements = send_measurements(
-            data=parsed_values
-        )
+        send_co2_tvoc_measurements = send_measurements(data=parsed_values)
         print(send_co2_tvoc_measurements)
 
         if send_co2_tvoc_measurements:

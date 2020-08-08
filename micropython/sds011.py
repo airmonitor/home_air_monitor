@@ -18,12 +18,14 @@ import ustruct as struct
 import sys
 import machine
 
-_SDS011_CMDS = {'SET': b'\x01',
-                'GET': b'\x00',
-                'QUERY': b'\x04',
-                'REPORTING_MODE': b'\x02',
-                'DUTYCYCLE': b'\x08',
-                'SLEEPWAKE': b'\x06'}
+_SDS011_CMDS = {
+    "SET": b"\x01",
+    "GET": b"\x00",
+    "QUERY": b"\x04",
+    "REPORTING_MODE": b"\x02",
+    "DUTYCYCLE": b"\x08",
+    "SLEEPWAKE": b"\x06",
+}
 
 
 class SDS011:
@@ -64,46 +66,49 @@ class SDS011:
         return self._packet
 
     def make_command(self, cmd, mode, param):
-        header = b'\xaa\xb4'
-        padding = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff'
+        header = b"\xaa\xb4"
+        padding = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff"
         checksum = chr((ord(cmd) + ord(mode) + ord(param) + 255 + 255) % 256)
-        checksum = bytes(checksum, 'utf8')
-        tail = b'\xab'
+        checksum = bytes(checksum, "utf8")
+        tail = b"\xab"
 
         return header + cmd + mode + param + padding + checksum + tail
 
     def wake(self):
         """Sends wake command to sds011 (starts its fan)."""
-        cmd = self.make_command(_SDS011_CMDS['SLEEPWAKE'],
-                                _SDS011_CMDS['SET'], chr(1))
+        cmd = self.make_command(
+            _SDS011_CMDS["SLEEPWAKE"], _SDS011_CMDS["SET"], chr(1)
+        )
         self.uart.write(cmd)
 
     def sleep(self):
         """Sends sleep command to sds011 (stops its fan)."""
-        cmd = self.make_command(_SDS011_CMDS['SLEEPWAKE'],
-                                _SDS011_CMDS['SET'], chr(0))
+        cmd = self.make_command(
+            _SDS011_CMDS["SLEEPWAKE"], _SDS011_CMDS["SET"], chr(0)
+        )
         self.uart.write(cmd)
 
     def set_reporting_mode_query(self):
-        cmd = self.make_command(_SDS011_CMDS['REPORTING_MODE'],
-                                _SDS011_CMDS['SET'], chr(1))
+        cmd = self.make_command(
+            _SDS011_CMDS["REPORTING_MODE"], _SDS011_CMDS["SET"], chr(1)
+        )
         self.uart.write(cmd)
 
     def query(self):
         """Query new measurement data"""
-        cmd = self.make_command(_SDS011_CMDS['QUERY'], chr(0), chr(0))
+        cmd = self.make_command(_SDS011_CMDS["QUERY"], chr(0), chr(0))
         self.uart.write(cmd)
 
     def process_measurement(self, packet):
         try:
-            *data, checksum, tail = struct.unpack('<HHBBBs', packet)
+            *data, checksum, tail = struct.unpack("<HHBBBs", packet)
             self._pm25 = data[0] / 10.0
             self._pm10 = data[1] / 10.0
-            checksum_OK = (checksum == (sum(data) % 256))
-            tail_OK = tail == b'\xab'
+            checksum_OK = checksum == (sum(data) % 256)
+            tail_OK = tail == b"\xab"
             self._packet_status = True if (checksum_OK and tail_OK) else False
         except Exception as e:
-            print('Problem decoding packet:', e)
+            print("Problem decoding packet:", e)
             sys.print_exception(e)
 
     def read(self):
@@ -121,16 +126,16 @@ class SDS011:
         for i in range(512):
             try:
                 header = self.uart.read(1)
-                if header == b'\xaa':
+                if header == b"\xaa":
                     command = self.uart.read(1)
 
-                    if command == b'\xc0':
+                    if command == b"\xc0":
                         packet = self.uart.read(8)
                         if packet != None:
                             self.process_measurement(packet)
                             return True
             except Exception as e:
-                print('Problem attempting to read:', e)
+                print("Problem attempting to read:", e)
                 sys.print_exception(e)
 
         # If we gave up finding a measurement pkt
