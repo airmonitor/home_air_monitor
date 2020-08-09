@@ -11,7 +11,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
     </content>
-    <orderEntry type="jdk" jdkName="Pipenv (HomeAirMonitor)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (HomeAirMonitor)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="MicroPython" level="project" />
     <orderEntry type="library" name="MicroPython" level="project" />

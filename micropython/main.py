@@ -1,4 +1,5 @@
-import time
+import utime
+from random import random
 
 import connect_wifi
 import ujson
@@ -144,14 +145,14 @@ def augment_data(measurements, sensor_name):
 def blink():
     led = Pin(2, Pin.OUT)
     led.value(1)
-    time.sleep(0.1)
+    utime.sleep(0.1)
     led.value(0)
 
 
 def blink_api_response(message):
     if message == "Metric saved":
         blink()
-        time.sleep(0.1)
+        utime.sleep(0.1)
         blink()
 
 
@@ -161,7 +162,7 @@ if __name__ == "__main__":
     if TEMP_HUM_PRESS_SENSOR:
         i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
 
-    time.sleep(10)
+    utime.sleep(10)
 
     while True:
         # PARTICLE_SENSOR
@@ -177,7 +178,7 @@ if __name__ == "__main__":
                 message=send_particle_measurements[0].get("status")
             )
 
-        time.sleep(1)
+        utime.sleep(1)
 
         # TEMP_HUM_PRESS SENSOR
         parsed_values = augment_data(
@@ -194,7 +195,7 @@ if __name__ == "__main__":
                 message=send_temp_humid_pressure_measurements[0].get("status")
             )
 
-        time.sleep(1)
+        utime.sleep(1)
 
         # CO2 TVOC SENSOR
         parsed_values = augment_data(
@@ -209,4 +210,4 @@ if __name__ == "__main__":
                 message=send_co2_tvoc_measurements[0].get("status")
             )
 
-        time.sleep(1800)
+        utime.sleep(int(random() * 600 + 1500))
