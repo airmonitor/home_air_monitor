@@ -209,4 +209,4 @@ if __name__ == "__main__":
                 message=send_co2_tvoc_measurements[0].get("status")
             )
 
-    time.sleep(1800)
+        time.sleep(1800)
