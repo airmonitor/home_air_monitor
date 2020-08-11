@@ -16,7 +16,7 @@ from boot import (
     WIFI_PASSWORD,
 )
 from i2c import I2CAdapter
-from machine import Pin
+from machine import Pin, reset
 
 if TEMP_HUM_PRESS_SENSOR == "BME680":
     import bme680
@@ -34,11 +34,17 @@ elif PARTICLE_SENSOR == "PMS7003":
 if TVOC_CO2_SENSOR == "CCS811":
     import CCS811
 
+LOOP_COUNTER = 0
 
 def sds_measurements():
     try:
-        SDS.read()
-        return {"pm25": SDS.pm25, "pm10": SDS.pm10}
+        SDS.wake()
+        utime.sleep(10)
+        for _ in range(10):
+            SDS.read()
+        if SDS.pm25 != 0 and SDS.pm10 != 0:
+            return {"pm25": SDS.pm25, "pm10": SDS.pm10}
+        SDS.sleep()
     except OSError:
         return False
 
@@ -47,6 +53,7 @@ def pms7003_measurements():
     try:
         pms = PassivePms7003(uart=2)
         pms.wakeup()
+        utime.sleep(10)
         pms_data = pms.read()
         pms.sleep()
         return pms_data
@@ -79,13 +86,16 @@ def get_particle_measurements():
 
     elif PARTICLE_SENSOR in ["SDS011", "SDS021"]:
         particle_data = sds_measurements()
-        data = {
-            "pm25": round(particle_data["pm25"]),
-            "pm10": round(particle_data["pm10"]),
-        }
 
+        try:
+            data = {
+                "pm25": round(particle_data["pm25"]),
+                "pm10": round(particle_data["pm10"]),
+            }
+
+        except TypeError:
+            pass
     return data
-
 
 def get_tvoc_co2():
     if TVOC_CO2_SENSOR == "CCS811":
@@ -209,5 +219,10 @@ if __name__ == "__main__":
             blink_api_response(
                 message=send_co2_tvoc_measurements[0].get("status")
             )
+
+        LOOP_COUNTER += 1
+        print("Increasing loop_counter, actual value {}".format(LOOP_COUNTER))
+        if LOOP_COUNTER >= 47:
+            reset()
 
         utime.sleep(int(random() * 600 + 1500))
