@@ -36,6 +36,10 @@
     <option name="projectConfigVersion" value="2" />
   </component>
   <component name="JupyterTrust" id="386f11d8-972d-49c7-97cd-83dc87362b6a" />
+  <component name="KubernetesApiPersistence">
+    <option name="context" value="microk8s" />
+    <option name="namespace" value="kube-system" />
+  </component>
   <component name="MicroPythonDevices" devicePath="/dev/ttyUSB0" autoDetectDevicePath="false" />
   <component name="ProjectId" id="1N45goJYfoE8MJn1KvMwRivQOIT" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -207,7 +211,9 @@
       <workItem from="1596967791581" duration="5554000" />
       <workItem from="1597045140552" duration="2924000" />
       <workItem from="1597054107773" duration="3694000" />
-      <workItem from="1597090143378" duration="597000" />
+      <workItem from="1597090143378" duration="1275000" />
+      <workItem from="1597316137127" duration="739000" />
+      <workItem from="1598105370993" duration="6798000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -461,7 +467,14 @@
       <option name="project" value="LOCAL" />
       <updated>1597015489539</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary=":wrench: SDS011/SDS021 will be powered off when metrics are not collected.&#10;:wrench: ESP32 will be restarted every 24 hours">
+      <created>1597131275065</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1597131275065</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -519,7 +532,8 @@
     <MESSAGE value=":wrench: API key is required to send metric data to new API endpoint" />
     <MESSAGE value=":bug: Fixing a bug." />
     <MESSAGE value=":wrench: time changed to utime." />
-    <option name="LAST_COMMIT_MESSAGE" value=":wrench: time changed to utime." />
+    <MESSAGE value=":wrench: SDS011/SDS021 will be powered off when metrics are not collected.&#10;:wrench: ESP32 will be restarted every 24 hours" />
+    <option name="LAST_COMMIT_MESSAGE" value=":wrench: SDS011/SDS021 will be powered off when metrics are not collected.&#10;:wrench: ESP32 will be restarted every 24 hours" />
   </component>
   <component name="WindowStateProjectService">
     <state x="1702" y="407" width="925" height="684" key="#Deployment" timestamp="1593519508835">
@@ -538,10 +552,10 @@
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
     <state x="1864" y="391" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519808673" />
-    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2" timestamp="1597015489475">
+    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2" timestamp="1597131274947">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1597015489475" />
+    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1597131274947" />
     <state x="1884" y="514" width="424" height="491" key="FileChooserDialogImpl" timestamp="1593519359721">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
@@ -566,10 +580,10 @@
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
     <state x="592" y="387" width="1022" height="737" key="SettingsEditor/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1596964720715" />
-    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2" timestamp="1597015494115">
+    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2" timestamp="1597131277363">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>
-    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1597015494115" />
+    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1597131277363" />
     <state x="901" y="602" width="451" height="181" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1593815601474">
       <screen x="0" y="27" width="3440" height="1413" />
     </state>

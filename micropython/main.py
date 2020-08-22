@@ -30,6 +30,7 @@ if PARTICLE_SENSOR in ["SDS011", "SDS021"]:
     SDS = sds011.SDS011(uart=2)
 elif PARTICLE_SENSOR == "PMS7003":
     from pms7003 import PassivePms7003
+    from pms7003 import UartError
 
 if TVOC_CO2_SENSOR == "CCS811":
     import CCS811
@@ -54,12 +55,9 @@ def pms7003_measurements():
         pms = PassivePms7003(uart=2)
         pms.wakeup()
         utime.sleep(10)
-        pms_data = pms.read()
-        pms.sleep()
-        return pms_data
-    except OSError:
-        return False
-
+        return pms.read()
+    except (OSError, UartError):
+        return {}
 
 def send_measurements(data):
     if data:
@@ -77,12 +75,12 @@ def get_particle_measurements():
     data = {}
     if PARTICLE_SENSOR == "PMS7003":
         particle_data = pms7003_measurements()
-
-        data = {
-            "pm1": round(particle_data["PM1_0_ATM"]),
-            "pm25": round(particle_data["PM2_5_ATM"]),
-            "pm10": round(particle_data["PM10_0_ATM"]),
-        }
+        if particle_data:
+            data = {
+                "pm1": round(particle_data["PM1_0_ATM"]),
+                "pm25": round(particle_data["PM2_5_ATM"]),
+                "pm10": round(particle_data["PM10_0_ATM"]),
+            }
 
     elif PARTICLE_SENSOR in ["SDS011", "SDS021"]:
         particle_data = sds_measurements()
