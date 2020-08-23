@@ -51,15 +51,23 @@ def sds_measurements():
 
 
 def pms7003_measurements():
+    pms = PassivePms7003(uart=2)
     try:
-        pms = PassivePms7003(uart=2)
         pms.wakeup()
         utime.sleep(10)
         return pms.read()
     except (OSError, UartError):
         return {}
+    finally:
+        try:
+            pms.sleep()
+        except (OSError, UartError):
+            pass
+
 
 def send_measurements(data):
+    print("Sending data to API {}".format(data))
+
     if data:
         post_data = ujson.dumps(data)
         res = urequests.post(
@@ -68,7 +76,11 @@ def send_measurements(data):
             data=post_data,
         ).json()
 
-        return res, post_data
+        print("API response {}".format(res))
+        print("\n")
+        print("\n")
+        blink_api_response(message=res)
+        return True
 
 
 def get_particle_measurements():
@@ -128,6 +140,7 @@ def get_temp_humid_pressure_measurements():
         try:
             bme = bme280.BME280(i2c=i2c_dev)
             if bme.values:
+                print("BME280 readings {}".format(bme.values))
                 return {
                     "temperature": bme.values["temperature"],
                     "humidity": bme.values["humidity"],
@@ -158,7 +171,7 @@ def blink():
 
 
 def blink_api_response(message):
-    if message == "Metric saved":
+    if message.get("status") == "Metric saved":
         blink()
         utime.sleep(0.1)
         blink()
@@ -173,45 +186,33 @@ if __name__ == "__main__":
     utime.sleep(10)
 
     while True:
-        # PARTICLE_SENSOR
-        parsed_values = augment_data(
-            measurements=get_particle_measurements(),
-            sensor_name=PARTICLE_SENSOR,
-        )
-        send_particle_measurements = send_measurements(data=parsed_values)
-        print(send_particle_measurements)
-
-        if send_particle_measurements:
-            blink_api_response(
-                message=send_particle_measurements[0].get("status")
+        if PARTICLE_SENSOR:
+            # PARTICLE_SENSOR
+            parsed_values = augment_data(
+                measurements=get_particle_measurements(),
+                sensor_name=PARTICLE_SENSOR,
             )
+            send_measurements(data=parsed_values)
 
-        utime.sleep(1)
+            utime.sleep(1)
 
         # TEMP_HUM_PRESS SENSOR
-        parsed_values = augment_data(
-            measurements=get_temp_humid_pressure_measurements(),
-            sensor_name=TEMP_HUM_PRESS_SENSOR,
-        )
-        send_temp_humid_pressure_measurements = send_measurements(
-            data=parsed_values
-        )
-        print(send_temp_humid_pressure_measurements)
-
-        if send_temp_humid_pressure_measurements:
-            blink_api_response(
-                message=send_temp_humid_pressure_measurements[0].get("status")
+        if TEMP_HUM_PRESS_SENSOR:
+            parsed_values = augment_data(
+                measurements=get_temp_humid_pressure_measurements(),
+                sensor_name=TEMP_HUM_PRESS_SENSOR,
             )
+            send_measurements(data=parsed_values)
 
-        utime.sleep(1)
+            utime.sleep(1)
 
         # CO2 TVOC SENSOR
-        parsed_values = augment_data(
-            measurements=get_tvoc_co2(), sensor_name=TVOC_CO2_SENSOR
-        )
+        if TVOC_CO2_SENSOR:
+            parsed_values = augment_data(
+                measurements=get_tvoc_co2(), sensor_name=TVOC_CO2_SENSOR
+            )
 
-        send_co2_tvoc_measurements = send_measurements(data=parsed_values)
-        print(send_co2_tvoc_measurements)
+            send_measurements(data=parsed_values)
 
         if send_co2_tvoc_measurements:
             blink_api_response(

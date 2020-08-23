@@ -1,9 +1,9 @@
-pyserial
-smbus2
-idna
-certifi
-chardet
-requests
-RPi.bme280
-configparser
-urllib3
+# pyserial
+# smbus2
+# idna
+# certifi
+# chardet
+# requests
+# RPi.bme280
+# configparser
+# urllib3
