@@ -1,9 +1,9 @@
-import utime
 from random import random
 
 import connect_wifi
 import ujson
 import urequests
+import utime
 from boot import (
     API_KEY,
     API_URL,
@@ -16,6 +16,7 @@ from boot import (
     WIFI_PASSWORD,
 )
 from i2c import I2CAdapter
+from lib import logging
 from machine import Pin, reset
 
 if TEMP_HUM_PRESS_SENSOR == "BME680":
@@ -35,6 +36,10 @@ elif PARTICLE_SENSOR == "PMS7003":
 if TVOC_CO2_SENSOR == "CCS811":
     import CCS811
 
+
+logging.basicConfig(level=logging.INFO)
+LOG = logging.getLogger(__name__)
+
 LOOP_COUNTER = 0
 
 def sds_measurements():
@@ -51,37 +56,38 @@ def sds_measurements():
 
 
 def pms7003_measurements():
-    pms = PassivePms7003(uart=2)
     try:
+        pms = PassivePms7003(uart=2)
         pms.wakeup()
         utime.sleep(10)
         return pms.read()
-    except (OSError, UartError):
+    except (OSError, UartError, TypeError):
         return {}
     finally:
         try:
             pms.sleep()
-        except (OSError, UartError):
+        except (OSError, UartError, TypeError, NameError):
             pass
 
 
 def send_measurements(data):
-    print("Sending data to API {}".format(data))
+    LOG.info("Sending data to API %s", data)
 
-    if data:
-        post_data = ujson.dumps(data)
-        res = urequests.post(
-            API_URL,
-            headers={"X-Api-Key": API_KEY, "Content-Type": "application/json"},
-            data=post_data,
-        ).json()
+    try:
+        if data:
+            post_data = ujson.dumps(data)
+            res = urequests.post(
+                API_URL,
+                headers={"X-Api-Key": API_KEY, "Content-Type": "application/json"},
+                data=post_data,
+            ).json()
 
-        print("API response {}".format(res))
-        print("\n")
-        print("\n")
-        blink_api_response(message=res)
-        return True
+            LOG.info("API response %s", res)
 
+            blink_api_response(message=res)
+            return True
+    except IndexError:
+        return False
 
 def get_particle_measurements():
     data = {}
@@ -140,7 +146,8 @@ def get_temp_humid_pressure_measurements():
         try:
             bme = bme280.BME280(i2c=i2c_dev)
             if bme.values:
-                print("BME280 readings {}".format(bme.values))
+                LOG.info("BME280 readings %s", bme.values)
+
                 return {
                     "temperature": bme.values["temperature"],
                     "humidity": bme.values["humidity"],
@@ -178,14 +185,12 @@ def blink_api_response(message):
 
 
 if __name__ == "__main__":
-    connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
-
     if TEMP_HUM_PRESS_SENSOR:
         i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
 
-    utime.sleep(10)
-
     while True:
+        connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
+        utime.sleep(10)
         if PARTICLE_SENSOR:
             # PARTICLE_SENSOR
             parsed_values = augment_data(
@@ -214,14 +219,9 @@ if __name__ == "__main__":
 
             send_measurements(data=parsed_values)
 
-        if send_co2_tvoc_measurements:
-            blink_api_response(
-                message=send_co2_tvoc_measurements[0].get("status")
-            )
-
         LOOP_COUNTER += 1
-        print("Increasing loop_counter, actual value {}".format(LOOP_COUNTER))
-        if LOOP_COUNTER >= 47:
+        LOG.info("Increasing loop_counter, actual value %s", LOOP_COUNTER)
+        if LOOP_COUNTER == 47:
             reset()
 
         utime.sleep(int(random() * 600 + 1500))
