@@ -189,39 +189,43 @@ if __name__ == "__main__":
         i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
 
     while True:
-        connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
-        utime.sleep(10)
-        if PARTICLE_SENSOR:
-            # PARTICLE_SENSOR
-            parsed_values = augment_data(
-                measurements=get_particle_measurements(),
-                sensor_name=PARTICLE_SENSOR,
-            )
-            send_measurements(data=parsed_values)
+        try:
+            connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
+            utime.sleep(10)
+            if PARTICLE_SENSOR:
+                # PARTICLE_SENSOR
+                parsed_values = augment_data(
+                    measurements=get_particle_measurements(),
+                    sensor_name=PARTICLE_SENSOR,
+                )
+                send_measurements(data=parsed_values)
 
-            utime.sleep(1)
+                utime.sleep(1)
 
-        # TEMP_HUM_PRESS SENSOR
-        if TEMP_HUM_PRESS_SENSOR:
-            parsed_values = augment_data(
-                measurements=get_temp_humid_pressure_measurements(),
-                sensor_name=TEMP_HUM_PRESS_SENSOR,
-            )
-            send_measurements(data=parsed_values)
+            # TEMP_HUM_PRESS SENSOR
+            if TEMP_HUM_PRESS_SENSOR:
+                parsed_values = augment_data(
+                    measurements=get_temp_humid_pressure_measurements(),
+                    sensor_name=TEMP_HUM_PRESS_SENSOR,
+                )
+                send_measurements(data=parsed_values)
 
-            utime.sleep(1)
+                utime.sleep(1)
 
-        # CO2 TVOC SENSOR
-        if TVOC_CO2_SENSOR:
-            parsed_values = augment_data(
-                measurements=get_tvoc_co2(), sensor_name=TVOC_CO2_SENSOR
-            )
+            # CO2 TVOC SENSOR
+            if TVOC_CO2_SENSOR:
+                parsed_values = augment_data(
+                    measurements=get_tvoc_co2(), sensor_name=TVOC_CO2_SENSOR
+                )
 
-            send_measurements(data=parsed_values)
+                send_measurements(data=parsed_values)
 
-        LOOP_COUNTER += 1
-        LOG.info("Increasing loop_counter, actual value %s", LOOP_COUNTER)
-        if LOOP_COUNTER == 47:
+            LOOP_COUNTER += 1
+            LOG.info("Increasing loop_counter, actual value %s", LOOP_COUNTER)
+            if LOOP_COUNTER == 47:
+                reset()
+
+            utime.sleep(int(random() * 600 + 1500))
+        except Exception as error:
+            LOG.info("Caught exception %s", error)
             reset()
-
-        utime.sleep(int(random() * 600 + 1500))
