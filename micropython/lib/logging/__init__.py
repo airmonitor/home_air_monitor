@@ -17,7 +17,7 @@ _level_dict = {
     DEBUG: "DEBUG",
 }
 
-def addLevelName(level, name):
+def add_level_name(level, name):
     _level_dict[level] = name
 
 class Logger:
@@ -29,16 +29,15 @@ class Logger:
         self.handlers = None
         self.parent = None
 
-    def _level_str(self, level):
+    @staticmethod
+    def _level_str(level):
         l = _level_dict.get(level)
-        if l is not None:
-            return l
-        return "LVL%s" % level
+        return l if l is not None else "LVL%s" % level
 
-    def setLevel(self, level):
+    def set_level(self, level):
         self.level = level
 
-    def isEnabledFor(self, level):
+    def is_enabled_for(self, level):
         return level >= self.level
 
     def log(self, level, msg, *args):
@@ -51,8 +50,8 @@ class Logger:
             )
 
             if dest.handlers:
-                for hdlr in dest.handlers:
-                    hdlr.emit(record)
+                for handler in dest.handlers:
+                    handler.emit(record)
 
     def debug(self, msg, *args):
         self.log(DEBUG, msg, *args)
@@ -79,59 +78,56 @@ class Logger:
     def exception(self, msg, *args):
         self.exc(sys.exc_info()[1], msg, *args)
 
-    def addHandler(self, hdlr):
+    def add_handler(self, handler):
         if self.handlers is None:
             self.handlers = []
-        self.handlers.append(hdlr)
+        self.handlers.append(handler)
 
 
-def getLogger(name=None):
+def get_logger(name=None):
     if name is None:
         name = "root"
     if name in _loggers:
         return _loggers[name]
     l = Logger(name)
-    # For now, we have shallow hierarchy, where parent of each logger is root.
+    # For now, we have shallow hierarchy, where the parent of each logger is root.
     l.parent = root
     _loggers[name] = l
     return l
 
 def info(msg, *args):
-    getLogger(None).info(msg, *args)
+    get_logger(None).info(msg, *args)
 
 def debug(msg, *args):
-    getLogger(None).debug(msg, *args)
+    get_logger(None).debug(msg, *args)
 
 def warning(msg, *args):
-    getLogger(None).warning(msg, *args)
+    get_logger(None).warning(msg, *args)
 
 warn = warning
 
 def error(msg, *args):
-    getLogger(None).error(msg, *args)
+    get_logger(None).error(msg, *args)
 
 def critical(msg, *args):
-    getLogger(None).critical(msg, *args)
+    get_logger(None).critical(msg, *args)
 
 def exception(msg, *args):
-    getLogger(None).exception(msg, *args)
+    get_logger(None).exception(msg, *args)
 
-def basicConfig(level=INFO, filename=None, stream=None, format=None, style="%"):
-    root.setLevel(level)
-    if filename:
-        h = FileHandler(filename)
-    else:
-        h = StreamHandler(stream)
-    h.setFormatter(Formatter(format or "%(levelname)s:%(name)s:%(message)s", style=style))
+def basic_config(level=INFO, filename=None, stream=None, log_format=None, style="%"):
+    root.set_level(level)
+    h = FileHandler(filename) if filename else StreamHandler(stream)
+    h.set_formatter(Formatter(log_format or "%(levelname)s:%(name)s:%(message)s", style=style))
     root.handlers.clear()
-    root.addHandler(h)
+    root.add_handler(h)
 
 
 class Handler:
     def __init__(self):
         self.formatter = Formatter()
 
-    def setFormatter(self, fmt):
+    def set_formatter(self, fmt):
         self.formatter = fmt
 
 
@@ -175,16 +171,16 @@ class Formatter:
 
     converter = utime.localtime
 
-    def __init__(self, fmt=None, datefmt=None, style="%"):
+    def __init__(self, fmt=None, date_format=None, style="%"):
         self.fmt = fmt or "%(message)s"
-        self.datefmt = datefmt
+        self.date_format = date_format
 
         if style not in ("%", "{"):
             raise ValueError("Style must be one of: %, {")
 
         self.style = style
 
-    def usesTime(self):
+    def uses_time(self):
         if self.style == "%":
             return "%(asctime)" in self.fmt
         elif self.style == "{":
@@ -196,18 +192,17 @@ class Formatter:
 
         # If the formatting string contains '(asctime)', formatTime() is called to
         # format the event time.
-        if self.usesTime():
-            record.asctime = self.formatTime(record, self.datefmt)
+        if self.uses_time():
+            record.asctime = self.format_time(record, self.date_format)
 
         # If there is exception information, it is formatted using formatException()
         # and appended to the message. The formatted exception information is cached
         # in attribute exc_text.
         if record.exc_info is not None:
-            record.exc_text += self.formatException(record.exc_info)
+            record.exc_text += self.format_exception(record.exc_info)
             record.message += "\n" + record.exc_text
 
-        # The record’s attribute dictionary is used as the operand to a string
-        # formatting operation.
+        # The record’s attribute dictionary is used as the operand to a string-formatting operation.
         if self.style == "%":
             return self.fmt % record.__dict__
         elif self.style == "{":
@@ -217,15 +212,16 @@ class Formatter:
                 "Style {0} is not supported by logging.".format(self.style)
             )
 
-    def formatTime(self, record, datefmt=None):
-        assert datefmt is None  # datefmt is not supported
+    @staticmethod
+    def format_time(record, date_format=None):
+        assert date_format is None  # datefmt is not supported
         ct = utime.localtime(record.created)
         return "{0}-{1}-{2} {3}:{4}:{5}".format(*ct)
 
-    def formatException(self, exc_info):
+    def format_exception(self, exc_info):
         raise NotImplementedError()
 
-    def formatStack(self, stack_info):
+    def format_stack(self, stack_info):
         raise NotImplementedError()
 
 
@@ -238,7 +234,7 @@ class LogRecord:
         self.msecs = (ct - int(ct)) * 1000
         self.name = name
         self.levelno = level
-        self.levelname = _level_dict.get(level, None)
+        self.levelname = _level_dict.get(level)
         self.pathname = pathname
         self.lineno = lineno
         self.msg = msg
@@ -249,8 +245,8 @@ class LogRecord:
 
 
 root = Logger("root")
-root.setLevel(WARNING)
+root.set_level(WARNING)
 sh = StreamHandler()
 sh.formatter = Formatter()
-root.addHandler(sh)
+root.add_handler(sh)
 _loggers = {"root": root}

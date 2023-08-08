@@ -1,6 +1,8 @@
+# noinspection PyInterpreter
 from random import random
 
 import connect_wifi
+import contextlib
 import ujson
 import urequests
 import utime
@@ -37,8 +39,8 @@ if TVOC_CO2_SENSOR == "CCS811":
     import CCS811
 
 
-logging.basicConfig(level=logging.INFO)
-LOG = logging.getLogger(__name__)
+logging.basic_config(level=logging.INFO)
+LOG = logging.get_logger(__name__)
 
 LOOP_COUNTER = 0
 
@@ -64,10 +66,8 @@ def pms7003_measurements():
     except (OSError, UartError, TypeError):
         return {}
     finally:
-        try:
+        with contextlib.suppress(OSError, UartError, TypeError, NameError):
             pms.sleep()
-        except (OSError, UartError, TypeError, NameError):
-            pass
 
 
 def send_measurements(data):
@@ -103,14 +103,12 @@ def get_particle_measurements():
     elif PARTICLE_SENSOR in ["SDS011", "SDS021"]:
         particle_data = sds_measurements()
 
-        try:
+        with contextlib.suppress(TypeError):
             data = {
                 "pm25": round(particle_data["pm25"]),
                 "pm10": round(particle_data["pm10"]),
             }
 
-        except TypeError:
-            pass
     return data
 
 def get_tvoc_co2():
@@ -158,11 +156,8 @@ def get_temp_humid_pressure_measurements():
 
 
 def augment_data(measurements, sensor_name):
-    data = {}
-
     if measurements:
-        for k, v in measurements.items():
-            data[k] = round(v)
+        data = {k: round(v) for k, v in measurements.items()}
         data["lat"] = LAT
         data["long"] = LONG
         data["sensor"] = sensor_name

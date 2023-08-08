@@ -37,7 +37,7 @@ I_MIN_CORRECTION = 1
 I_MAX_CORRECTION = 2
 
 # Register map
-# Other coefficient's address
+# Another coefficient's address
 ADDR_RES_HEAT_VAL_ADDR = 0x00
 ADDR_RES_HEAT_RANGE_ADDR = 0x02
 ADDR_RANGE_SW_ERR_ADDR = 0x04
@@ -405,7 +405,7 @@ class CalibrationData:
         self.range_sw_err = (sw_error * RSERROR_MSK) // 16
 
 
-# BME680 sensor settings structure which comprises of ODR,
+# BME680 sensor settings structure which comprises ODR,
 # over-sampling and filter settings.
 
 
@@ -421,7 +421,7 @@ class TPHSettings:
         self.filter = None
 
 
-# BME680 gas sensor which comprises of gas settings
+# BME680 gas sensor which consists of gas settings
 ## and status parameters
 
 
@@ -444,7 +444,7 @@ class GasSettings:
 
 class BME680Data:
     def __init__(self):
-        # Chip Id
+        # Chip ID
         self.chip_id = None
         # Device Id
         self.dev_id = None

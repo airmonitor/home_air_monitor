@@ -1,10 +1,9 @@
 import os
-import sys
 from . import Handler
 
 
 def try_remove(fn: str) -> None:
-    """Try to remove a file if it existst."""
+    """Try to remove a file if it exists."""
     try:
         os.remove(fn)
     except OSError:
