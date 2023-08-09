@@ -155,11 +155,12 @@ class BME280:
 
             Args:
                 result: array of length 3 or alike where the result will be
-                stored, in temperature, pressure, humidity and order. You may use
-                this to read out the sensor without allocating heap memory
+                stored, in temperature, pressure, humidity.
+                You may use this to read out the sensor without allocating heap memory
 
             Returns:
-                array with temperature, pressure, humidity. Will be the one from
+                array with temperature, pressure, humidity.
+                Will be the one from
                 the result parameter if not None
         """
         self.read_raw_data(self._l3_resultarray)
