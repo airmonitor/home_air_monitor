@@ -1,16 +1,17 @@
 """
-Reading format. See http://cl.ly/ekot
+Reading format.
+See https://cl.ly/ekot
 
-0 Header   '\xaa'
-1 Command  '\xc0'
-2 DATA1    PM2.5 Low byte
-3 DATA2    PM2.5 High byte
-4 DATA3    PM10 Low byte
-5 DATA4    PM10 High byte
-6 DATA5    ID byte 1
-7 DATA6    ID byte 2
+0 Header '\xaa'
+1 Command '\xc0'
+2 DATA1 PM2.5 Low byte
+3 DATA2 PM2.5 High byte
+4 DATA3 PM10 Low byte
+5 DATA4 PM10 High byte
+6 DATA5 ID byte 1
+7 DATA6 ID byte 2
 8 Checksum Low byte of sum of DATA bytes
-9 Tail     '\xab'
+9 Tail '\xab'
 
 """
 
@@ -31,7 +32,7 @@ _SDS011_CMDS = {
 class SDS011:
     """A driver for the SDS011 particulate matter sensor.
 
-    :param uart: The `UART` object to use.
+    :param uart: The `UART is` object to use.
     """
 
     def __init__(self, uart):
@@ -104,26 +105,26 @@ class SDS011:
             *data, checksum, tail = struct.unpack("<HHBBBs", packet)
             self._pm25 = data[0] / 10.0
             self._pm10 = data[1] / 10.0
-            checksum_OK = checksum == (sum(data) % 256)
-            tail_OK = tail == b"\xab"
-            self._packet_status = True if (checksum_OK and tail_OK) else False
+            checksum_ok = checksum == (sum(data) % 256)
+            tail_ok = tail == b"\xab"
+            self._packet_status = checksum_ok and tail_ok
         except Exception as e:
             print("Problem decoding packet:", e)
             sys.print_exception(e)
 
     def read(self):
         """
-        Query a new measurement, wait for response and process it.
+        Query a new measurement, wait for a response and process it.
         Waits for a response during 512 characters (0.4s at 9600bauds).
         
-        Return True if a response has been received, False overwise.
+        Return True if a response has been received, False over wise.
         """
         # Query measurement
         self.query()
 
         # Read measurement
         # Drops up to 512 characters before giving up finding a measurement pkt...
-        for i in range(512):
+        for _ in range(512):
             try:
                 header = self.uart.read(1)
                 if header == b"\xaa":
@@ -131,7 +132,7 @@ class SDS011:
 
                     if command == b"\xc0":
                         packet = self.uart.read(8)
-                        if packet != None:
+                        if packet is not None:
                             self.process_measurement(packet)
                             return True
             except Exception as e:

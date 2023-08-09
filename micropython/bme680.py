@@ -210,6 +210,7 @@ class BME680(BME680Data):
         self._set_regs(RES_HEAT0_ADDR + nb_profile, temp)
 
     def set_gas_heater_duration(self, value, nb_profile=0):
+        # sourcery skip: use-fstring-for-formatting
         """Set gas sensor heater duration
 
         Heating durations between 1 ms and 4032 ms can be configured.
@@ -229,8 +230,8 @@ class BME680(BME680Data):
                 )
             )
 
-        self.gas_settings.heatr_dur = value
-        temp = self._calc_heater_duration(self.gas_settings.heatr_dur)
+        self.gas_settings.heater_duration = value
+        temp = self._calc_heater_duration(self.gas_settings.heater_duration)
         self._set_regs(GAS_WAIT0_ADDR + nb_profile, temp)
 
     def set_power_mode(self, value, blocking=True):
@@ -320,6 +321,7 @@ class BME680(BME680Data):
             )
 
     def _calc_temperature(self, temperature_adc):
+        # sourcery skip: inline-immediately-returned-variable
         var1 = (temperature_adc >> 3) - (self.calibration_data.par_t1 << 1)
         var2 = (var1 * self.calibration_data.par_t2) >> 11
         var3 = ((var1 >> 1) * (var1 >> 1)) >> 12
@@ -332,6 +334,7 @@ class BME680(BME680Data):
         return calc_temp
 
     def _calc_pressure(self, pressure_adc):
+        # sourcery skip: inline-immediately-returned-variable
         var1 = (self.calibration_data.t_fine >> 1) - 64000
         var2 = (
                        (((var1 >> 2) * (var1 >> 2)) >> 11) * self.calibration_data.par_p6
@@ -409,6 +412,7 @@ class BME680(BME680Data):
         return min(max(calc_hum, 0), 100000)
 
     def _calc_gas_resistance(self, gas_res_adc, gas_range):
+        # sourcery skip: inline-immediately-returned-variable
         var1 = (
                        (1340 + (5 * self.calibration_data.range_sw_err))
                        * (lookupTable1[gas_range])
