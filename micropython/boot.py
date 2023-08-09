@@ -6,7 +6,7 @@
 # import machine
 # machine.freq(80000000)
 
-SSID = "xxx1"
+SSID = "WIFI_SSID"
 WIFI_PASSWORD = "WIFI_PASSWORD"
 LAT = "52.3911"
 LONG = "16.8477"
