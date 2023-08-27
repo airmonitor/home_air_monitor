@@ -405,7 +405,7 @@ class CalibrationData:
         self.range_sw_err = (sw_error * RSERROR_MSK) // 16
 
 
-# BME680 sensor settings structure which comprises ODR,
+# BME680 sensor settings structure which comprises of ODR,
 # over-sampling and filter settings.
 
 
@@ -421,7 +421,7 @@ class TPHSettings:
         self.filter = None
 
 
-# BME680 gas sensor which consists of gas settings
+# BME680 gas sensor which comprises of gas settings
 ## and status parameters
 
 
@@ -444,7 +444,7 @@ class GasSettings:
 
 class BME680Data:
     def __init__(self):
-        # Chip ID
+        # Chip Id
         self.chip_id = None
         # Device Id
         self.dev_id = None
