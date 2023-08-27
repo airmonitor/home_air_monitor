@@ -155,11 +155,12 @@ class BME280:
 
             Args:
                 result: array of length 3 or alike where the result will be
-                stored, in temperature, pressure, humidity order. You may use
-                this to read out the sensor without allocating heap memory
+                stored, in temperature, pressure, humidity.
+                You may use this to read out the sensor without allocating heap memory
 
             Returns:
-                array with temperature, pressure, humidity. Will be the one from
+                array with temperature, pressure, humidity.
+                Will be the one from
                 the result parameter if not None
         """
         self.read_raw_data(self._l3_resultarray)
@@ -221,8 +222,8 @@ class BME280:
             >> 14
         )
         h = h - (((((h >> 15) * (h >> 15)) >> 7) * self.dig_H1) >> 4)
-        h = 0 if h < 0 else h
-        h = 419430400 if h > 419430400 else h
+        h = max(h, 0)
+        h = min(h, 419430400)
         humidity = h >> 12
 
         if result:
