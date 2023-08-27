@@ -235,7 +235,7 @@ if __name__ == "__main__":
             if LOOP_COUNTER == 47:
                 LOG.info("Resetting device, loop counter %s", LOOP_COUNTER)
                 reset()
-            random_sleep_value = random.randint(50, 59)
+            random_sleep_value = random.randint(50, 59) + 1740
             LOG.info("Sleeping for %s", random_sleep_value)
             utime.sleep(random_sleep_value)
         except Exception as error:
