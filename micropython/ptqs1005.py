@@ -16,6 +16,7 @@ class Utility:
 
 class ResponseValidator:
     """ResponseValidator class for validating response data."""
+
     @staticmethod
     def is_valid_header(raw_resp: bytes):
         """Check if the response header is valid."""
@@ -32,6 +33,7 @@ class ResponseValidator:
 
 class ResponseParser:
     """ResponseParser class for parsing response data."""
+
     @staticmethod
     def parse(raw_response: bytes) -> dict:
         """Parse raw response bytes into a dictionary of sensor data."""
@@ -44,31 +46,32 @@ class ResponseParser:
             raise Exception("Invalid response")
 
         parsed_data = {}
-        parsed_data["pm10"] = Utility.make_16bit_int(raw_resp[4], raw_resp[5])
-        parsed_data["pm25"] = Utility.make_16bit_int(raw_resp[6], raw_resp[7])
-        parsed_data["pm100"] = Utility.make_16bit_int(raw_resp[8], raw_resp[9])
-        parsed_data["pm10_atm"] = Utility.make_16bit_int(raw_resp[10], raw_resp[11])
-        parsed_data["pm25_atm"] = Utility.make_16bit_int(raw_resp[12], raw_resp[13])
-        parsed_data["pm100_atm"] = Utility.make_16bit_int(raw_resp[14], raw_resp[15])
-        parsed_data["part03"] = Utility.make_16bit_int(raw_resp[16], raw_resp[17])
-        parsed_data["part05"] = Utility.make_16bit_int(raw_resp[18], raw_resp[19])
-        parsed_data["part10"] = Utility.make_16bit_int(raw_resp[20], raw_resp[21])
-        parsed_data["part25"] = Utility.make_16bit_int(raw_resp[22], raw_resp[23])
-        parsed_data["part50"] = Utility.make_16bit_int(raw_resp[24], raw_resp[25])
-        parsed_data["part100"] = Utility.make_16bit_int(raw_resp[26], raw_resp[27])
-        parsed_data["tvoc"] = Utility.make_16bit_int(raw_resp[28], raw_resp[29]) / 100.0
-        parsed_data["tvoc_quan"] = int(raw_resp[30])
-        parsed_data["hcho"] = Utility.make_16bit_int(raw_resp[31], raw_resp[32]) / 100.0
-        parsed_data["hcho_quan"] = int(raw_resp[33])
-        parsed_data["co2"] = Utility.make_16bit_int(raw_resp[34], raw_resp[35])
-        parsed_data["temp"] = Utility.make_16bit_int(raw_resp[36], raw_resp[37]) / 10.0
-        parsed_data["hum"] = Utility.make_16bit_int(raw_resp[38], raw_resp[39]) / 10.0
+        parsed_data["pm10"] = Utility.make_16bit_int(raw_resp[4], raw_resp[5])  # PM1
+        parsed_data["pm25"] = Utility.make_16bit_int(raw_resp[6], raw_resp[7])  # PM2.5
+        parsed_data["pm100"] = Utility.make_16bit_int(raw_resp[8], raw_resp[9])  # PM10
+        parsed_data["pm10_atm"] = Utility.make_16bit_int(raw_resp[10], raw_resp[11])  # "PM1 (atmosphere)"
+        parsed_data["pm25_atm"] = Utility.make_16bit_int(raw_resp[12], raw_resp[13])  # "PM2.5 (atmosphere)"
+        parsed_data["pm100_atm"] = Utility.make_16bit_int(raw_resp[14], raw_resp[15])  # "PM10 (atmosphere)"
+        parsed_data["part03"] = Utility.make_16bit_int(raw_resp[16], raw_resp[17])  # "0.3um particles"
+        parsed_data["part05"] = Utility.make_16bit_int(raw_resp[18], raw_resp[19])  # "0.5um particles"
+        parsed_data["part10"] = Utility.make_16bit_int(raw_resp[20], raw_resp[21])  # "1.0um particles"
+        parsed_data["part25"] = Utility.make_16bit_int(raw_resp[22], raw_resp[23])  # "2.5um particles"
+        parsed_data["part50"] = Utility.make_16bit_int(raw_resp[24], raw_resp[25])  # "5.0um particles"
+        parsed_data["part100"] = Utility.make_16bit_int(raw_resp[26], raw_resp[27])  # "10.0um particles"
+        parsed_data["tvoc"] = Utility.make_16bit_int(raw_resp[28], raw_resp[29]) / 100.0  # "TVOC"
+        parsed_data["tvoc_quan"] = int(raw_resp[30])  # "TVOC quantity"
+        parsed_data["hcho"] = Utility.make_16bit_int(raw_resp[31], raw_resp[32]) / 100.0  # "HCHO"
+        parsed_data["hcho_quan"] = int(raw_resp[33])  # "HCHO quantity"
+        parsed_data["co2"] = Utility.make_16bit_int(raw_resp[34], raw_resp[35])  # "CO2"
+        parsed_data["temp"] = Utility.make_16bit_int(raw_resp[36], raw_resp[37]) / 10.0  # "Temperature"
+        parsed_data["hum"] = Utility.make_16bit_int(raw_resp[38], raw_resp[39]) / 10.0  # "Humidity"
 
         return parsed_data
 
 
 class PTQS1005Driver:
     """PTQS1005Driver class for interacting with the sensor driver."""
+
     def __init__(self, uart: int):
         """Initialize the sensor driver with the specified UART."""
         self.ser = machine.UART(uart, baudrate=9600, bits=8, parity=None, stop=1)
@@ -111,6 +114,7 @@ class PTQS1005Driver:
 
 class PTQS1005Sensor:
     """PTQS1005Sensor class for interacting with the sensor."""
+
     def __init__(self, uart: int):
         """Initialize the sensor with the specified UART."""
         self.driver = PTQS1005Driver(uart)

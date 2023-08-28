@@ -136,6 +136,9 @@ def get_particle_measurements():
                 "pm1": round(particle_data["pm10_atm"]),
                 "pm25": round(particle_data["pm25_atm"]),
                 "pm10": round(particle_data["pm100_atm"]),
+                "tvoc": round(particle_data["tvoc"]),
+                "hcho": round(particle_data["hcho"]),
+                "co2": round(particle_data["co2"]),
             }
     if PARTICLE_SENSOR in ("SDS011", "SDS021"):
         particle_data = sds_measurements()
