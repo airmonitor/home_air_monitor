@@ -12,29 +12,35 @@ from machine import Pin, reset
 logging.basicConfig()
 LOG = logging.getLogger(__name__)
 
-if TEMP_HUM_PRESS_SENSOR == "BME680":
-    LOG.info("Using BME680")
+if TEMP_HUM_PRESS_SENSOR.upper() == "BME680":
+    TEMP_HUM_PRESS_SENSOR = TEMP_HUM_PRESS_SENSOR.upper()
+    LOG.info("Using %s", TEMP_HUM_PRESS_SENSOR)
     import bme680
-elif TEMP_HUM_PRESS_SENSOR == "BME280":
-    LOG.info("Using BME280")
+if TEMP_HUM_PRESS_SENSOR.upper() == "BME280":
+    TEMP_HUM_PRESS_SENSOR = TEMP_HUM_PRESS_SENSOR.upper()
+    LOG.info("Using %s", TEMP_HUM_PRESS_SENSOR)
     import bme280
 
-if PARTICLE_SENSOR in ("SDS011", "SDS021"):
-    LOG.info("Using SDS0*")
+if PARTICLE_SENSOR.upper() in ("SDS011", "SDS021"):
+    PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
+    LOG.info("Using %s", PARTICLE_SENSOR)
     import sds011
     SDS = sds011.SDS011(uart=2)
-elif PARTICLE_SENSOR == "PMS7003":
-    LOG.info("Using PMS7003")
+if PARTICLE_SENSOR.upper() == "PMS7003":
+    PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
+    LOG.info("Using %s", PARTICLE_SENSOR)
     from pms7003 import PassivePms7003
     from pms7003 import UartError
+if PARTICLE_SENSOR.upper() == "PTQS1005":
+    PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
+    LOG.info("Using %s", PARTICLE_SENSOR)
+    from ptqs1005 import PTQS1005Sensor
 
-if TVOC_CO2_SENSOR == "CCS811":
-    LOG.info("Using CCS811")
+if TVOC_CO2_SENSOR.upper() == "CCS811":
+    TVOC_CO2_SENSOR = TVOC_CO2_SENSOR.upper()
+    LOG.info("Using %s", TVOC_CO2_SENSOR)
     import CCS811
 
-if PARTICLE_SENSOR == "PTQS1005":
-    LOG.info("Using PTQS1005")
-    from ptqs1005 import PTQS1005Sensor
 
 
 LOOP_COUNTER = 0
