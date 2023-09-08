@@ -1,5 +1,8 @@
 # noinspection PyInterpreter
 import random
+
+import time
+
 import connect_wifi
 import ujson
 import urequests
@@ -8,6 +11,7 @@ from boot import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, SSID, TEMP_HUM_PR
 from i2c import I2CAdapter
 from lib import logging
 from machine import Pin, reset
+from machine import lightsleep
 
 logging.basicConfig()
 LOG = logging.getLogger(__name__)
@@ -75,9 +79,14 @@ def pms7003_measurements():
 
 
 def ptqs1005_measurements() -> dict:
+    ptqs1005_sensor = PTQS1005Sensor(uart=2)
     try:
-        ptqs1005_sensor = PTQS1005Sensor(uart=2)
-        return ptqs1005_sensor.measure()
+        ptqs1005_sensor.wakeup(reset_pin=23)
+        time.sleep(10)
+        data = ptqs1005_sensor.measure()
+        time.sleep(3)
+        ptqs1005_sensor.sleep(reset_pin=23)
+        return data
     except (OSError, UartError, TypeError):
         return {}
 
@@ -248,7 +257,7 @@ if __name__ == "__main__":
                 reset()
             random_sleep_value = random.randint(50, 59) + 1740
             LOG.info("Sleeping for %s", random_sleep_value)
-            utime.sleep(random_sleep_value)
+            lightsleep(random_sleep_value * 1000)
         except Exception as error:
             LOG.info("Caught exception %s", error)
             reset()
