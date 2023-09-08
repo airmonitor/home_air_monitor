@@ -58,13 +58,13 @@ class ResponseParser:
         parsed_data["part25"] = Utility.make_16bit_int(raw_resp[22], raw_resp[23])  # "2.5um particles"
         parsed_data["part50"] = Utility.make_16bit_int(raw_resp[24], raw_resp[25])  # "5.0um particles"
         parsed_data["part100"] = Utility.make_16bit_int(raw_resp[26], raw_resp[27])  # "10.0um particles"
-        parsed_data["tvoc"] = Utility.make_16bit_int(raw_resp[28], raw_resp[29]) / 100.0  # "TVOC"
+        parsed_data["tvoc"] = Utility.make_16bit_int(raw_resp[28], raw_resp[29]) / 100.0  # "TVOC"  # noqa: E501
         parsed_data["tvoc_quan"] = int(raw_resp[30])  # "TVOC quantity"
-        parsed_data["hcho"] = Utility.make_16bit_int(raw_resp[31], raw_resp[32]) / 100.0  # "HCHO"
+        parsed_data["hcho"] = Utility.make_16bit_int(raw_resp[31], raw_resp[32]) / 100.0  # "HCHO"  # noqa: E501
         parsed_data["hcho_quan"] = int(raw_resp[33])  # "HCHO quantity"
         parsed_data["co2"] = Utility.make_16bit_int(raw_resp[34], raw_resp[35])  # "CO2"
         parsed_data["temp"] = Utility.make_16bit_int(raw_resp[36], raw_resp[37]) / 10.0  # "Temperature"
-        parsed_data["hum"] = Utility.make_16bit_int(raw_resp[38], raw_resp[39]) / 10.0  # "Humidity"
+        parsed_data["hum"] = Utility.make_16bit_int(raw_resp[38], raw_resp[39]) / 10.0  # "Humidity"  # noqa: E501
 
         return parsed_data
 
@@ -104,6 +104,16 @@ class PTQS1005Driver:
         self.ser.write(cmd)
         utime.sleep(1e-3)
 
+    def __standby_mode(self, reset_pin: int):
+        """Send a command to the sensor."""
+        cmd = machine.Pin(reset_pin, machine.Pin.OUT)
+        cmd.value(0)
+
+    def __active_mode(self, reset_pin: int):
+        """Send a command to the sensor."""
+        cmd = machine.Pin(reset_pin, machine.Pin.OUT)
+        cmd.value(1)
+
     def __read_response(self) -> bytes:
         """Read and return the sensor response."""
         resp = self.ser.read(42)
@@ -127,3 +137,11 @@ class PTQS1005Sensor:
             time.sleep(1)
             response = self.driver.read()
         return ResponseParser.parse(response)
+
+    def sleep(self, reset_pin: int):
+        """Put the sensor in standby mode."""
+        self.driver.__standby_mode(reset_pin)
+
+    def wakeup(self, reset_pin: int):
+        """Put the sensor in active mode."""
+        self.driver.__active_mode(reset_pin)
