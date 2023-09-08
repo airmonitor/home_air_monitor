@@ -90,7 +90,7 @@ def blink():
 
 
 def blink_api_response(message):
-    if message.get("status") == "Metric saved":
+    if message.get("id"):
         LOG.info("Metric saved, blinking 2 times")
         blink()
         utime.sleep(0.1)
