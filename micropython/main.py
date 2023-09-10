@@ -12,6 +12,9 @@ from i2c import I2CAdapter
 from lib import logging
 from machine import Pin, reset
 from machine import lightsleep
+import ucontextlib
+
+
 
 logging.basicConfig()
 LOG = logging.getLogger(__name__)
@@ -23,18 +26,17 @@ if TEMP_HUM_PRESS_SENSOR.upper() == "BME680":
 if TEMP_HUM_PRESS_SENSOR.upper() == "BME280":
     TEMP_HUM_PRESS_SENSOR = TEMP_HUM_PRESS_SENSOR.upper()
     LOG.info("Using %s", TEMP_HUM_PRESS_SENSOR)
-    import bme280
+    from bme280 import BME280
 
 if PARTICLE_SENSOR.upper() in ("SDS011", "SDS021"):
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
     LOG.info("Using %s", PARTICLE_SENSOR)
-    import sds011
-    SDS = sds011.SDS011(uart=2)
+    from sds011 import SDS011
 if PARTICLE_SENSOR.upper() == "PMS7003":
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
     LOG.info("Using %s", PARTICLE_SENSOR)
     from pms7003 import PassivePms7003
-    from pms7003 import UartError
+    from errors import UartError
 if PARTICLE_SENSOR.upper() == "PTQS1005":
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
     LOG.info("Using %s", PARTICLE_SENSOR)
@@ -48,17 +50,22 @@ if TVOC_CO2_SENSOR.upper() == "CCS811":
 
 
 LOOP_COUNTER = 0
+RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540
+LOG.info("Sleep value %s seconds", RANDOM_SLEEP_VALUE)
 
+HARD_RESET_VALUE = int(86400 / RANDOM_SLEEP_VALUE) # The Board will be restarted once per 24 hours
+LOG.info("Hard reset value %s", HARD_RESET_VALUE)
 
 def sds_measurements():
+    sds = SDS011(uart=2)
     try:
-        SDS.wake()
+        sds.wake()
         utime.sleep(10)
         for _ in range(10):
-            SDS.read()
-        if SDS.pm25 != 0 and SDS.pm10 != 0:
-            return {"pm25": SDS.pm25, "pm10": SDS.pm10}
-        SDS.sleep()
+            sds.read()
+        if sds.pm25 != 0 and sds.pm10 != 0:
+            return {"pm25": sds.pm25, "pm10": sds.pm10}
+        sds.sleep()
     except OSError:
         return False
 
@@ -72,10 +79,8 @@ def pms7003_measurements():
     except (OSError, UartError, TypeError):
         return {}
     finally:
-        try:
+        with ucontextlib.suppress(OSError, UartError, TypeError, NameError):
             pms.sleep()
-        except (OSError, UartError, TypeError, NameError):
-            pass
 
 
 def ptqs1005_measurements() -> dict:
@@ -159,13 +164,11 @@ def get_particle_measurements():
             }
     if PARTICLE_SENSOR in ("SDS011", "SDS021"):
         particle_data = sds_measurements()
-        try:
+        with ucontextlib.suppress(TypeError):
             data = {
                 "pm25": round(particle_data["pm25"]),
                 "pm10": round(particle_data["pm10"]),
             }
-        except TypeError:
-            pass
     return data
 
 
@@ -198,7 +201,7 @@ def get_temp_humid_pressure_measurements():
             return False
     elif TEMP_HUM_PRESS_SENSOR == "BME280":
         try:
-            bme = bme280.BME280(i2c=i2c_dev)
+            bme = BME280(i2c=i2c_dev)
             if bme.values:
                 LOG.info("BME280 readings %s", bme.values)
                 return {
@@ -234,7 +237,6 @@ if __name__ == "__main__":
                     sensor_name=PARTICLE_SENSOR,
                 )
                 send_measurements(data=values)
-                LOG.info("Parsed values %s", values)
                 utime.sleep(1)
             if TEMP_HUM_PRESS_SENSOR:
                 LOG.info("Using temp/humid/pressure sensor %s", TEMP_HUM_PRESS_SENSOR)
@@ -252,12 +254,10 @@ if __name__ == "__main__":
                 send_measurements(data=values)
             LOOP_COUNTER += 1
             LOG.info("Increasing loop_counter, actual value %s", LOOP_COUNTER)
-            if LOOP_COUNTER == 47:
+            if LOOP_COUNTER == HARD_RESET_VALUE:
                 LOG.info("Resetting device, loop counter %s", LOOP_COUNTER)
                 reset()
-            random_sleep_value = random.randint(50, 59) + 1740
-            LOG.info("Sleeping for %s", random_sleep_value)
-            lightsleep(random_sleep_value * 1000)
+            lightsleep(RANDOM_SLEEP_VALUE * 1000)
         except Exception as error:
             LOG.info("Caught exception %s", error)
             reset()
