@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment=":wrench: API key is required to send metric data to new API endpoint">
-      <change afterPath="$PROJECT_DIR$/micropython/boot.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/micropython/links.txt" afterDir="false" />
+    <list default="true" id="ceac4ddc-8743-4f57-a6dd-2071d87bb503" name="Default" comment=":sparkles: Introducing new features.">
+      <change beforePath="$PROJECT_DIR$/.idea/HomeAirMonitor.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/HomeAirMonitor.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/micropython/boot.py" beforeDir="false" afterPath="$PROJECT_DIR$/micropython/boot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/micropython/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/micropython/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,61 +27,115 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="1.1.0" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="MERGE" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitToolBoxStore">
-    <option name="projectConfigVersion" value="2" />
+    <option name="projectConfigVersion" value="5" />
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1693159246" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="1.1.0" />
+                    <option name="lastUsedInstant" value="1691490435" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="ansible-only" />
+                    <option name="lastUsedInstant" value="1691490410" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1693161531" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1693161530" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$/micropython/FullMicroPython" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
   </component>
   <component name="JupyterTrust" id="386f11d8-972d-49c7-97cd-83dc87362b6a" />
   <component name="KubernetesApiPersistence">
     <option name="context" value="microk8s" />
     <option name="namespace" value="kube-system" />
   </component>
-  <component name="MicroPythonDevices" devicePath="/dev/ttyUSB0" autoDetectDevicePath="false" />
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MicroPythonDevices" devicePath="/dev/tty.usbmodem53770175371" autoDetectDevicePath="false" clearReplOnLaunch="false" />
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="1N45goJYfoE8MJn1KvMwRivQOIT" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <OptionsSetting value="false" id="Update" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="false" />
-    <property name="TF_FMT" value="false" />
-    <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
-    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
-    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
-    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
-    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="node.js.detected.package.eslint" value="true" />
-    <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.path.for.package.eslint" value="project" />
-    <property name="node.js.path.for.package.tslint" value="project" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.micropython.configurable" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "/Users/tomaszszuster/PycharmProjects/AirMonitor/HomeAirMonitor",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "Errors"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/micropython" />
+      <recent name="$PROJECT_DIR$/micropython/lib" />
       <recent name="$PROJECT_DIR$/ansible/roles/airmonitor/files" />
       <recent name="$PROJECT_DIR$/ansible/roles/airmonitor/tasks" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/micropython/lib" />
-      <recent name="$PROJECT_DIR$/ansible/roles/airmonitor/files" />
-      <recent name="$PROJECT_DIR$/ansible/roles" />
-      <recent name="$PROJECT_DIR$/ansible/roles/system/task" />
-      <recent name="$PROJECT_DIR$/ansible/roles/system" />
+      <recent name="$PROJECT_DIR$/micropython" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/micropython/lib/collections" />
+      <recent name="$PROJECT_DIR$/micropython/lib/ucontextlib" />
     </key>
   </component>
   <component name="RunManager" selected="Python.running-pms">
@@ -214,7 +271,45 @@
       <workItem from="1597090143378" duration="1275000" />
       <workItem from="1597316137127" duration="739000" />
       <workItem from="1598105370993" duration="6844000" />
-      <workItem from="1598165287944" duration="6411000" />
+      <workItem from="1598165287944" duration="6737000" />
+      <workItem from="1598184579211" duration="301000" />
+      <workItem from="1598211270774" duration="8000" />
+      <workItem from="1598255016536" duration="338000" />
+      <workItem from="1598268571027" duration="616000" />
+      <workItem from="1598269482797" duration="15000" />
+      <workItem from="1598270541327" duration="796000" />
+      <workItem from="1598347094371" duration="104000" />
+      <workItem from="1598358534907" duration="12000" />
+      <workItem from="1598516625441" duration="828000" />
+      <workItem from="1598524742099" duration="27000" />
+      <workItem from="1599469636263" duration="7485000" />
+      <workItem from="1599550125240" duration="126000" />
+      <workItem from="1609519864039" duration="1952000" />
+      <workItem from="1609591173234" duration="8000" />
+      <workItem from="1610282837551" duration="626000" />
+      <workItem from="1612989654878" duration="1271000" />
+      <workItem from="1691471659988" duration="147000" />
+      <workItem from="1691471819766" duration="15000" />
+      <workItem from="1691471842202" duration="10390000" />
+      <workItem from="1692797813485" duration="1213000" />
+      <workItem from="1693001231493" duration="1257000" />
+      <workItem from="1693081878694" duration="31035000" />
+      <workItem from="1693161062141" duration="739000" />
+      <workItem from="1693206455432" duration="3657000" />
+      <workItem from="1693219233400" duration="103000" />
+      <workItem from="1693219345147" duration="106000" />
+      <workItem from="1693219467064" duration="52000" />
+      <workItem from="1693219524125" duration="3019000" />
+      <workItem from="1693339951274" duration="1093000" />
+      <workItem from="1693380596932" duration="597000" />
+      <workItem from="1693431683833" duration="98000" />
+      <workItem from="1693750183593" duration="1260000" />
+      <workItem from="1693955059480" duration="680000" />
+      <workItem from="1694119212074" duration="2893000" />
+      <workItem from="1694164221770" duration="1839000" />
+      <workItem from="1694170854608" duration="8409000" />
+      <workItem from="1694324285016" duration="6770000" />
+      <workItem from="1694346481184" duration="9423000" />
     </task>
     <task id="LOCAL-00001" summary="1. Code refactoring.">
       <created>1544270060761</created>
@@ -482,22 +577,109 @@
       <option name="project" value="LOCAL" />
       <updated>1598130414616</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary=":recycle: Refactoring code.">
+      <created>1598175336001</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1598175336001</updated>
+    </task>
+    <task id="LOCAL-00040" summary=":sparkles: Added logging library">
+      <created>1599481669690</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1599481669690</updated>
+    </task>
+    <task id="LOCAL-00041" summary=":bug: Added catching all errors which may occur and reboot when this happen.&#10;:wrench: Scheduled reboot of the board every ~24 hours">
+      <created>1609521201194</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1609521201194</updated>
+    </task>
+    <task id="LOCAL-00063" summary=":bento: errors.py&#10;:recycle: pms7003.py">
+      <option name="closed" value="true" />
+      <created>1694345535388</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1694345535388</updated>
+    </task>
+    <task id="LOCAL-00064" summary=":recycle: i2c.py to use SoftI2C not legacy I2C">
+      <option name="closed" value="true" />
+      <created>1694345568454</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1694345568454</updated>
+    </task>
+    <task id="LOCAL-00065" summary=":wrench: Using contextlib&#10;:recycle: refactoring name of imported libraries&#10;:loud_sound: Adding logs for random sleep value and hard reset value">
+      <option name="closed" value="true" />
+      <created>1694345634909</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1694345634909</updated>
+    </task>
+    <task id="LOCAL-00066" summary=":recycle: Refactoring code.">
+      <option name="closed" value="true" />
+      <created>1694346721597</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1694346721597</updated>
+    </task>
+    <task id="LOCAL-00067" summary=":fire: Removing unnecessary module import">
+      <option name="closed" value="true" />
+      <created>1694375010580</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1694375010580</updated>
+    </task>
+    <task id="LOCAL-00068" summary=":recycle: Using f-strings&#10;:sparkles: OTA">
+      <option name="closed" value="true" />
+      <created>1694379514634</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1694379514634</updated>
+    </task>
+    <task id="LOCAL-00069" summary=":fire: removing legacy logger&#10;:bento: adding new logger&#10;:recycle: refactoring main.py to use new logger">
+      <option name="closed" value="true" />
+      <created>1694381481387</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1694381481387</updated>
+    </task>
+    <task id="LOCAL-00070" summary=":wrench: extending a file list that will be updated via OTA">
+      <option name="closed" value="true" />
+      <created>1694381513130</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1694381513130</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
     </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
     <option name="RECENT_FILTERS">
       <map>
         <entry key="Branch">
@@ -512,105 +694,51 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
     <ignored-roots>
       <path value="$PROJECT_DIR$/esptool" />
     </ignored-roots>
-    <MESSAGE value="Minor syntax updates." />
-    <MESSAGE value="1. Code refactoring." />
-    <MESSAGE value="1. bme280 refactoring" />
-    <MESSAGE value="Initial upload.&#10;Ansible and changed python scripts not tested yet." />
-    <MESSAGE value="Typo fixes." />
-    <MESSAGE value="Changed location of downloaded python archive to /home/pi" />
-    <MESSAGE value="Changed python interpreter location." />
-    <MESSAGE value="moved watchdog reconfiguration after watchdog installation" />
-    <MESSAGE value="Upgrade pip module" />
-    <MESSAGE value="delete console definition from cmdline.txt" />
-    <MESSAGE value="added force fsck" />
-    <MESSAGE value="typo fix" />
-    <MESSAGE value="squash! typo fix" />
-    <MESSAGE value="Added README." />
-    <MESSAGE value=":bug: Fix installation of python modules&#10;&#10;Python modules were not installed via ansible using custom pip3.6&#10;executable.&#10;Now, required python modules will be installed via&#10;install.sh script after ansible-playbook finished." />
-    <MESSAGE value=":wrench: Rounding values returned by bme280, ccs811 and pms sensors." />
-    <MESSAGE value=":wrench: Increased interval for sending measurements to API from 10 to 30 minutes&#10;:wrench: Added jitter with range 10-300 to every script to randomly pause execution" />
-    <MESSAGE value=":wrench: Reconfiguration api endpoint. Updated API endpoint." />
-    <MESSAGE value=":wrench: API key is required to send metric data to new API endpoint" />
-    <MESSAGE value=":bug: Fixing a bug." />
-    <MESSAGE value=":wrench: time changed to utime." />
-    <MESSAGE value=":wrench: SDS011/SDS021 will be powered off when metrics are not collected.&#10;:wrench: ESP32 will be restarted every 24 hours" />
+    <MESSAGE value=":recycle:" />
+    <MESSAGE value=":sparkles: Adding PTQS1005 support" />
+    <MESSAGE value=":rotating_light:" />
+    <MESSAGE value=":fire: Removing code or files." />
+    <MESSAGE value=":bug: Fixing a bug.&#10;&#10;Measurements should be sent at every 30 minutes not every 1 minute" />
+    <MESSAGE value=":wrench: Adding more measurement types from PTQS1005.&#10;&#10;Additional measurements which will be sent to API are:&#10;- tvoc&#10;- hcho&#10;- co2" />
+    <MESSAGE value=":bug: Adding temperature and humidity to reported parameters from PTQS1005" />
+    <MESSAGE value=":sparkles: Adding pyboard.py script to faster manage micropython" />
+    <MESSAGE value=":recycle: Renaming all sensor names to use upper case letters" />
+    <MESSAGE value=":wrench: Adjusting blue LED response according to the API GW reply" />
+    <MESSAGE value=":see_no_evil: Adding or updating a .gitignore file." />
+    <MESSAGE value=":sparkles: PTQS1005 sleep mode to reduce power consumption" />
+    <MESSAGE value=":sparkles: PQTS1005 will be suspended to reduce power consumption&#10;:wrench: ESP32 will be suspended using lightsleep mode - this mode is honoring PIN states compared to deepsleep" />
+    <MESSAGE value=":sparkles: Adding contextlib" />
+    <MESSAGE value=":recycle: bme680" />
+    <MESSAGE value=":truck: CCS811.py&#10;:recycle: main.py" />
+    <MESSAGE value=":bento: errors.py&#10;:recycle: pms7003.py" />
+    <MESSAGE value=":recycle: i2c.py to use SoftI2C not legacy I2C" />
+    <MESSAGE value=":wrench: Using contextlib&#10;:recycle: refactoring name of imported libraries&#10;:loud_sound: Adding logs for random sleep value and hard reset value" />
     <MESSAGE value=":recycle: Refactoring code." />
-    <option name="LAST_COMMIT_MESSAGE" value=":recycle: Refactoring code." />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="1702" y="407" width="925" height="684" key="#Deployment" timestamp="1593519508835">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="1702" y="407" width="925" height="684" key="#Deployment/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519508835" />
-    <state x="1997" y="366" width="809" height="741" key="#Options" timestamp="1593519794070">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="1997" y="366" width="809" height="741" key="#Options/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519794070" />
-    <state x="1681" y="397" width="832" height="711" key="#SSH_Configurations" timestamp="1593519482284">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="1681" y="397" width="832" height="711" key="#SSH_Configurations/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519482284" />
-    <state x="1864" y="391" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1593519808673">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="1864" y="391" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519808673" />
-    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2" timestamp="1598130414486">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="1257" y="218" width="1517" height="1121" key="CommitChangelistDialog2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1597131274947" />
-    <state x="1257" y="218" key="CommitChangelistDialog2/0.27.3440.1413@0.27.3440.1413" timestamp="1598130414486" />
-    <state x="1884" y="514" width="424" height="491" key="FileChooserDialogImpl" timestamp="1593519359721">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="1884" y="514" width="424" height="491" key="FileChooserDialogImpl/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519359721" />
-    <state width="1782" height="522" key="GridCell.Tab.0.bottom" timestamp="1593520965292">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state width="1782" height="522" key="GridCell.Tab.0.bottom/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520965292" />
-    <state width="1782" height="522" key="GridCell.Tab.0.center" timestamp="1593520965292">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state width="1782" height="522" key="GridCell.Tab.0.center/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520965292" />
-    <state width="1782" height="522" key="GridCell.Tab.0.left" timestamp="1593520965292">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state width="1782" height="522" key="GridCell.Tab.0.left/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520965292" />
-    <state width="1782" height="522" key="GridCell.Tab.0.right" timestamp="1593520965292">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state width="1782" height="522" key="GridCell.Tab.0.right/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593520965292" />
-    <state x="592" y="387" width="1022" height="737" key="SettingsEditor" timestamp="1596964720715">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="592" y="387" width="1022" height="737" key="SettingsEditor/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1596964720715" />
-    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2" timestamp="1598130416555">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="1322" y="474" width="800" height="543" key="Vcs.Push.Dialog.v2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1597131277363" />
-    <state x="1322" y="474" key="Vcs.Push.Dialog.v2/0.27.3440.1413@0.27.3440.1413" timestamp="1598130416555" />
-    <state x="901" y="602" width="451" height="181" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1593815601474">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="901" y="602" width="451" height="181" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593815601474" />
-    <state x="821" y="352" width="1264" height="743" key="find.popup" timestamp="1594193400694">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="821" y="352" width="1264" height="743" key="find.popup/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1594193400694" />
-    <state x="2067" y="402" width="687" height="855" key="ftp.server.browser" timestamp="1593519506553">
-      <screen x="0" y="27" width="3440" height="1413" />
-    </state>
-    <state x="2067" y="402" width="687" height="855" key="ftp.server.browser/0.27.3440.1413/3440.0.1920.1080@0.27.3440.1413" timestamp="1593519506553" />
+    <MESSAGE value=":fire: Removing unnecessary module import" />
+    <MESSAGE value=":recycle: Using f-strings&#10;:sparkles: OTA" />
+    <MESSAGE value=":fire: removing legacy logger&#10;:bento: adding new logger&#10;:recycle: refactoring main.py to use new logger" />
+    <MESSAGE value=":sparkles: Introducing new features." />
+    <MESSAGE value=":wrench: extending a file list that will be updated via OTA" />
+    <option name="LAST_COMMIT_MESSAGE" value=":wrench: extending a file list that will be updated via OTA" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/HomeAirMonitor$bme280.coverage" NAME="bme280 Coverage Results" MODIFIED="1593520471757" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ansible/roles/airmonitor/files" />
     <SUITE FILE_PATH="coverage/HomeAirMonitor$ccs811.coverage" NAME="ccs811 Coverage Results" MODIFIED="1593520522500" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ansible/roles/airmonitor/files" />
     <SUITE FILE_PATH="coverage/HomeAirMonitor$running_pms.coverage" NAME="running-pms Coverage Results" MODIFIED="1593520527036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/HomeAirMonitor$bme280.coverage" NAME="bme280 Coverage Results" MODIFIED="1593520471757" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ansible/roles/airmonitor/files" />
   </component>
 </project>

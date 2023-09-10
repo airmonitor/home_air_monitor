@@ -225,10 +225,10 @@ if __name__ == "__main__":
     connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
     utime.sleep(10)
     logging.info("Wifi connected")
-    #
-    # logging.info("Starting OTA updater")
-    # ota_updater()
-    # logging.info("OTA finished")
+
+    logging.info("Starting OTA updater")
+    ota_updater()
+    logging.info("OTA finished")
 
     if TEMP_HUM_PRESS_SENSOR:
         i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
