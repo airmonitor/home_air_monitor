@@ -1,6 +1,6 @@
 import time
 
-from constants import *
+from bme680_constants import *
 
 __version__ = "1.0.2"
 
