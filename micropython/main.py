@@ -71,8 +71,8 @@ def sds_measurements():
 
 
 def pms7003_measurements():
+    pms = PassivePms7003(uart=2)
     try:
-        pms = PassivePms7003(uart=2)
         pms.wakeup()
         utime.sleep(10)
         return pms.read()
@@ -103,7 +103,7 @@ def blink():
     led.value(0)
 
 
-def blink_api_response(message):
+def blink_api_response(message):  # sourcery skip: extract-duplicate-method
     if message.get("id"):
         LOG.info("Metric saved, blinking 2 times")
         blink()
@@ -139,7 +139,7 @@ def send_measurements(data):
         return False
 
 
-def get_particle_measurements():
+def get_particle_measurements():  # sourcery skip: use-named-expression
     data = {}
     if PARTICLE_SENSOR == "PMS7003":
         particle_data = pms7003_measurements()
