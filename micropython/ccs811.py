@@ -8,8 +8,6 @@ Tested on NodeMCU and Wemos D1 Mini (ESP8266) MicroPython v1.8.7-7-gb5a1a20a3
 and MicroPython v1.9.3-8-g63826ac5c on 2017-11-01; ESP module with ESP8266
 """
 
-from machine import I2C
-
 
 class CCS811(object):
     """CCS811 gas sensor. Measures eCO2 in ppm and TVOC in ppb"""
