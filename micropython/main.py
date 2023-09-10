@@ -43,7 +43,7 @@ if PARTICLE_SENSOR.upper() == "PTQS1005":
 if TVOC_CO2_SENSOR.upper() == "CCS811":
     TVOC_CO2_SENSOR = TVOC_CO2_SENSOR.upper()
     LOG.info("Using %s", TVOC_CO2_SENSOR)
-    import CCS811
+    from ccs811 import CCS811
 
 
 
@@ -172,7 +172,7 @@ def get_particle_measurements():
 def get_tvoc_co2():
     if TVOC_CO2_SENSOR == "CCS811":
         try:
-            sensor = CCS811.CCS811(i2c=i2c_dev, addr=90)
+            sensor = CCS811(i2c=i2c_dev, addr=90)
             if sensor.data_ready():
                 return {"co2": sensor.eCO2, "tvoc": sensor.tVOC}
         except (OSError, RuntimeError):
