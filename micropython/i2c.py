@@ -1,5 +1,5 @@
 try:
-    from machine import I2C
+    from machine import SoftI2C
 except ImportError:
     raise ImportError(
         "Can't find the micropython machine.I2C class: "
@@ -7,18 +7,15 @@ except ImportError:
     )
 
 
-class I2CAdapter(I2C):
-    """ Adds some of the SMBus I2c methods to the micropython I2c class,
-        for enhanced compatibility. 
+class I2CAdapter(SoftI2C):
+    """Adds some of the SMBus I2c methods to the micropython I2c class,
+        for enhanced compatibility.
+        Use it like you would the machine.I2C class:
 
-	Use it like you would the machine.I2C class: 
-	
-	    from bme680.i2c import I2CAdapter 
-	
-	    i2c_dev = I2CAdapter(1, pins=('G15','G10'), baudrate=100000)
-	    sensor = bme680.BME680(i2c_device=i2c_dev)
-	
-	"""
+        From bme680.i2c import I2CAdapter
+        I2c_dev = I2CAdapter(1, pins=('G15','G10'), baudrate=100000)
+        sensor = bme680.BME680(i2c_device=i2c_dev)
+        """
 
     def read_byte_data(self, addr, register):
         """ Read a single byte from register of device at addr
