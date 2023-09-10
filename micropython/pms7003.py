@@ -1,14 +1,10 @@
 import machine
 import struct
 import time
-
-
-class UartError(Exception):
-    pass
+from errors import UartError
 
 
 class Pms7003:
-
     START_BYTE_1 = 0x42
     START_BYTE_2 = 0x4D
 

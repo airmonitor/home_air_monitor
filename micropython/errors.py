@@ -1,0 +1,4 @@
+
+class UartError(Exception):
+    pass
+
