@@ -1,8 +1,6 @@
 # noinspection PyInterpreter
 import random
-
 import time
-
 import connect_wifi
 import ujson
 import urequests
@@ -14,6 +12,8 @@ from machine import Pin, reset
 from machine import lightsleep
 import ucontextlib
 
+# Please don't change anything below this line
+from home_air_monitor_ota import ota_updater
 
 
 logging.basicConfig()
@@ -21,40 +21,39 @@ LOG = logging.getLogger(__name__)
 
 if TEMP_HUM_PRESS_SENSOR.upper() == "BME680":
     TEMP_HUM_PRESS_SENSOR = TEMP_HUM_PRESS_SENSOR.upper()
-    LOG.info("Using %s", TEMP_HUM_PRESS_SENSOR)
+    LOG.info(f"Using {TEMP_HUM_PRESS_SENSOR}")
     import bme680
 if TEMP_HUM_PRESS_SENSOR.upper() == "BME280":
     TEMP_HUM_PRESS_SENSOR = TEMP_HUM_PRESS_SENSOR.upper()
-    LOG.info("Using %s", TEMP_HUM_PRESS_SENSOR)
+    LOG.info(f"Using {TEMP_HUM_PRESS_SENSOR}")
     from bme280 import BME280
 
 if PARTICLE_SENSOR.upper() in ("SDS011", "SDS021"):
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
-    LOG.info("Using %s", PARTICLE_SENSOR)
+    LOG.info(f"Using {PARTICLE_SENSOR}")
     from sds011 import SDS011
 if PARTICLE_SENSOR.upper() == "PMS7003":
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
-    LOG.info("Using %s", PARTICLE_SENSOR)
+    LOG.info(f"Using {PARTICLE_SENSOR}")
     from pms7003 import PassivePms7003
     from errors import UartError
 if PARTICLE_SENSOR.upper() == "PTQS1005":
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
-    LOG.info("Using %s", PARTICLE_SENSOR)
+    LOG.info(f"Using {PARTICLE_SENSOR}")
     from ptqs1005 import PTQS1005Sensor
 
 if TVOC_CO2_SENSOR.upper() == "CCS811":
     TVOC_CO2_SENSOR = TVOC_CO2_SENSOR.upper()
-    LOG.info("Using %s", TVOC_CO2_SENSOR)
+    LOG.info(f"Using {TVOC_CO2_SENSOR}")
     from ccs811 import CCS811
-
-
 
 LOOP_COUNTER = 0
 RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540
-LOG.info("Sleep value %s seconds", RANDOM_SLEEP_VALUE)
+LOG.info(f"Sleep value {RANDOM_SLEEP_VALUE} seconds")
 
-HARD_RESET_VALUE = int(86400 / RANDOM_SLEEP_VALUE) # The Board will be restarted once per 24 hours
-LOG.info("Hard reset value %s", HARD_RESET_VALUE)
+HARD_RESET_VALUE = int(86400 / RANDOM_SLEEP_VALUE)  # The Board will be restarted once per 24 hours
+LOG.info(f"Hard reset value {HARD_RESET_VALUE}")
+
 
 def sds_measurements():
     sds = SDS011(uart=2)
@@ -106,24 +105,22 @@ def blink():
 def blink_api_response(message):  # sourcery skip: extract-duplicate-method
     if message.get("id"):
         LOG.info("Metric saved, blinking 2 times")
-        blink()
-        utime.sleep(0.1)
-        blink()
+        single_blink_and_sleep()
     else:
-        LOG.info("Invalid request body, blinking 5 times")
-        blink()
-        utime.sleep(0.1)
-        blink()
-        utime.sleep(0.1)
-        blink()
-        utime.sleep(0.1)
-        blink()
-        utime.sleep(0.1)
-        blink()
+        error_response = 5
+        LOG.info(f"Invalid request body, blinking {error_response} times")
+        for _ in range(error_response):
+            single_blink_and_sleep()
+    blink()
+
+
+def single_blink_and_sleep():
+    blink()
+    utime.sleep(0.1)
 
 
 def send_measurements(data):
-    LOG.info("Sending data to API %s", data)
+    LOG.info(f"Sending data to API {data}")
     try:
         if data:
             post_data = ujson.dumps(data)
@@ -132,7 +129,7 @@ def send_measurements(data):
                 headers={"X-Api-Key": API_KEY, "Content-Type": "application/json"},
                 data=post_data,
             ).json()
-            LOG.info("API response %s", res)
+            LOG.info(f"API response {res}")
             blink_api_response(message=res)
             return True
     except IndexError:
@@ -203,7 +200,7 @@ def get_temp_humid_pressure_measurements():
         try:
             bme = BME280(i2c=i2c_dev)
             if bme.values:
-                LOG.info("BME280 readings %s", bme.values)
+                LOG.info(f"BME280 readings {bme.values}")
                 return {
                     "temperature": bme.values["temperature"],
                     "humidity": bme.values["humidity"],
@@ -221,17 +218,24 @@ def augment_data(measurements, sensor_name):
         data["sensor"] = sensor_name
         return data
 
+
 if __name__ == "__main__":
+    LOG.info("Connecting to wifi...")
+    connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
+    utime.sleep(10)
+    LOG.info("Wifi connected")
+
+    LOG.info("Starting OTA updater")
+    ota_updater()
+    LOG.info("OTA finished")
+
     if TEMP_HUM_PRESS_SENSOR:
         i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
     while True:
         try:
-            LOG.info("Connecting to wifi...")
-            connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
-            utime.sleep(10)
-            LOG.info("Wifi connected")
+
             if PARTICLE_SENSOR:
-                LOG.info("Using particle sensor %s", PARTICLE_SENSOR)
+                LOG.info(f"Using particle sensor {PARTICLE_SENSOR}")
                 values = augment_data(
                     measurements=get_particle_measurements(),
                     sensor_name=PARTICLE_SENSOR,
@@ -239,7 +243,7 @@ if __name__ == "__main__":
                 send_measurements(data=values)
                 utime.sleep(1)
             if TEMP_HUM_PRESS_SENSOR:
-                LOG.info("Using temp/humid/pressure sensor %s", TEMP_HUM_PRESS_SENSOR)
+                LOG.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")
                 values = augment_data(
                     measurements=get_temp_humid_pressure_measurements(),
                     sensor_name=TEMP_HUM_PRESS_SENSOR,
@@ -247,17 +251,17 @@ if __name__ == "__main__":
                 send_measurements(data=values)
                 utime.sleep(1)
             if TVOC_CO2_SENSOR:
-                LOG.info("Using tvoc/co2 sensor %s", TVOC_CO2_SENSOR)
+                LOG.info(f"Using tvoc/co2 sensor {TVOC_CO2_SENSOR}")
                 values = augment_data(
                     measurements=get_tvoc_co2(), sensor_name=TVOC_CO2_SENSOR
                 )
                 send_measurements(data=values)
             LOOP_COUNTER += 1
-            LOG.info("Increasing loop_counter, actual value %s", LOOP_COUNTER)
+            LOG.info(f"Increasing loop_counter, actual value {LOOP_COUNTER}")
             if LOOP_COUNTER == HARD_RESET_VALUE:
-                LOG.info("Resetting device, loop counter %s", LOOP_COUNTER)
+                LOG.info(f"Resetting device, loop counter {LOOP_COUNTER}")
                 reset()
             lightsleep(RANDOM_SLEEP_VALUE * 1000)
         except Exception as error:
-            LOG.info("Caught exception %s", error)
+            LOG.info(f"Caught exception {error}")
             reset()
