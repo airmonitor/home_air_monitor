@@ -10,7 +10,7 @@ from machine import Pin, reset
 from machine import lightsleep
 import ucontextlib
 import sys
-
+from wifi_connection import wifi_connect
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -222,6 +222,7 @@ if __name__ == "__main__":
         i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
     while True:
         try:
+            wifi_connect() # Another attempt to establish Wi-Fi connection on a not reliable network
             if PARTICLE_SENSOR:
                 logging.info(f"Using particle sensor {PARTICLE_SENSOR}")
                 values = augment_data(
