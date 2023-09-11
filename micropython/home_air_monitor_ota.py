@@ -1,4 +1,11 @@
+import sys
+from lib import logging
 import micropython_ota
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+
+for handler in logging.getLogger().handlers:
+    handler.setFormatter(logging.Formatter("[%(levelname)s]:%(name)s:%(message)s"))
 
 
 def ota_updater():
@@ -8,15 +15,19 @@ def ota_updater():
         "bme280.py",
         "bme680.py",
         "bme680_constants.py",
+        "boot.py",
         "ccs811.py",
         "connect_wifi.py",
+        "errors.py",
         "home_air_monitor_ota.py",
         "i2c.py",
         "micropython_ota.py",
         "pms7003.py",
         "ptqs1005.py",
         "sds011.py",
+        "wifi_connection.py",
     ]
+    logging.info("Starting OTA updater")
 
     micropython_ota.ota_update(
         ota_host,
@@ -27,3 +38,4 @@ def ota_updater():
         soft_reset_device=False,
         timeout=5
     )
+    logging.info("OTA finished")

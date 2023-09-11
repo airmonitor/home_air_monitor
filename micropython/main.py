@@ -1,11 +1,9 @@
-# noinspection PyInterpreter
 import random
 import time
-import connect_wifi
 import ujson
 import urequests
 import utime
-from boot import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, SSID, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR, WIFI_PASSWORD
+from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR
 from i2c import I2CAdapter
 from lib import logging
 from machine import Pin, reset
@@ -13,12 +11,11 @@ from machine import lightsleep
 import ucontextlib
 import sys
 
+
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 for handler in logging.getLogger().handlers:
     handler.setFormatter(logging.Formatter("[%(levelname)s]:%(name)s:%(message)s"))
-
-from home_air_monitor_ota import ota_updater
 
 if TEMP_HUM_PRESS_SENSOR.upper() == "BME680":
     TEMP_HUM_PRESS_SENSOR = TEMP_HUM_PRESS_SENSOR.upper()
@@ -221,20 +218,10 @@ def augment_data(measurements, sensor_name):
 
 
 if __name__ == "__main__":
-    logging.info("Connecting to wifi...")
-    connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
-    utime.sleep(10)
-    logging.info("Wifi connected")
-
-    logging.info("Starting OTA updater")
-    ota_updater()
-    logging.info("OTA finished")
-
     if TEMP_HUM_PRESS_SENSOR:
         i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
     while True:
         try:
-
             if PARTICLE_SENSOR:
                 logging.info(f"Using particle sensor {PARTICLE_SENSOR}")
                 values = augment_data(
