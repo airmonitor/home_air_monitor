@@ -21,6 +21,7 @@ def ota_updater():
         "errors.py",
         "home_air_monitor_ota.py",
         "i2c.py",
+        "main.py",
         "micropython_ota.py",
         "pms7003.py",
         "ptqs1005.py",
