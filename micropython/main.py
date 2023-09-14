@@ -1,15 +1,16 @@
 import random
+import sys
 import time
+
+import ucontextlib
 import ujson
 import urequests
-import utime
+from machine import Pin, reset
+from machine import lightsleep
+
 from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR
 from i2c import I2CAdapter
 from lib import logging
-from machine import Pin, reset
-from machine import lightsleep
-import ucontextlib
-import sys
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -46,7 +47,7 @@ if TVOC_CO2_SENSOR.upper() == "CCS811":
 
 LOOP_COUNTER = 0
 RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540
-logging.info(f"Sleep value {RANDOM_SLEEP_VALUE} seconds")
+logging.info(f"Sleep value is {RANDOM_SLEEP_VALUE} seconds")
 
 HARD_RESET_VALUE = int(86400 / RANDOM_SLEEP_VALUE)  # The Board will be restarted once per 24 hours
 logging.info(f"Hard reset value {HARD_RESET_VALUE}")
@@ -56,7 +57,7 @@ def sds_measurements():
     sds = SDS011(uart=2)
     try:
         sds.wake()
-        utime.sleep(10)
+        time.sleep(10)
         for _ in range(10):
             sds.read()
         if sds.pm25 != 0 and sds.pm10 != 0:
@@ -70,7 +71,7 @@ def pms7003_measurements():
     pms = PassivePms7003(uart=2)
     try:
         pms.wakeup()
-        utime.sleep(10)
+        time.sleep(10)
         return pms.read()
     except (OSError, UartError, TypeError):
         return {}
@@ -80,22 +81,26 @@ def pms7003_measurements():
 
 
 def ptqs1005_measurements() -> dict:
+    """Initialize the sensor with the specified UART."""
+    output_data = {}
     ptqs1005_sensor = PTQS1005Sensor(uart=2)
     try:
         ptqs1005_sensor.wakeup(reset_pin=23)
         time.sleep(10)
-        data = ptqs1005_sensor.measure()
+        output_data = ptqs1005_sensor.measure()
         time.sleep(3)
-        ptqs1005_sensor.sleep(reset_pin=23)
-        return data
     except (OSError, UartError, TypeError):
-        return {}
+        return output_data
+    finally:
+        ptqs1005_sensor.sleep(reset_pin=23)
+
+    return output_data
 
 
 def blink():
     led = Pin(2, Pin.OUT)
     led.value(1)
-    utime.sleep(0.1)
+    time.sleep(0.1)
     led.value(0)
 
 
@@ -113,7 +118,7 @@ def blink_api_response(message):  # sourcery skip: extract-duplicate-method
 
 def single_blink_and_sleep():
     blink()
-    utime.sleep(0.1)
+    time.sleep(0.1)
 
 
 def send_measurements(data):
@@ -218,7 +223,7 @@ def augment_data(measurements, sensor_name):
 
 if __name__ == "__main__":
     if TEMP_HUM_PRESS_SENSOR:
-        i2c_dev = I2CAdapter(scl=Pin(022), sda=Pin(021), freq=100000)
+        i2c_dev = I2CAdapter(scl=Pin(22), sda=Pin(21), freq=100000)
     while True:
         try:
             if PARTICLE_SENSOR:
@@ -228,15 +233,15 @@ if __name__ == "__main__":
                     sensor_name=PARTICLE_SENSOR,
                 )
                 send_measurements(data=values)
-                utime.sleep(1)
+                time.sleep(1)
             if TEMP_HUM_PRESS_SENSOR:
-                logging.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")
+                logging.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")  # noqa: E501
                 values = augment_data(
                     measurements=get_temp_humid_pressure_measurements(),
                     sensor_name=TEMP_HUM_PRESS_SENSOR,
                 )
                 send_measurements(data=values)
-                utime.sleep(1)
+                time.sleep(1)
             if TVOC_CO2_SENSOR:
                 logging.info(f"Using tvoc/co2 sensor {TVOC_CO2_SENSOR}")
                 values = augment_data(
