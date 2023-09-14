@@ -138,9 +138,9 @@ def send_measurements(data):
         return False
 
 
-def get_particle_measurements():  # sourcery skip: use-named-expression
+def get_particle_measurements(sensor_model: str) -> dict:  # sourcery skip: use-named-expression
     data = {}
-    if PARTICLE_SENSOR == "PMS7003":
+    if sensor_model == "PMS7003":
         particle_data = pms7003_measurements()
         if particle_data:
             data = {
@@ -148,7 +148,7 @@ def get_particle_measurements():  # sourcery skip: use-named-expression
                 "pm25": round(particle_data["PM2_5_ATM"]),
                 "pm10": round(particle_data["PM10_0_ATM"]),
             }
-    if PARTICLE_SENSOR == "PTQS1005":
+    elif sensor_model == "PTQS1005":
         particle_data = ptqs1005_measurements()
         if particle_data:
             data = {
@@ -161,7 +161,7 @@ def get_particle_measurements():  # sourcery skip: use-named-expression
                 "temperature": round(particle_data["temp"]),
                 "humidity": round(particle_data["hum"]),
             }
-    if PARTICLE_SENSOR in ("SDS011", "SDS021"):
+    if sensor_model in {"SDS011", "SDS021"}:
         particle_data = sds_measurements()
         with ucontextlib.suppress(TypeError):
             data = {
@@ -171,8 +171,8 @@ def get_particle_measurements():  # sourcery skip: use-named-expression
     return data
 
 
-def get_tvoc_co2():
-    if TVOC_CO2_SENSOR == "CCS811":
+def get_tvoc_co2(sensor_model: str):
+    if sensor_model == "CCS811":
         try:
             sensor = CCS811(i2c=i2c_dev, addr=90)
             if sensor.data_ready():
@@ -181,8 +181,21 @@ def get_tvoc_co2():
             return False
 
 
-def get_temp_humid_pressure_measurements():
-    if TEMP_HUM_PRESS_SENSOR == "BME680":
+def get_temp_humid_pressure_measurements(sensor_model: str):
+    if sensor_model == "BME280":
+        try:
+            bme = BME280(i2c=i2c_dev)
+            if bme.values:
+                logging.info(f"BME280 readings {bme.values}")
+                return {
+                    "temperature": bme.values["temperature"],
+                    "humidity": bme.values["humidity"],
+                    "pressure": bme.values["pressure"],
+                }
+        except (OSError, RuntimeError):
+            return False
+
+    elif sensor_model == "BME680":
         try:
             sensor = bme680.BME680(i2c_device=i2c_dev)
             sensor.set_humidity_oversample(bme680.OS_2X)
@@ -198,26 +211,18 @@ def get_temp_humid_pressure_measurements():
                 }
         except (OSError, RuntimeError):
             return False
-    elif TEMP_HUM_PRESS_SENSOR == "BME280":
-        try:
-            bme = BME280(i2c=i2c_dev)
-            if bme.values:
-                logging.info(f"BME280 readings {bme.values}")
-                return {
-                    "temperature": bme.values["temperature"],
-                    "humidity": bme.values["humidity"],
-                    "pressure": bme.values["pressure"],
-                }
-        except (OSError, RuntimeError):
-            return False
+
+    else:
+        logging.error("Sensor model not supported")
+        return False
 
 
-def augment_data(measurements, sensor_name):
+def augment_data(measurements: dict, sensor_model: str):
     if measurements:
         data = {k: round(v) for k, v in measurements.items()}
         data["lat"] = LAT
         data["long"] = LONG
-        data["sensor"] = sensor_name
+        data["sensor"] = sensor_model
         return data
 
 
@@ -229,23 +234,23 @@ if __name__ == "__main__":
             if PARTICLE_SENSOR:
                 logging.info(f"Using particle sensor {PARTICLE_SENSOR}")
                 values = augment_data(
-                    measurements=get_particle_measurements(),
-                    sensor_name=PARTICLE_SENSOR,
+                    measurements=get_particle_measurements(sensor_model=PARTICLE_SENSOR),
+                    sensor_model=PARTICLE_SENSOR,
                 )
                 send_measurements(data=values)
                 time.sleep(1)
             if TEMP_HUM_PRESS_SENSOR:
                 logging.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")  # noqa: E501
                 values = augment_data(
-                    measurements=get_temp_humid_pressure_measurements(),
-                    sensor_name=TEMP_HUM_PRESS_SENSOR,
+                    measurements=get_temp_humid_pressure_measurements(sensor_model=TEMP_HUM_PRESS_SENSOR),
+                    sensor_model=TEMP_HUM_PRESS_SENSOR,
                 )
                 send_measurements(data=values)
                 time.sleep(1)
             if TVOC_CO2_SENSOR:
                 logging.info(f"Using tvoc/co2 sensor {TVOC_CO2_SENSOR}")
                 values = augment_data(
-                    measurements=get_tvoc_co2(), sensor_name=TVOC_CO2_SENSOR
+                    measurements=get_tvoc_co2(sensor_model=TVOC_CO2_SENSOR), sensor_model=TVOC_CO2_SENSOR
                 )
                 send_measurements(data=values)
             LOOP_COUNTER += 1
