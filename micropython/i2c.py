@@ -24,7 +24,7 @@ class I2CAdapter(SoftI2C):
 
     def read_i2c_block_data(self, addr, register, length):
         """ Read a block of length from register of device at addr
-            Returns a bytes object filled with whatever was read """
+            Returns a byte object filled with whatever was read """
         return self.readfrom_mem(addr, register, length)
 
     def write_byte_data(self, addr, register, data):

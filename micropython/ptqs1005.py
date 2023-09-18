@@ -1,10 +1,7 @@
-import logging
 import time
 
 import machine
 import utime
-
-logging.basicConfig()
 
 
 class Utility:
@@ -75,7 +72,6 @@ class PTQS1005Driver:
     def __init__(self, uart: int):
         """Initialize the sensor driver with the specified UART."""
         self.ser = machine.UART(uart, baudrate=9600, bits=8, parity=None, stop=1)
-        logging.debug("Serial port initialized")
 
     @staticmethod
     def __make_cmd(cmd: int, data: int) -> bytes:

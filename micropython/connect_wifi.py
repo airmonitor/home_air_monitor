@@ -1,4 +1,10 @@
 import network
+from lib import logging
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+
+for handler in logging.getLogger().handlers:
+    handler.setFormatter(logging.Formatter("[%(levelname)s]:%(name)s:%(message)s"))
 
 
 def connect(ssid, password):
@@ -14,5 +20,5 @@ def connect(ssid, password):
     while not station.isconnected():
         pass
 
-    print("Connection successful")
-    print(station.ifconfig())
+    logging.info("Connection successful")
+    logging.info(station.ifconfig())

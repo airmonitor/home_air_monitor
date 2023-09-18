@@ -31,7 +31,7 @@ class Pms7003:
         )
 
     def __repr__(self):
-        return "Pms7003({})".format(self.uart)
+        return f"Pms7003({self.uart})"
 
     @staticmethod
     def _assert_byte(byte, expected):
@@ -56,10 +56,7 @@ class Pms7003:
 
             if buffer != response:
                 raise UartError(
-                    "Wrong UART response, expecting: {}, getting: {}".format(
-                        Pms7003._format_bytearray(response),
-                        Pms7003._format_bytearray(buffer),
-                    )
+                    f"Wrong UART response, expecting: {Pms7003._format_bytearray(response)}, getting: {Pms7003._format_bytearray(buffer)}"
                 )
 
     def read(self):
