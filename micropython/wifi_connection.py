@@ -1,8 +1,10 @@
 import sys
-from lib import logging
+
+import time
+
 import connect_wifi
-import utime
 from constants import WIFI_PASSWORD, SSID
+from lib import logging
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -16,5 +18,5 @@ def wifi_connect():
     """
     logging.info("Connecting to wifi...")
     connect_wifi.connect(ssid=SSID, password=WIFI_PASSWORD)
-    utime.sleep(10)
+    time.sleep(10)
     logging.info("Wifi connected")

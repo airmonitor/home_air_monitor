@@ -1,10 +1,4 @@
-try:
-    from machine import SoftI2C
-except ImportError:
-    raise ImportError(
-        "Can't find the micropython machine.I2C class: "
-        "perhaps you don't need this adapter?"
-    )
+from machine import SoftI2C
 
 
 class I2CAdapter(SoftI2C):

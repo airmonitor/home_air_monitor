@@ -37,7 +37,17 @@ def generate_auth(user=None, passwd=None) -> str | None:
     return auth_bytes.decode().strip()
 
 
-def ota_update(host, project, filenames, use_version_prefix=True, user=None, passwd=None, hard_reset_device=True, soft_reset_device=False, timeout=5) -> None:
+def ota_update(
+        host,
+        project,
+        filenames,
+        use_version_prefix=True,
+        user=None,
+        passwd=None,
+        hard_reset_device=True,
+        soft_reset_device=False,
+        timeout=5
+) -> None:
     all_files_found = True
     auth = generate_auth(user, passwd)
     prefix_or_path_separator = '_' if use_version_prefix else '/'
@@ -46,7 +56,7 @@ def ota_update(host, project, filenames, use_version_prefix=True, user=None, pas
         if version_changed:
             try:
                 uos.mkdir('tmp')
-            except:
+            except Exception:
                 pass
             for filename in filenames:
                 if auth:
@@ -69,7 +79,7 @@ def ota_update(host, project, filenames, use_version_prefix=True, user=None, pas
                     uos.remove(f'tmp/{filename}')
                 try:
                     uos.rmdir('tmp')
-                except:
+                except Exception:
                     pass
                 with open('version', 'w') as current_version_file:
                     current_version_file.write(remote_version)
