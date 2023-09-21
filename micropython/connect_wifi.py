@@ -1,4 +1,7 @@
+import sys
+
 import network
+
 from lib import logging
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
