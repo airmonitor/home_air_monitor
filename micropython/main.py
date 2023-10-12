@@ -38,6 +38,7 @@ if PARTICLE_SENSOR.upper() == "PMS7003":
 if PARTICLE_SENSOR.upper() == "PTQS1005":
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
     logging.info(f"Using {PARTICLE_SENSOR}")
+    from errors import UartError
     from ptqs1005 import PTQS1005Sensor
 
 if TVOC_CO2_SENSOR.upper() == "CCS811":
@@ -46,7 +47,7 @@ if TVOC_CO2_SENSOR.upper() == "CCS811":
     from ccs811 import CCS811
 
 LOOP_COUNTER = 0
-RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540
+RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540  # seconds
 logging.info(f"Sleep value is {RANDOM_SLEEP_VALUE} seconds")
 
 HARD_RESET_VALUE = int(86400 / RANDOM_SLEEP_VALUE)  # The Board will be restarted once per 24 hours
@@ -86,9 +87,8 @@ def ptqs1005_measurements() -> dict:
     ptqs1005_sensor = PTQS1005Sensor(uart=2)
     try:
         ptqs1005_sensor.wakeup(reset_pin=23)
-        time.sleep(10)
+        time.sleep(7)
         output_data = ptqs1005_sensor.measure()
-        time.sleep(3)
     except (OSError, UartError, TypeError):
         return output_data
     finally:
