@@ -87,7 +87,7 @@ def ptqs1005_measurements() -> dict:
     ptqs1005_sensor = PTQS1005Sensor(uart=2)
     try:
         ptqs1005_sensor.wakeup(reset_pin=23)
-        time.sleep(7)
+        time.sleep(10)
         output_data = ptqs1005_sensor.measure()
     except (OSError, UartError, TypeError):
         return output_data
