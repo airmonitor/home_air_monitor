@@ -14,7 +14,7 @@ def connect(ssid, password):
     station = network.WLAN(network.STA_IF)
 
     if station.isconnected():
-        print("Already connected")
+        logging.info("Already connected")
         return True
 
     station.active(True)
