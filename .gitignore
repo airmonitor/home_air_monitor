@@ -1,3 +1,4 @@
 .idea
 .idea/*
-micropython/boot.py
+micropython/constants.py
+micropython/Makefile
