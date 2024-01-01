@@ -9,8 +9,7 @@ import urequests
 from machine import Pin, reset
 from machine import lightsleep
 
-from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR, \
-    SOUND_LEVEL_SENSOR
+from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR
 from i2c import I2CAdapter
 from lib import logging
 
