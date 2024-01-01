@@ -2,37 +2,35 @@ import random
 import sys
 import time
 
+import machine
 import ucontextlib
 import ujson
 import urequests
 from machine import Pin, reset
 from machine import lightsleep
 
-from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR
+from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR, \
+    SOUND_LEVEL_SENSOR
 from i2c import I2CAdapter
 from lib import logging
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 for handler in logging.getLogger().handlers:
     handler.setFormatter(logging.Formatter("[%(levelname)s]:%(name)s:%(message)s"))
 
 if TEMP_HUM_PRESS_SENSOR.upper() == "BME680":
     TEMP_HUM_PRESS_SENSOR = TEMP_HUM_PRESS_SENSOR.upper()
-    logging.info(f"Using {TEMP_HUM_PRESS_SENSOR}")
     import bme680
 if TEMP_HUM_PRESS_SENSOR.upper() == "BME280":
     TEMP_HUM_PRESS_SENSOR = TEMP_HUM_PRESS_SENSOR.upper()
-    logging.info(f"Using {TEMP_HUM_PRESS_SENSOR}")
     from bme280 import BME280
 
 if PARTICLE_SENSOR.upper() in ("SDS011", "SDS021"):
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
-    logging.info(f"Using {PARTICLE_SENSOR}")
     from sds011 import SDS011
 if PARTICLE_SENSOR.upper() == "PMS7003":
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
-    logging.info(f"Using {PARTICLE_SENSOR}")
     from pms7003 import PassivePms7003
     from errors import UartError
 if PARTICLE_SENSOR.upper() == "PTQS1005":
@@ -43,7 +41,6 @@ if PARTICLE_SENSOR.upper() == "PTQS1005":
 
 if TVOC_CO2_SENSOR.upper() == "CCS811":
     TVOC_CO2_SENSOR = TVOC_CO2_SENSOR.upper()
-    logging.info(f"Using {TVOC_CO2_SENSOR}")
     from ccs811 import CCS811
 
 LOOP_COUNTER = 0
@@ -174,17 +171,17 @@ def get_particle_measurements(sensor_model: str) -> dict:  # sourcery skip: use-
 def get_tvoc_co2(sensor_model: str):
     if sensor_model == "CCS811":
         try:
-            sensor = CCS811(i2c=i2c_dev, addr=90)
+            sensor = CCS811(i2c=i2c_adapter, addr=90)
             if sensor.data_ready():
                 return {"co2": sensor.eCO2, "tvoc": sensor.tVOC}
         except (OSError, RuntimeError):
             return False
 
 
-def get_temp_humid_pressure_measurements(sensor_model: str):
+def get_temp_humid_pressure_measurements(*, sensor_model: str, i2c_adapter: machine.I2C):
     if sensor_model == "BME280":
         try:
-            bme = BME280(i2c=i2c_dev)
+            bme = BME280(i2c=i2c_adapter)
             if bme.values:
                 logging.info(f"BME280 readings {bme.values}")
                 return {
@@ -197,7 +194,7 @@ def get_temp_humid_pressure_measurements(sensor_model: str):
 
     elif sensor_model == "BME680":
         try:
-            sensor = bme680.BME680(i2c_device=i2c_dev)
+            sensor = bme680.BME680(i2c_device=i2c_adapter)
             sensor.set_humidity_oversample(bme680.OS_2X)
             sensor.set_pressure_oversample(bme680.OS_4X)
             sensor.set_temperature_oversample(bme680.OS_8X)
@@ -227,8 +224,8 @@ def augment_data(measurements: dict, sensor_model: str):
 
 
 if __name__ == "__main__":
-    if TEMP_HUM_PRESS_SENSOR:
-        i2c_dev = I2CAdapter(scl=Pin(22), sda=Pin(21), freq=100000)
+    i2c_adapter = I2CAdapter(scl=Pin(22), sda=Pin(21), freq=100000)
+
     while True:
         try:
             if PARTICLE_SENSOR:
@@ -242,11 +239,15 @@ if __name__ == "__main__":
             if TEMP_HUM_PRESS_SENSOR:
                 logging.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")  # noqa: E501
                 values = augment_data(
-                    measurements=get_temp_humid_pressure_measurements(sensor_model=TEMP_HUM_PRESS_SENSOR),
+                    measurements=get_temp_humid_pressure_measurements(
+                        sensor_model=TEMP_HUM_PRESS_SENSOR,
+                        i2c_adapter=i2c_adapter,
+                    ),
                     sensor_model=TEMP_HUM_PRESS_SENSOR,
                 )
                 send_measurements(data=values)
                 time.sleep(1)
+
             if TVOC_CO2_SENSOR:
                 logging.info(f"Using tvoc/co2 sensor {TVOC_CO2_SENSOR}")
                 values = augment_data(
