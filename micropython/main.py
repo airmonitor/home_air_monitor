@@ -35,13 +35,16 @@ if PARTICLE_SENSOR.upper() == "PMS7003":
     from errors import UartError
 if PARTICLE_SENSOR.upper() == "PTQS1005":
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
-    logging.info(f"Using {PARTICLE_SENSOR}")
     from errors import UartError
     from ptqs1005 import PTQS1005Sensor
 
 if TVOC_CO2_SENSOR.upper() == "CCS811":
     TVOC_CO2_SENSOR = TVOC_CO2_SENSOR.upper()
     from ccs811 import CCS811
+
+# if SOUND_LEVEL_SENSOR.upper() == "PCB_ARTIST":
+#     SOUND_LEVEL_SENSOR = SOUND_LEVEL_SENSOR.upper()
+#     from pcb_artist_sound_level import PCBArtistSoundLevel
 
 LOOP_COUNTER = 0
 RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540  # seconds
@@ -94,6 +97,15 @@ def ptqs1005_measurements() -> dict:
     return output_data
 
 
+# def pcb_artist_sound_level_measurements(sensor: PCBArtistSoundLevel):
+#     # sensor_version = sensor.db_sensor_version()
+#     # logging.debug(f"Sound level sensor version = 0x{sensor_version:02x}")
+#     # sensor_id = sensor.db_sensor_id()
+#     # logging.debug(f"Sound level sensor unique ID: 0x{sensor_id:02x}")
+#
+#     return int.from_bytes(sensor.reg_read(), "big")
+#
+
 def blink():
     led = Pin(2, Pin.OUT)
     led.value(1)
@@ -134,6 +146,26 @@ def send_measurements(data):
     except IndexError:
         return False
 
+
+# def get_sound_level_measurements(
+#         i2c_adapter: machine.I2C,
+#         sensor_model: str,
+# ) -> dict:  # sourcery skip: use-named-expression
+#     data = {}
+#     if sensor_model == "PCB_ARTIST":
+#         logging.info("PCB Artist Sound Level Measurements")
+#         sensor = PCBArtistSoundLevel(i2c=i2c_adapter)
+#         # Set TAVG high for capturing
+#         while True:
+#             sound_level = pcb_artist_sound_level_measurements(sensor)
+#             logging.info(f"Sound level: {sound_level} dB")
+#             time.sleep(2)
+#     #     if sound_level:
+#     #         data = {"sound_level": sound_level}
+#     #         logging.info("Sound level dB {data}")
+#     #         data["dB"] = data
+#     # return data
+#
 
 def get_particle_measurements(sensor_model: str) -> dict:  # sourcery skip: use-named-expression
     data = {}
@@ -254,6 +286,23 @@ if __name__ == "__main__":
                     measurements=get_tvoc_co2(sensor_model=TVOC_CO2_SENSOR), sensor_model=TVOC_CO2_SENSOR
                 )
                 send_measurements(data=values)
+            #
+            # if SOUND_LEVEL_SENSOR:
+            #     logging.info(f"Using sound level sensor {SOUND_LEVEL_SENSOR}")
+            #     measurements = get_sound_level_measurements(
+            #         sensor_model=SOUND_LEVEL_SENSOR,
+            #         i2c_adapter=i2c_adapter
+            #     )
+            #     print(measurements)
+            #     # values = augment_data(
+            #     #     measurements=get_sound_level_measurements(
+            #     #         sensor_model=SOUND_LEVEL_SENSOR,
+            #     #         i2c_adapter=i2c_adapter
+            #     #     ),
+            #     #     sensor_model=SOUND_LEVEL_SENSOR,
+            #     # )
+            #     # send_measurements(data=values)
+
             LOOP_COUNTER += 1
             logging.info(f"Increasing loop_counter, actual value {LOOP_COUNTER}")
             if LOOP_COUNTER == HARD_RESET_VALUE:
