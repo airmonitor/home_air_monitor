@@ -6,10 +6,10 @@ import machine
 import ucontextlib
 import ujson
 import urequests
-from machine import Pin, reset
-from machine import lightsleep
+from machine import Pin, reset, sleep
 
-from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR
+from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR, \
+    SOUND_LEVEL_SENSOR
 from i2c import I2CAdapter
 from lib import logging
 
@@ -34,6 +34,7 @@ if PARTICLE_SENSOR.upper() == "PMS7003":
     from errors import UartError
 if PARTICLE_SENSOR.upper() == "PTQS1005":
     PARTICLE_SENSOR = PARTICLE_SENSOR.upper()
+    logging.info(f"Using {PARTICLE_SENSOR}")
     from errors import UartError
     from ptqs1005 import PTQS1005Sensor
 
@@ -41,9 +42,9 @@ if TVOC_CO2_SENSOR.upper() == "CCS811":
     TVOC_CO2_SENSOR = TVOC_CO2_SENSOR.upper()
     from ccs811 import CCS811
 
-# if SOUND_LEVEL_SENSOR.upper() == "PCB_ARTIST":
-#     SOUND_LEVEL_SENSOR = SOUND_LEVEL_SENSOR.upper()
-#     from pcb_artist_sound_level import PCBArtistSoundLevel
+if SOUND_LEVEL_SENSOR.upper() == "PCB_ARTIST_SOUND_LEVEL":
+    SOUND_LEVEL_SENSOR = SOUND_LEVEL_SENSOR.upper()
+    from pcb_artist_sound_level import PCBArtistSoundLevel
 
 LOOP_COUNTER = 0
 RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540  # seconds
@@ -54,6 +55,21 @@ logging.info(f"Hard reset value {HARD_RESET_VALUE}")
 
 
 def sds_measurements():
+    """
+    Initiates measurements for particulate matter (PM) using the SDS011 sensor.
+
+    Parameters:
+        None
+
+    Functionality:
+        Wakes up the SDS011 sensor, performs measurements for PM2.5 and PM10 over a period, 
+        then puts the sensor back to sleep. It attempts to read the sensor values 10 times 
+        with a delay between each read to ensure accurate readings.
+
+    Returns:
+        dict: A dictionary containing the PM2.5 and PM10 values if both are non-zero.
+        bool: False if an OSError occurs during the sensor read operation.
+    """
     sds = SDS011(uart=2)
     try:
         sds.wake()
@@ -68,6 +84,21 @@ def sds_measurements():
 
 
 def pms7003_measurements():
+    """
+    Initiates measurements for particulate matter using the PMS7003 sensor.
+
+    Parameters:
+        None
+
+    Functionality:
+        Wakes up the PMS7003 sensor, waits for it to stabilize, then reads particulate matter measurements. 
+        In case of an error (OSError, UartError, TypeError), it returns an empty dictionary. 
+        It ensures the sensor is put back to sleep after the operation, even if an error occurs.
+
+    Returns:
+        dict: A dictionary containing the particulate matter measurements if successful,
+        or an empty dictionary if an error occurs.
+    """
     pms = PassivePms7003(uart=2)
     try:
         pms.wakeup()
@@ -81,7 +112,23 @@ def pms7003_measurements():
 
 
 def ptqs1005_measurements() -> dict:
-    """Initialize the sensor with the specified UART."""
+    """
+    Initiates measurements for air quality using the PTQS1005 sensor.
+
+    Parameters:
+        None
+
+    Functionality:
+        - Wakes up the PTQS1005 sensor using the specified UART port and reset pin.
+        - Waits for the sensor to stabilize.
+        - Gathers air quality measurements from the sensor.
+        - Handles exceptions that may occur during the measurement process.
+        - Ensures the sensor is put back to sleep after measurements are taken.
+
+    Returns:
+        dict: A dictionary containing the air quality measurements if successful. 
+              The dictionary is empty if an exception occurs during the measurement process.
+    """
     output_data = {}
     ptqs1005_sensor = PTQS1005Sensor(uart=2)
     try:
@@ -96,14 +143,26 @@ def ptqs1005_measurements() -> dict:
     return output_data
 
 
-# def pcb_artist_sound_level_measurements(sensor: PCBArtistSoundLevel):
-#     # sensor_version = sensor.db_sensor_version()
-#     # logging.debug(f"Sound level sensor version = 0x{sensor_version:02x}")
-#     # sensor_id = sensor.db_sensor_id()
-#     # logging.debug(f"Sound level sensor unique ID: 0x{sensor_id:02x}")
-#
-#     return int.from_bytes(sensor.reg_read(), "big")
-#
+def pcb_artist_sound_level_measurements(sensor: PCBArtistSoundLevel) -> int:
+    """
+    Measures the sound level using the PCB Artist Sound Level sensor.
+
+    Parameters:
+        sensor (PCBArtistSoundLevel): The sensor object used to measure sound levels.
+
+    Functionality:
+        Reads the sound level measurement from the PCB Artist Sound Level sensor's register.
+        If an OSError occurs during the read operation, logs an error message indicating the sensor was not found.
+
+    Returns:
+        int: The sound level measurement as an integer. Returns 0 if an OSError occurs.
+    """
+    try:
+        return int.from_bytes(sensor.reg_read(), "big")
+    except OSError:
+        logging.error("Sound level sensor not found")
+    return 0
+
 
 def blink():
     led = Pin(2, Pin.OUT)
@@ -112,7 +171,22 @@ def blink():
     led.value(0)
 
 
-def blink_api_response(message):  # sourcery skip: extract-duplicate-method
+def blink_api_response(message):
+    """
+    Controls the blinking of an LED based on the API response message.
+
+    Parameters:
+        message (dict): The response message from the API.
+
+    Functionality:
+        - Checks if the message contains an "id" key.
+        - If an "id" is present, it indicates a successful metric save, and the function triggers two blinks.
+        - If an "id" is not present, indicating an invalid request, it triggers five blinks.
+        - Finally, it calls another function to perform a single blink, regardless of the previous condition.
+
+    Returns:
+        None
+    """
     if message.get("id"):
         logging.info("Metric saved, blinking 2 times")
         single_blink_and_sleep()
@@ -130,6 +204,26 @@ def single_blink_and_sleep():
 
 
 def send_measurements(data):
+    """
+    Sends the collected sensor data to a specified API endpoint using a POST request.
+
+    Parameters:
+        data (dict): The sensor data to be sent.
+        This should be a dictionary where keys are sensor names and values are their respective measurements.
+
+    Functionality:
+        - Logs the data being sent to the API.
+        - Converts the `data` dictionary into a JSON string using `ujson.dumps`.
+        - Makes a POST request to the API_URL with the JSON string as the body and includes the API_KEY in the headers.
+        - Logs the API's response.
+        - Blinks an LED (or similar indicator) to signal the API response status.
+        - Handles an `IndexError` exception, which may occur during the API response handling.
+
+    Returns:
+        bool:
+        True if the data was successfully sent and a response was received from the API,
+        False if an `IndexError` exception was caught.
+    """
     logging.info(f"Sending data to API {data}")
     try:
         if data:
@@ -146,27 +240,71 @@ def send_measurements(data):
         return False
 
 
-# def get_sound_level_measurements(
-#         i2c_adapter: machine.I2C,
-#         sensor_model: str,
-# ) -> dict:  # sourcery skip: use-named-expression
-#     data = {}
-#     if sensor_model == "PCB_ARTIST":
-#         logging.info("PCB Artist Sound Level Measurements")
-#         sensor = PCBArtistSoundLevel(i2c=i2c_adapter)
-#         # Set TAVG high for capturing
-#         while True:
-#             sound_level = pcb_artist_sound_level_measurements(sensor)
-#             logging.info(f"Sound level: {sound_level} dB")
-#             time.sleep(2)
-#     #     if sound_level:
-#     #         data = {"sound_level": sound_level}
-#     #         logging.info("Sound level dB {data}")
-#     #         data["dB"] = data
-#     # return data
-#
+def get_sound_level_measurements(
+        i2c_adapter: machine.I2C,
+        sensor_model: str,
+        time_range_in_seconds: int = 60,
+        sleep_time_in_seconds: int = 1
+) -> dict:
+    """
+    Parameters:
+        i2c_adapter (machine.I2C): The I2C adapter to communicate with the sensor.
+        sensor_model (str): The model of the sound level sensor.
+        time_range_in_seconds (int): The duration over which sound level measurements are taken.
+        sleep_time_in_seconds (int): The delay between each sound level measurement.
 
-def get_particle_measurements(sensor_model: str) -> dict:  # sourcery skip: use-named-expression
+    Functionality:
+        Collects sound level measurements over a specified period from a PCB Artist Sound Level sensor. 
+        It logs the sound level in decibels at each interval and calculates the maximum sound level 
+        observed during the measurement period.
+
+    Returns:
+        dict: A dictionary containing the highest sound level in decibels measured during the specified time range.
+    """
+    data = {}
+    decibel_metrics_list = []
+    if sensor_model == "PCB_ARTIST_SOUND_LEVEL":
+        logging.info("PCB Artist Sound Level Measurements")
+        sensor = PCBArtistSoundLevel(i2c=i2c_adapter)
+        # Set TAVG high for capturing
+        while time_range_in_seconds > 0:
+            sound_level = pcb_artist_sound_level_measurements(sensor)
+            logging.info(f"Sound level: {sound_level} dB")
+            time.sleep(sleep_time_in_seconds)
+            time_range_in_seconds -= sleep_time_in_seconds
+            logging.info(f"Time remaining: {time_range_in_seconds}")
+            if sound_level:
+                decibel_metrics_list.append(sound_level)
+        data["decibel"] = max(decibel_metrics_list)
+        logging.info(f"The highest sound level in dB from the last {time_range_in_seconds} {data}")
+    return data
+
+
+def get_particle_measurements(sensor_model: str) -> dict:
+    """
+    Retrieves particle measurements from the specified sensor model.
+
+    Parameters:
+        sensor_model (str): The model of the sensor from which to retrieve measurements.
+
+    Functionality:
+        Depending on the sensor model provided,
+        this function calls one of several measurement functions specific to that sensor model.
+        It processes the raw data from these functions,
+        rounding the values and structuring them into a dictionary that is returned.
+        The function handles three types of sensors: PMS7003, PTQS1005, and SDS011/SDS021.
+        Each sensor type has a different data structure and provides different types of measurements
+        (e.g., PM1.0, PM2.5, PM10, TVOC, HCHO, CO2, temperature, and humidity).
+
+    Returns:
+        A dictionary containing the processed measurements from the sensor.
+        The keys in the dictionary depend on the sensor model.
+        For PMS7003, it includes 'pm1', 'pm25', and 'pm10'.
+        For PTQS1005, it includes 'pm1', 'pm25', 'pm10', 'tvoc', 'hcho', 'co2', 'temperature', and 'humidity'.
+        For SDS011/SDS021, it includes 'pm25' and 'pm10'.
+        If the sensor model does not match any of the specified models or if no data could be retrieved,
+        an empty dictionary is returned.
+    """
     data = {}
     if sensor_model == "PMS7003":
         particle_data = pms7003_measurements()
@@ -200,6 +338,21 @@ def get_particle_measurements(sensor_model: str) -> dict:  # sourcery skip: use-
 
 
 def get_tvoc_co2(sensor_model: str):
+    """
+    Retrieves the Total Volatile Organic Compounds (TVOC) and Carbon Dioxide (CO2) levels from the specified sensor.
+
+    Parameters:
+        sensor_model (str): The model of the sensor to retrieve data from.
+
+    Functionality:
+        Attempts to initialize the specified sensor model with the I2C adapter and address.
+        If the sensor's data is ready, it returns the eCO2 and tVOC readings.
+        Handles exceptions for OSError and RuntimeError by returning False.
+
+    Returns:
+        dict: A dictionary containing the "co2" and "tvoc" levels if successful.
+        bool: False if an error occurs during sensor initialization or data retrieval.
+    """
     if sensor_model == "CCS811":
         try:
             sensor = CCS811(i2c=i2c_adapter, addr=90)
@@ -210,6 +363,23 @@ def get_tvoc_co2(sensor_model: str):
 
 
 def get_temp_humid_pressure_measurements(*, sensor_model: str, i2c_adapter: machine.I2C):
+    """
+    Fetches temperature, humidity, and pressure measurements from specified sensor models.
+
+    Parameters:
+        sensor_model (str): The model of the sensor from which to fetch measurements. Supported models are "BME280" and "BME680".
+        i2c_adapter (machine.I2C): The I2C adapter to communicate with the sensor.
+
+    Functionality:
+        This function checks the sensor model specified and initializes the appropriate sensor using the provided I2C adapter. 
+        For the BME280 sensor, it fetches temperature, humidity, and pressure readings. 
+        For the BME680 sensor, it additionally fetches gas resistance along with temperature, humidity, and pressure readings. 
+        It logs the readings for the BME280 sensor. In case of an error (OSError, RuntimeError), it returns False.
+
+    Returns:
+        dict: A dictionary containing the sensor readings if successful. The keys are "temperature", "humidity", "pressure", and optionally "gas_resistance" for the BME680 sensor.
+        bool: False if there is an error initializing the sensor or fetching the data.
+    """
     if sensor_model == "BME280":
         try:
             bme = BME280(i2c=i2c_adapter)
@@ -246,6 +416,22 @@ def get_temp_humid_pressure_measurements(*, sensor_model: str, i2c_adapter: mach
 
 
 def augment_data(measurements: dict, sensor_model: str):
+    """
+    Enhances the measurement dictionary with additional data including latitude, longitude, and sensor model.
+
+    Parameters:
+        measurements (dict): A dictionary containing measurement data from a sensor.
+        sensor_model (str): A string representing the model of the sensor.
+
+    Functionality:
+        - Rounds the values of the measurements to the nearest integer.
+        - Adds the latitude ('lat') and longitude ('long') from global constants.
+        - Adds the sensor model information under the key 'sensor'.
+        - Returns the augmented data dictionary.
+
+    Returns:
+        dict: The augmented dictionary containing the original measurements, location data, and sensor model.
+    """
     if measurements:
         data = {k: round(v) for k, v in measurements.items()}
         data["lat"] = LAT
@@ -266,9 +452,11 @@ if __name__ == "__main__":
                     sensor_model=PARTICLE_SENSOR,
                 )
                 send_measurements(data=values)
+                del values
                 time.sleep(1)
+
             if TEMP_HUM_PRESS_SENSOR:
-                logging.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")  # noqa: E501
+                logging.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")
                 values = augment_data(
                     measurements=get_temp_humid_pressure_measurements(
                         sensor_model=TEMP_HUM_PRESS_SENSOR,
@@ -277,6 +465,7 @@ if __name__ == "__main__":
                     sensor_model=TEMP_HUM_PRESS_SENSOR,
                 )
                 send_measurements(data=values)
+                del values
                 time.sleep(1)
 
             if TVOC_CO2_SENSOR:
@@ -285,29 +474,31 @@ if __name__ == "__main__":
                     measurements=get_tvoc_co2(sensor_model=TVOC_CO2_SENSOR), sensor_model=TVOC_CO2_SENSOR
                 )
                 send_measurements(data=values)
-            #
-            # if SOUND_LEVEL_SENSOR:
-            #     logging.info(f"Using sound level sensor {SOUND_LEVEL_SENSOR}")
-            #     measurements = get_sound_level_measurements(
-            #         sensor_model=SOUND_LEVEL_SENSOR,
-            #         i2c_adapter=i2c_adapter
-            #     )
-            #     print(measurements)
-            #     # values = augment_data(
-            #     #     measurements=get_sound_level_measurements(
-            #     #         sensor_model=SOUND_LEVEL_SENSOR,
-            #     #         i2c_adapter=i2c_adapter
-            #     #     ),
-            #     #     sensor_model=SOUND_LEVEL_SENSOR,
-            #     # )
-            #     # send_measurements(data=values)
+                del values
+                time.sleep(1)
+
+            if SOUND_LEVEL_SENSOR:
+                logging.info(f"Using sound level sensor {SOUND_LEVEL_SENSOR}")
+                values = augment_data(
+                    measurements=get_sound_level_measurements(
+                        sensor_model=SOUND_LEVEL_SENSOR,
+                        i2c_adapter=i2c_adapter
+                    ),
+                    sensor_model=SOUND_LEVEL_SENSOR,
+                )
+                send_measurements(data=values)
+                del values
+                time.sleep(1)
 
             LOOP_COUNTER += 1
             logging.info(f"Increasing loop_counter, actual value {LOOP_COUNTER}")
             if LOOP_COUNTER == HARD_RESET_VALUE:
                 logging.info(f"Resetting device, loop counter {LOOP_COUNTER}")
                 reset()
-            lightsleep(RANDOM_SLEEP_VALUE * 1000)
+            if not SOUND_LEVEL_SENSOR:
+                logging.info(f"Sleeping for {RANDOM_SLEEP_VALUE} seconds")
+                sleep(RANDOM_SLEEP_VALUE * 1000)
+            
         except Exception as error:
             logging.info(f"Caught exception {error}")
             reset()
