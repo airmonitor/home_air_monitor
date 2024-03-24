@@ -157,7 +157,11 @@ def pcb_artist_sound_level_measurements(sensor: PCBArtistSoundLevel) -> int:
         int: The sound level measurement as an integer. Returns 0 if an OSError occurs.
     """
     try:
-        return int.from_bytes(sensor.reg_read(), "big")
+        measurement = int.from_bytes(sensor.reg_read(), "big")
+        if 35 <= measurement <= 120:
+            return measurement
+        else:
+            return 0
     except OSError:
         logging.error("Sound level sensor not found")
     return 0
@@ -273,7 +277,7 @@ def get_sound_level_measurements(
 
         while time.time() < end_time:
             sound_level = pcb_artist_sound_level_measurements(sensor)
-            if sound_level and sound_level < 160:  # 160dB is the maximum sound level
+            if sound_level:
                 logging.info(f"Sound level: {sound_level} dB")
                 max_sound_level = max(max_sound_level, sound_level)
             time.sleep(sleep_time_in_seconds)
@@ -484,7 +488,8 @@ if __name__ == "__main__":
                 values = augment_data(
                     measurements=get_sound_level_measurements(
                         sensor_model=SOUND_LEVEL_SENSOR,
-                        i2c_adapter=i2c_adapter
+                        i2c_adapter=i2c_adapter,
+                        time_range_in_seconds=RANDOM_SLEEP_VALUE
                     ),
                     sensor_model=SOUND_LEVEL_SENSOR,
                 )
