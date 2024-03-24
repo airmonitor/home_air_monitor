@@ -25,7 +25,6 @@ I2C_REG_THR_MAX = 0x0E
 I2C_REG_HISTORY_0 = 0x14
 I2C_REG_HISTORY_99 = 0x77
 
-
 ###############################################
 # Settings
 
@@ -115,3 +114,36 @@ class PCBArtistSoundLevel:
 
         read_data = self.reg_read(reg=reg, nbytes=nbytes)
         return int.from_bytes(read_data, "big")
+
+    def enable_fast_mode_intensity_measurement(self):
+        """
+        Enables fast mode for intensity measurement.
+        TavgH = 0, TavgL = 125
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+
+        self.reg_write(reg=I2C_REG_TAVG_LOW, data=0x7D)
+        self.reg_write(reg=I2C_REG_TAVG_HIGH, data=0x00)
+
+    def enable_standard_mode_intensity_measurement(self):
+        """
+        Enables fast mode for intensity measurement.
+        TavgH = 0x03, TavgL = 0xE8
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+
+        self.reg_write(reg=I2C_REG_TAVG_LOW, data=0xE8)
+        self.reg_write(reg=I2C_REG_TAVG_HIGH, data=0x03)

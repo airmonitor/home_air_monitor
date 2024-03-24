@@ -1,7 +1,6 @@
 import random
 import sys
 import time
-
 import machine
 import ucontextlib
 import ujson
@@ -241,9 +240,9 @@ def send_measurements(data):
 
 
 def get_sound_level_measurements(
-        i2c_adapter: machine.I2C,
+        i2c_adapter: machine.I2C,  # noqa
         sensor_model: str,
-        time_range_in_seconds: int = 60,
+        time_range_in_seconds: int = 900,
         sleep_time_in_seconds: int = 1
 ) -> dict:
     """
@@ -261,23 +260,26 @@ def get_sound_level_measurements(
     Returns:
         dict: A dictionary containing the highest sound level in decibels measured during the specified time range.
     """
-    data = {}
-    decibel_metrics_list = []
+
+    end_time = time.time() + time_range_in_seconds
+    max_sound_level = 0
+
     if sensor_model == "PCB_ARTIST_SOUND_LEVEL":
         logging.info("PCB Artist Sound Level Measurements")
         sensor = PCBArtistSoundLevel(i2c=i2c_adapter)
-        # Set TAVG high for capturing
-        while time_range_in_seconds > 0:
+
+        logging.info("Enabling fast mode intensity measurement")
+        sensor.enable_fast_mode_intensity_measurement()
+
+        while time.time() < end_time:
             sound_level = pcb_artist_sound_level_measurements(sensor)
-            logging.info(f"Sound level: {sound_level} dB")
+            if sound_level and sound_level < 160:  # 160dB is the maximum sound level
+                logging.info(f"Sound level: {sound_level} dB")
+                max_sound_level = max(max_sound_level, sound_level)
             time.sleep(sleep_time_in_seconds)
-            time_range_in_seconds -= sleep_time_in_seconds
-            logging.info(f"Time remaining: {time_range_in_seconds}")
-            if sound_level:
-                decibel_metrics_list.append(sound_level)
-        data["decibel"] = max(decibel_metrics_list)
-        logging.info(f"The highest sound level in dB from the last {time_range_in_seconds} {data}")
-    return data
+        logging.info(
+            f"The highest sound level in dB from the last {time_range_in_seconds} seconds was {max_sound_level}")
+    return {"decibel": max_sound_level}
 
 
 def get_particle_measurements(sensor_model: str) -> dict:
@@ -498,7 +500,7 @@ if __name__ == "__main__":
             if not SOUND_LEVEL_SENSOR:
                 logging.info(f"Sleeping for {RANDOM_SLEEP_VALUE} seconds")
                 sleep(RANDOM_SLEEP_VALUE * 1000)
-            
+
         except Exception as error:
             logging.info(f"Caught exception {error}")
             reset()
