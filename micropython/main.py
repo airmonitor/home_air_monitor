@@ -275,7 +275,11 @@ def get_sound_level_measurements(
 
         logging.info("Enabling fast mode intensity measurement")
         sensor.enable_fast_mode_intensity_measurement()
-        time.sleep(2)  # initial sleep allowing firmware to settle
+        time.sleep(1)  # initial sleep allowing firmware to settle
+        pcb_artist_sound_level_measurements(sensor)
+        time.sleep(1)  # initial sleep allowing firmware to settle
+        pcb_artist_sound_level_measurements(sensor)
+        time.sleep(1)  # initial sleep allowing firmware to settle
 
         while time.time() < end_time:
             sound_level = pcb_artist_sound_level_measurements(sensor)
