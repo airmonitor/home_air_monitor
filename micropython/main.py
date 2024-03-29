@@ -283,7 +283,7 @@ def get_sound_level_measurements(
 
         while time.time() < end_time:
             sound_level = pcb_artist_sound_level_measurements(sensor)
-            if sound_level:
+            if sound_level and sound_level < 100:
                 logging.info(f"Sound level: {sound_level} dB")
                 max_sound_level = max(max_sound_level, sound_level)
             time.sleep(sleep_time_in_seconds)
