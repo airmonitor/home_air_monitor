@@ -7,29 +7,26 @@ import machine
 PCB_ARTISTS_DBM = 0x48
 
 # Registers
-I2C_REG_VERSION = 0x00
-I2C_REG_ID3 = 0x01
-I2C_REG_ID2 = 0x02
-I2C_REG_ID1 = 0x03
-I2C_REG_ID0 = 0x04
-I2C_REG_SCRATCH = 0x05
-I2C_REG_CONTROL = 0x06
-I2C_REG_TAVG_HIGH = 0x07
-I2C_REG_TAVG_LOW = 0x08
-I2C_REG_RESET = 0x09
-I2C_REG_DECIBEL = 0x0A
-I2C_REG_MIN = 0x0B
-I2C_REG_MAX = 0x0C
-I2C_REG_THR_MIN = 0x0D
-I2C_REG_THR_MAX = 0x0E
-I2C_REG_HISTORY_0 = 0x14
-I2C_REG_HISTORY_99 = 0x77
+_PCB_ARTISTS_I2C_REG_VERSION = 0x00
+_PCB_ARTISTS_I2C_REG_ID3 = 0x01
+_PCB_ARTISTS_I2C_REG_ID2 = 0x02
+_PCB_ARTISTS_I2C_REG_ID1 = 0x03
+_PCB_ARTISTS_I2C_REG_ID0 = 0x04
+_PCB_ARTISTS_I2C_REG_SCRATCH = 0x05
+_PCB_ARTISTS_I2C_REG_CONTROL = 0x06
+_PCB_ARTISTS_I2C_REG_TAVG_HIGH = 0x07
+_PCB_ARTISTS_I2C_REG_TAVG_LOW = 0x08
+_PCB_ARTISTS_I2C_REG_RESET = 0x09
+_PCB_ARTISTS_I2C_REG_DECIBEL = 0x0A
+_PCB_ARTISTS_I2C_REG_MIN = 0x0B
+_PCB_ARTISTS_I2C_REG_MAX = 0x0C
+_PCB_ARTISTS_I2C_REG_THR_MIN = 0x0D
+_PCB_ARTISTS_I2C_REG_THR_MAX = 0x0E
+_PCB_ARTISTS_I2C_REG_HISTORY_0 = 0x14
+_PCB_ARTISTS_I2C_REG_HISTORY_99 = 0x77
 
 ###############################################
 # Settings
-
-# Initialize I2C with pins
-i2c = machine.I2C(0, scl=machine.Pin(22), sda=machine.Pin(21), freq=100000)
 
 
 class PCBArtistSoundLevel:
@@ -63,7 +60,7 @@ class PCBArtistSoundLevel:
         # Write out the message to register
         self.i2c.writeto_mem(self.addr, reg, msg)
 
-    def reg_read(self, *, reg: int = I2C_REG_DECIBEL, nbytes=1):
+    def reg_read(self, *, reg: int = _PCB_ARTISTS_I2C_REG_DECIBEL, nbytes=1):
         """
         Reads data from a register of the dB sensor.
 
@@ -80,7 +77,7 @@ class PCBArtistSoundLevel:
 
         return bytearray() if nbytes < 1 else self.i2c.readfrom_mem(self.addr, reg, nbytes)
 
-    def db_sensor_version(self, reg: int = I2C_REG_VERSION) -> int:
+    def db_sensor_version(self, reg: int = _PCB_ARTISTS_I2C_REG_VERSION) -> int:
         """
         Returns the version of the dB sensor.
 
@@ -97,7 +94,7 @@ class PCBArtistSoundLevel:
         read_data = self.reg_read(reg=reg)
         return int.from_bytes(read_data, "big")
 
-    def db_sensor_id(self, reg: int = I2C_REG_ID3, nbytes: int = 4) -> int:
+    def db_sensor_id(self, reg: int = _PCB_ARTISTS_I2C_REG_ID3, nbytes: int = 4) -> int:
         """
         Returns the ID of the dB sensor.
 
@@ -127,8 +124,8 @@ class PCBArtistSoundLevel:
             None
         """
 
-        self.reg_write(reg=I2C_REG_TAVG_LOW, data=0x7D)
-        self.reg_write(reg=I2C_REG_TAVG_HIGH, data=0x00)
+        self.reg_write(reg=_PCB_ARTISTS_I2C_REG_TAVG_LOW, data=0x7D)
+        self.reg_write(reg=_PCB_ARTISTS_I2C_REG_TAVG_HIGH, data=0x00)
 
     def enable_standard_mode_intensity_measurement(self):
         """
@@ -145,5 +142,5 @@ class PCBArtistSoundLevel:
             None
         """
 
-        self.reg_write(reg=I2C_REG_TAVG_LOW, data=0xE8)
-        self.reg_write(reg=I2C_REG_TAVG_HIGH, data=0x03)
+        self.reg_write(reg=_PCB_ARTISTS_I2C_REG_TAVG_LOW, data=0xE8)
+        self.reg_write(reg=_PCB_ARTISTS_I2C_REG_TAVG_HIGH, data=0x03)

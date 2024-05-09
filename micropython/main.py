@@ -8,8 +8,18 @@ import ujson
 import urequests
 from machine import Pin, reset, sleep
 
-from constants import API_KEY, API_URL, LAT, LONG, PARTICLE_SENSOR, TEMP_HUM_PRESS_SENSOR, TVOC_CO2_SENSOR, \
-    SOUND_LEVEL_SENSOR
+from constants import (
+    API_KEY,
+    API_URL,
+    LAT,
+    LONG,
+    PARTICLE_SENSOR,
+    TEMP_HUM_PRESS_SENSOR,
+    TVOC_CO2_SENSOR,
+    SOUND_LEVEL_SENSOR,
+    DFROBOT_MICS_SENSOR
+)
+
 from i2c import I2CAdapter
 from lib import logging
 
@@ -45,6 +55,14 @@ if TVOC_CO2_SENSOR.upper() == "CCS811":
 if SOUND_LEVEL_SENSOR.upper() == "PCB_ARTIST_SOUND_LEVEL":
     SOUND_LEVEL_SENSOR = SOUND_LEVEL_SENSOR.upper()
     from pcb_artist_sound_level import PCBArtistSoundLevel
+
+
+if DFROBOT_MICS_SENSOR.upper() == "MICS-4514":
+    DFROBOT_MICS_SENSOR = DFROBOT_MICS_SENSOR.upper()
+    from dfrobot_mics import Mics
+
+
+
 
 LOOP_COUNTER = 0
 RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540  # seconds
@@ -374,6 +392,18 @@ def get_tvoc_co2(sensor_model: str):
             return False
 
 
+def get_mics_gas_data(sensor_model: str, _dfrobot: Mics):
+    measured_gas_particles = ("CO", "CH4", "C2H5OH", "H2", "NH3", "NO2")
+    data = {}
+    if sensor_model == "MICS-4514":
+        try:
+            for _ in measured_gas_particles:
+                data[_] = dfrobot.get_gas_ppm(gas_type=_)
+        except (OSError, RuntimeError):
+            return False
+        return data
+
+
 def get_temp_humid_pressure_measurements(*, sensor_model: str, i2c_adapter: machine.I2C):
     """
     Fetches temperature, humidity, and pressure measurements from specified sensor models.
@@ -455,6 +485,12 @@ def augment_data(measurements: dict, sensor_model: str):
 if __name__ == "__main__":
     i2c_adapter = I2CAdapter(scl=Pin(22), sda=Pin(21), freq=100000)
 
+    if DFROBOT_MICS_SENSOR:
+        logging.info(f"Warming up DFRobot sensor: {DFROBOT_MICS_SENSOR}")
+        dfrobot = Mics(i2c_adapter)
+        dfrobot.wakeup_mode()
+        dfrobot.warm_up_time()
+
     while True:
         try:
             if PARTICLE_SENSOR:
@@ -502,6 +538,11 @@ if __name__ == "__main__":
                 send_measurements(data=values)
                 del values
                 time.sleep(1)
+
+            if DFROBOT_MICS_SENSOR:
+                logging.info(f"Using DFRobot MICS sensor {DFROBOT_MICS_SENSOR}")
+                values = get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)
+                logging.info(f"DFRobot MICS sensor values {values}")
 
             LOOP_COUNTER += 1
             logging.info(f"Increasing loop_counter, actual value {LOOP_COUNTER}")
