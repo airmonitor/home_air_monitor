@@ -489,6 +489,7 @@ if __name__ == "__main__":
         logging.info(f"Warming up DFRobot sensor: {DFROBOT_MICS_SENSOR}")
         dfrobot = Mics(i2c_adapter)
         dfrobot.wakeup_mode()
+        dfrobot.get_power_mode()
         dfrobot.warm_up_time()
 
     while True:
@@ -525,6 +526,13 @@ if __name__ == "__main__":
                 del values
                 time.sleep(1)
 
+            if DFROBOT_MICS_SENSOR:
+                logging.info(f"Using DFRobot MICS sensor {DFROBOT_MICS_SENSOR}")
+                values = get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)  # noqa
+                logging.info(f"DFRobot MICS sensor values {values}")
+                del values
+                time.sleep(1)
+
             if SOUND_LEVEL_SENSOR:
                 logging.info(f"Using sound level sensor {SOUND_LEVEL_SENSOR}")
                 values = augment_data(
@@ -539,10 +547,6 @@ if __name__ == "__main__":
                 del values
                 time.sleep(1)
 
-            if DFROBOT_MICS_SENSOR:
-                logging.info(f"Using DFRobot MICS sensor {DFROBOT_MICS_SENSOR}")
-                values = get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)
-                logging.info(f"DFRobot MICS sensor values {values}")
 
             LOOP_COUNTER += 1
             logging.info(f"Increasing loop_counter, actual value {LOOP_COUNTER}")

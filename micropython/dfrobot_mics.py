@@ -116,8 +116,8 @@ class Mics(object):
         """
         result = self.get_mics_data()
 
-        rs_r0_red_data = result[1] / self.__r0_red
-        rs_ro_ox_data = result[0] / self.__r0_ox
+        rs_r0_red_data = float(result[1]) / float(self.__r0_red)
+        rs_ro_ox_data = float(result[0]) / float(self.__r0_ox)
 
         gas_getters = {
             "CO": self.get_carbon_monoxide(rs_r0_red_data),
