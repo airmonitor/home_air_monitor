@@ -486,24 +486,28 @@ if __name__ == "__main__":
     i2c_adapter = I2CAdapter(scl=Pin(22), sda=Pin(21), freq=100000)
 
     if DFROBOT_MICS_SENSOR:
+        mics_sensor_available = False
         logging.info(f"Warming up DFRobot sensor: {DFROBOT_MICS_SENSOR}")
         dfrobot = Mics(i2c_adapter)
         dfrobot.wakeup_mode()
         dfrobot.get_power_mode()
-        dfrobot.warm_up_time()
+        try:
+            dfrobot.warm_up_time()
+            time.sleep(5)
+            get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)
+            mics_sensor_available = True
+            time.sleep(5)
+        except OSError:
+            logging.error("Error warming up DFRobot sensor, trying again")
+            dfrobot.warm_up_time()
+            time.sleep(5)
+            get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)
+            mics_sensor_available = True
+        finally:
+            pass
 
     while True:
         try:
-            if PARTICLE_SENSOR:
-                logging.info(f"Using particle sensor {PARTICLE_SENSOR}")
-                values = augment_data(
-                    measurements=get_particle_measurements(sensor_model=PARTICLE_SENSOR),
-                    sensor_model=PARTICLE_SENSOR,
-                )
-                send_measurements(data=values)
-                del values
-                time.sleep(1)
-
             if TEMP_HUM_PRESS_SENSOR:
                 logging.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")
                 values = augment_data(
@@ -513,6 +517,7 @@ if __name__ == "__main__":
                     ),
                     sensor_model=TEMP_HUM_PRESS_SENSOR,
                 )
+                logging.info(f"TEMP/HUMID/PRESSURE sensor values {values}")
                 send_measurements(data=values)
                 del values
                 time.sleep(1)
@@ -522,14 +527,27 @@ if __name__ == "__main__":
                 values = augment_data(
                     measurements=get_tvoc_co2(sensor_model=TVOC_CO2_SENSOR), sensor_model=TVOC_CO2_SENSOR
                 )
+                logging.info(f"TVOC/CO2 sensor values {values}")
                 send_measurements(data=values)
                 del values
                 time.sleep(1)
 
-            if DFROBOT_MICS_SENSOR:
+            if DFROBOT_MICS_SENSOR and mics_sensor_available:
                 logging.info(f"Using DFRobot MICS sensor {DFROBOT_MICS_SENSOR}")
                 values = get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)  # noqa
                 logging.info(f"DFRobot MICS sensor values {values}")
+                send_measurements(data=values)
+                del values
+                time.sleep(1)
+
+            if PARTICLE_SENSOR:
+                logging.info(f"Using particle sensor {PARTICLE_SENSOR}")
+                values = augment_data(
+                    measurements=get_particle_measurements(sensor_model=PARTICLE_SENSOR),
+                    sensor_model=PARTICLE_SENSOR,
+                )
+                logging.info(f"Particle sensor values {values}")
+                send_measurements(data=values)
                 del values
                 time.sleep(1)
 
@@ -543,6 +561,7 @@ if __name__ == "__main__":
                     ),
                     sensor_model=SOUND_LEVEL_SENSOR,
                 )
+                logging.info(f"Sound sensor values {values}")
                 send_measurements(data=values)
                 del values
                 time.sleep(1)
