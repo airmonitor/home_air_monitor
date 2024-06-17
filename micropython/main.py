@@ -398,7 +398,7 @@ def get_mics_gas_data(sensor_model: str, _dfrobot: Mics):
     if sensor_model == "MICS-4514":
         try:
             for _ in measured_gas_particles:
-                data[_] = dfrobot.get_gas_ppm(gas_type=_)
+                data[_.lower()] = int(dfrobot.get_gas_ppm(gas_type=_))
         except (OSError, RuntimeError):
             return False
         return data
@@ -534,7 +534,10 @@ if __name__ == "__main__":
 
             if DFROBOT_MICS_SENSOR and mics_sensor_available:
                 logging.info(f"Using DFRobot MICS sensor {DFROBOT_MICS_SENSOR}")
-                values = get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)  # noqa
+                values = augment_data(
+                    measurements=get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot),
+                    sensor_model=DFROBOT_MICS_SENSOR
+                )
                 logging.info(f"DFRobot MICS sensor values {values}")
                 send_measurements(data=values)
                 del values
