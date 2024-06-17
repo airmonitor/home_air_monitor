@@ -17,7 +17,7 @@ from constants import (
     TEMP_HUM_PRESS_SENSOR,
     TVOC_CO2_SENSOR,
     SOUND_LEVEL_SENSOR,
-    DFROBOT_MICS_SENSOR
+    DFROBOT_MICS_SENSOR,
 )
 
 from i2c import I2CAdapter
@@ -62,26 +62,23 @@ if DFROBOT_MICS_SENSOR.upper() == "MICS-4514":
     from dfrobot_mics import Mics
 
 
-
-
 LOOP_COUNTER = 0
 RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540  # seconds
 logging.info(f"Sleep value is {RANDOM_SLEEP_VALUE} seconds")
 
-HARD_RESET_VALUE = int(86400 / RANDOM_SLEEP_VALUE)  # The Board will be restarted once per 24 hours
+HARD_RESET_VALUE = int(
+    86400 / RANDOM_SLEEP_VALUE
+)  # The Board will be restarted once per 24 hours
 logging.info(f"Hard reset value {HARD_RESET_VALUE}")
 
 
 def sds_measurements():
-    """
-    Initiates measurements for particulate matter (PM) using the SDS011 sensor.
-
-    Parameters:
-        None
+    """Initiates measurements for particulate matter (PM) using the SDS011
+    sensor.
 
     Functionality:
-        Wakes up the SDS011 sensor, performs measurements for PM2.5 and PM10 over a period, 
-        then puts the sensor back to sleep. It attempts to read the sensor values 10 times 
+        Wakes up the SDS011 sensor, performs measurements for PM2.5 and PM10 over a period,
+        then puts the sensor back to sleep. It attempts to read the sensor values 10 times
         with a delay between each read to ensure accurate readings.
 
     Returns:
@@ -102,15 +99,14 @@ def sds_measurements():
 
 
 def pms7003_measurements():
-    """
-    Initiates measurements for particulate matter using the PMS7003 sensor.
+    """Initiates measurements for particulate matter using the PMS7003 sensor.
 
     Parameters:
         None
 
     Functionality:
-        Wakes up the PMS7003 sensor, waits for it to stabilize, then reads particulate matter measurements. 
-        In case of an error (OSError, UartError, TypeError), it returns an empty dictionary. 
+        Wakes up the PMS7003 sensor, waits for it to stabilize, then reads particulate matter measurements.
+        In case of an error (OSError, UartError, TypeError), it returns an empty dictionary.
         It ensures the sensor is put back to sleep after the operation, even if an error occurs.
 
     Returns:
@@ -130,11 +126,7 @@ def pms7003_measurements():
 
 
 def ptqs1005_measurements() -> dict:
-    """
-    Initiates measurements for air quality using the PTQS1005 sensor.
-
-    Parameters:
-        None
+    """Initiates measurements for air quality using the PTQS1005 sensor.
 
     Functionality:
         - Wakes up the PTQS1005 sensor using the specified UART port and reset pin.
@@ -144,7 +136,7 @@ def ptqs1005_measurements() -> dict:
         - Ensures the sensor is put back to sleep after measurements are taken.
 
     Returns:
-        dict: A dictionary containing the air quality measurements if successful. 
+        dict: A dictionary containing the air quality measurements if successful.
               The dictionary is empty if an exception occurs during the measurement process.
     """
     output_data = {}
@@ -162,8 +154,7 @@ def ptqs1005_measurements() -> dict:
 
 
 def pcb_artist_sound_level_measurements(sensor: PCBArtistSoundLevel) -> int:
-    """
-    Measures the sound level using the PCB Artist Sound Level sensor.
+    """Measures the sound level using the PCB Artist Sound Level sensor.
 
     Parameters:
         sensor (PCBArtistSoundLevel): The sensor object used to measure sound levels.
@@ -193,9 +184,13 @@ def blink():
     led.value(0)
 
 
+def single_blink_and_sleep():
+    blink()
+    time.sleep(0.1)
+
+
 def blink_api_response(message):
-    """
-    Controls the blinking of an LED based on the API response message.
+    """Controls the blinking of an LED based on the API response message.
 
     Parameters:
         message (dict): The response message from the API.
@@ -220,14 +215,9 @@ def blink_api_response(message):
     blink()
 
 
-def single_blink_and_sleep():
-    blink()
-    time.sleep(0.1)
-
-
 def send_measurements(data):
-    """
-    Sends the collected sensor data to a specified API endpoint using a POST request.
+    """Sends the collected sensor data to a specified API endpoint using a POST
+    request.
 
     Parameters:
         data (dict): The sensor data to be sent.
@@ -263,10 +253,10 @@ def send_measurements(data):
 
 
 def get_sound_level_measurements(
-        i2c_adapter: machine.I2C,  # noqa
-        sensor_model: str,
-        time_range_in_seconds: int = 900,
-        sleep_time_in_seconds: int = 1
+    i2c_adapter: machine.I2C,  # noqa
+    sensor_model: str,
+    time_range_in_seconds: int = 900,
+    sleep_time_in_seconds: int = 1,
 ) -> dict:
     """
     Parameters:
@@ -276,8 +266,8 @@ def get_sound_level_measurements(
         sleep_time_in_seconds (int): The delay between each sound level measurement.
 
     Functionality:
-        Collects sound level measurements over a specified period from a PCB Artist Sound Level sensor. 
-        It logs the sound level in decibels at each interval and calculates the maximum sound level 
+        Collects sound level measurements over a specified period from a PCB Artist Sound Level sensor.
+        It logs the sound level in decibels at each interval and calculates the maximum sound level
         observed during the measurement period.
 
     Returns:
@@ -306,13 +296,13 @@ def get_sound_level_measurements(
                 max_sound_level = max(max_sound_level, sound_level)
             time.sleep(sleep_time_in_seconds)
         logging.info(
-            f"The highest sound level in dB from the last {time_range_in_seconds} seconds was {max_sound_level}")
+            f"The highest sound level in dB from the last {time_range_in_seconds} seconds was {max_sound_level}"
+        )
     return {"decibel": max_sound_level}
 
 
 def get_particle_measurements(sensor_model: str) -> dict:
-    """
-    Retrieves particle measurements from the specified sensor model.
+    """Retrieves particle measurements from the specified sensor model.
 
     Parameters:
         sensor_model (str): The model of the sensor from which to retrieve measurements.
@@ -368,8 +358,8 @@ def get_particle_measurements(sensor_model: str) -> dict:
 
 
 def get_tvoc_co2(sensor_model: str):
-    """
-    Retrieves the Total Volatile Organic Compounds (TVOC) and Carbon Dioxide (CO2) levels from the specified sensor.
+    """Retrieves the Total Volatile Organic Compounds (TVOC) and Carbon Dioxide
+    (CO2) levels from the specified sensor.
 
     Parameters:
         sensor_model (str): The model of the sensor to retrieve data from.
@@ -393,6 +383,24 @@ def get_tvoc_co2(sensor_model: str):
 
 
 def get_mics_gas_data(sensor_model: str, _dfrobot: Mics):
+    """
+    Parameters:
+        sensor_model (str): The model of the MICS gas sensor
+        _dfrobot (Mics): An instance of the Mics class representing the gas sensor
+
+    Functionality:
+        Retrieves gas particle data from the specified MICS gas sensor model.
+        Measures the concentration of various gas particles such as CO, CH4, C2H5OH, H2, NH3, and NO2.
+        Returns the measured gas particle data as a dictionary with the
+        gas particle names as keys and their concentrations as values.
+        If an error occurs during the measurement, returns False.
+
+    Returns:
+        dict: A dictionary containing the measured gas particle data,
+         with keys representing the gas particle names (lowercase)
+         and values representing their concentrations as integers.
+        False: If an error occurs during the measurement.
+    """
     measured_gas_particles = ("CO", "CH4", "C2H5OH", "H2", "NH3", "NO2")
     data = {}
     if sensor_model == "MICS-4514":
@@ -404,22 +412,28 @@ def get_mics_gas_data(sensor_model: str, _dfrobot: Mics):
         return data
 
 
-def get_temp_humid_pressure_measurements(*, sensor_model: str, i2c_adapter: machine.I2C):
-    """
-    Fetches temperature, humidity, and pressure measurements from specified sensor models.
+def get_temp_humid_pressure_measurements(
+    *, sensor_model: str, i2c_adapter: machine.I2C
+):
+    """Fetches temperature, humidity, and pressure measurements from specified
+    sensor models.
 
     Parameters:
-        sensor_model (str): The model of the sensor from which to fetch measurements. Supported models are "BME280" and "BME680".
+        sensor_model (str): The model of the sensor from which to fetch measurements.
+        Supported models are "BME280" and "BME680".
         i2c_adapter (machine.I2C): The I2C adapter to communicate with the sensor.
 
     Functionality:
-        This function checks the sensor model specified and initializes the appropriate sensor using the provided I2C adapter. 
-        For the BME280 sensor, it fetches temperature, humidity, and pressure readings. 
-        For the BME680 sensor, it additionally fetches gas resistance along with temperature, humidity, and pressure readings. 
+        This function checks the sensor model specified and initializes the appropriate sensor using the
+        provided I2C adapter.
+        For the BME280 sensor, it fetches temperature, humidity, and pressure readings.
+        For the BME680 sensor, it additionally fetches gas resistance along with temperature, humidity,
+        and pressure readings.
         It logs the readings for the BME280 sensor. In case of an error (OSError, RuntimeError), it returns False.
 
     Returns:
-        dict: A dictionary containing the sensor readings if successful. The keys are "temperature", "humidity", "pressure", and optionally "gas_resistance" for the BME680 sensor.
+        dict: A dictionary containing the sensor readings if successful.
+        The keys are "temperature", "humidity", "pressure", and optionally "gas_resistance" for the BME680 sensor.
         bool: False if there is an error initializing the sensor or fetching the data.
     """
     if sensor_model == "BME280":
@@ -458,8 +472,8 @@ def get_temp_humid_pressure_measurements(*, sensor_model: str, i2c_adapter: mach
 
 
 def augment_data(measurements: dict, sensor_model: str):
-    """
-    Enhances the measurement dictionary with additional data including latitude, longitude, and sensor model.
+    """Enhances the measurement dictionary with additional data including
+    latitude, longitude, and sensor model.
 
     Parameters:
         measurements (dict): A dictionary containing measurement data from a sensor.
@@ -509,7 +523,9 @@ if __name__ == "__main__":
     while True:
         try:
             if TEMP_HUM_PRESS_SENSOR:
-                logging.info(f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}")
+                logging.info(
+                    f"Using temp/humid/pressure sensor {TEMP_HUM_PRESS_SENSOR}"
+                )
                 values = augment_data(
                     measurements=get_temp_humid_pressure_measurements(
                         sensor_model=TEMP_HUM_PRESS_SENSOR,
@@ -525,7 +541,8 @@ if __name__ == "__main__":
             if TVOC_CO2_SENSOR:
                 logging.info(f"Using tvoc/co2 sensor {TVOC_CO2_SENSOR}")
                 values = augment_data(
-                    measurements=get_tvoc_co2(sensor_model=TVOC_CO2_SENSOR), sensor_model=TVOC_CO2_SENSOR
+                    measurements=get_tvoc_co2(sensor_model=TVOC_CO2_SENSOR),
+                    sensor_model=TVOC_CO2_SENSOR,
                 )
                 logging.info(f"TVOC/CO2 sensor values {values}")
                 send_measurements(data=values)
@@ -535,8 +552,10 @@ if __name__ == "__main__":
             if DFROBOT_MICS_SENSOR and mics_sensor_available:
                 logging.info(f"Using DFRobot MICS sensor {DFROBOT_MICS_SENSOR}")
                 values = augment_data(
-                    measurements=get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot),
-                    sensor_model=DFROBOT_MICS_SENSOR
+                    measurements=get_mics_gas_data(
+                        sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot
+                    ),
+                    sensor_model=DFROBOT_MICS_SENSOR,
                 )
                 logging.info(f"DFRobot MICS sensor values {values}")
                 send_measurements(data=values)
@@ -546,7 +565,9 @@ if __name__ == "__main__":
             if PARTICLE_SENSOR:
                 logging.info(f"Using particle sensor {PARTICLE_SENSOR}")
                 values = augment_data(
-                    measurements=get_particle_measurements(sensor_model=PARTICLE_SENSOR),
+                    measurements=get_particle_measurements(
+                        sensor_model=PARTICLE_SENSOR
+                    ),
                     sensor_model=PARTICLE_SENSOR,
                 )
                 logging.info(f"Particle sensor values {values}")
@@ -560,7 +581,7 @@ if __name__ == "__main__":
                     measurements=get_sound_level_measurements(
                         sensor_model=SOUND_LEVEL_SENSOR,
                         i2c_adapter=i2c_adapter,
-                        time_range_in_seconds=RANDOM_SLEEP_VALUE
+                        time_range_in_seconds=RANDOM_SLEEP_VALUE,
                     ),
                     sensor_model=SOUND_LEVEL_SENSOR,
                 )
@@ -568,7 +589,6 @@ if __name__ == "__main__":
                 send_measurements(data=values)
                 del values
                 time.sleep(1)
-
 
             LOOP_COUNTER += 1
             logging.info(f"Increasing loop_counter, actual value {LOOP_COUNTER}")
