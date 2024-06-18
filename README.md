@@ -2,11 +2,11 @@
 
 Repository contains solution for creating your own air monitoring station.
 
-This is location of code for project page http://airmonitor.pl/
+This is the location of code for project page http://airmonitor.pl/
 
 Automated installation is conducted using ansible.
 
-All scripts for obtaining data from sensors and sending them are written in python 3.6
+All scripts for collecting data from sensors and sending them are written in micropython
 
 # Usage
 
