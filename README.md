@@ -11,7 +11,7 @@ All scripts for collecting data from sensors and sending them are written in mic
 # Usage
 
 Please read the first description on the http://airmonitor.pl to connect all necessary sensors in a proper way to
-raspberry pi board.
+micropython supported board.
 
 1. https://airmonitor.pl/prod/necessary_components
 2. https://airmonitor.pl/prod/wiring_diagram
