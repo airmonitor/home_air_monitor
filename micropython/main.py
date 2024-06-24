@@ -6,7 +6,7 @@ import machine
 import ucontextlib
 import ujson
 import urequests
-from machine import Pin, reset, sleep
+from machine import Pin, reset, lightsleep
 
 from constants import (
     API_KEY,
@@ -56,14 +56,12 @@ if SOUND_LEVEL_SENSOR.upper() == "PCB_ARTIST_SOUND_LEVEL":
     SOUND_LEVEL_SENSOR = SOUND_LEVEL_SENSOR.upper()
     from pcb_artist_sound_level import PCBArtistSoundLevel
 
-
 if DFROBOT_MICS_SENSOR.upper() == "MICS-4514":
     DFROBOT_MICS_SENSOR = DFROBOT_MICS_SENSOR.upper()
     from dfrobot_mics import Mics
 
-
 LOOP_COUNTER = 0
-RANDOM_SLEEP_VALUE = random.randint(50, 59) + 540  # seconds
+RANDOM_SLEEP_VALUE = random.randint(50, 59)  # seconds
 logging.info(f"Sleep value is {RANDOM_SLEEP_VALUE} seconds")
 
 HARD_RESET_VALUE = int(
@@ -512,11 +510,7 @@ if __name__ == "__main__":
             mics_sensor_available = True
             time.sleep(5)
         except OSError:
-            logging.error("Error warming up DFRobot sensor, trying again")
-            dfrobot.warm_up_time()
-            time.sleep(5)
-            get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)
-            mics_sensor_available = True
+            reset()
         finally:
             pass
 
@@ -597,7 +591,7 @@ if __name__ == "__main__":
                 reset()
             if not SOUND_LEVEL_SENSOR:
                 logging.info(f"Sleeping for {RANDOM_SLEEP_VALUE} seconds")
-                sleep(RANDOM_SLEEP_VALUE * 1000)
+                lightsleep(RANDOM_SLEEP_VALUE * 1000)
 
         except Exception as error:
             logging.info(f"Caught exception {error}")
