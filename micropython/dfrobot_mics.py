@@ -1,7 +1,13 @@
 import utime as time
+import sys
 
 from i2c import I2CAdapter
+from lib import logging
 
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+
+for handler in logging.getLogger().handlers:
+    handler.setFormatter(logging.Formatter("[%(levelname)s]:%(name)s:%(message)s"))
 ######################################
 # Constants
 
@@ -99,38 +105,45 @@ class Mics(object):
         return sensor_data
 
     def get_gas_ppm(self, gas_type: str):
-        """
-        Parameters:
-            gas_type (str): The type of gas to get the concentration for
+        try:
+            result = self.get_mics_data()
 
-        Functionality:
-            Retrieves the concentration of the specified gas type in parts per million (ppm).
-            Calls the `get_mics_data` method to get the sensor data.
-            Calculates the ratios of rs/r0 for the red and ox values.
-            Uses a dictionary `gas_getters` to map gas types to their corresponding getter methods.
-            If the specified `gas_type` exists in the `gas_getters` dictionary, it calls the corresponding getter method and returns the result.
-            If the `gas_type` is not found in the `gas_getters` dictionary, it returns `_MICS_ERROR`.
+            if self.__r0_red == 0 or self.__r0_ox == 0:
+                logging.error(
+                    "R0 values are zero. Sensor may not be properly calibrated."
+                )
+                return _MICS_ERROR
 
-        Returns:
-            float or str: The concentration of the specified gas type in parts per million (ppm) if the gas type is supported, or `_MICS_ERROR` if the gas type is not supported.
-        """
-        result = self.get_mics_data()
+            rs_r0_red_data = (
+                float(result[1]) / float(self.__r0_red) if self.__r0_red != 0 else 0
+            )
+            rs_ro_ox_data = (
+                float(result[0]) / float(self.__r0_ox) if self.__r0_ox != 0 else 0
+            )
 
-        rs_r0_red_data = float(result[1]) / float(self.__r0_red)
-        rs_ro_ox_data = float(result[0]) / float(self.__r0_ox)
+            gas_getters = {
+                "CO": self.get_carbon_monoxide(rs_r0_red_data),
+                "CH4": self.get_methane(rs_r0_red_data),
+                "C2H5OH": self.get_ethanol(rs_r0_red_data),
+                "H2": self.get_hydrogen(rs_r0_red_data),
+                "NH3": self.get_ammonia(rs_r0_red_data),
+                "NO2": self.get_nitrogen_dioxide(rs_ro_ox_data),
+            }
 
-        gas_getters = {
-            "CO": self.get_carbon_monoxide(rs_r0_red_data),
-            "CH4": self.get_methane(rs_r0_red_data),
-            "C2H5OH": self.get_ethanol(rs_r0_red_data),
-            "H2": self.get_hydrogen(rs_r0_red_data),
-            "NH3": self.get_ammonia(rs_r0_red_data),
-            "NO2": self.get_nitrogen_dioxide(rs_ro_ox_data),
-        }
-        if gas_type in gas_getters.keys():
-            return gas_getters.get(gas_type)
-        
-        return _MICS_ERROR
+            if gas_type in gas_getters:
+                return gas_getters[gas_type]
+
+            logging.warning(f"Unsupported gas type: {gas_type}")
+            return _MICS_ERROR
+
+        except ZeroDivisionError:
+            logging.error(
+                "ZeroDivisionError in get_gas_ppm. Sensor values may be invalid."
+            )
+            return _MICS_ERROR
+        except Exception as e:
+            logging.error(f"Unexpected error in get_gas_ppm: {str(e)}")
+            return _MICS_ERROR
 
     def warm_up_time(self):
         """

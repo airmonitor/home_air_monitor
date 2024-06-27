@@ -60,6 +60,8 @@ if DFROBOT_MICS_SENSOR.upper() == "MICS-4514":
     DFROBOT_MICS_SENSOR = DFROBOT_MICS_SENSOR.upper()
     from dfrobot_mics import Mics
 
+    _MICS_ERROR = -1
+
 LOOP_COUNTER = 0
 RANDOM_SLEEP_VALUE = random.randint(50, 59)  # seconds
 logging.info(f"Sleep value is {RANDOM_SLEEP_VALUE} seconds")
@@ -381,32 +383,19 @@ def get_tvoc_co2(sensor_model: str):
 
 
 def get_mics_gas_data(sensor_model: str, _dfrobot: Mics):
-    """
-    Parameters:
-        sensor_model (str): The model of the MICS gas sensor
-        _dfrobot (Mics): An instance of the Mics class representing the gas sensor
-
-    Functionality:
-        Retrieves gas particle data from the specified MICS gas sensor model.
-        Measures the concentration of various gas particles such as CO, CH4, C2H5OH, H2, NH3, and NO2.
-        Returns the measured gas particle data as a dictionary with the
-        gas particle names as keys and their concentrations as values.
-        If an error occurs during the measurement, returns False.
-
-    Returns:
-        dict: A dictionary containing the measured gas particle data,
-         with keys representing the gas particle names (lowercase)
-         and values representing their concentrations as integers.
-        False: If an error occurs during the measurement.
-    """
     measured_gas_particles = ("CO", "CH4", "C2H5OH", "H2", "NH3", "NO2")
     data = {}
     if sensor_model == "MICS-4514":
         try:
             for _ in measured_gas_particles:
-                data[_.lower()] = int(dfrobot.get_gas_ppm(gas_type=_))
+                gas_ppm = _dfrobot.get_gas_ppm(gas_type=_)
+                if gas_ppm == _MICS_ERROR:
+                    logging.error(f"Error reading {_} from MICS sensor")
+                    return None  # Return None to indicate an error
+                data[_.lower()] = int(gas_ppm)
         except (OSError, RuntimeError):
-            return False
+            logging.error("Error reading from MICS sensor")
+            return None  # Return None to indicate an error
         return data
 
 
@@ -506,7 +495,12 @@ if __name__ == "__main__":
         try:
             dfrobot.warm_up_time()
             time.sleep(5)
-            get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)
+            if (
+                get_mics_gas_data(sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot)
+                is None
+            ):
+                logging.error("Failed to initialize MICS sensor. Rebooting...")
+                reset()
             mics_sensor_available = True
             time.sleep(5)
         except OSError:
@@ -545,10 +539,14 @@ if __name__ == "__main__":
 
             if DFROBOT_MICS_SENSOR and mics_sensor_available:
                 logging.info(f"Using DFRobot MICS sensor {DFROBOT_MICS_SENSOR}")
+                mics_data = get_mics_gas_data(
+                    sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot
+                )
+                if mics_data is None:
+                    logging.error("Error reading from MICS sensor. Rebooting...")
+                    reset()
                 values = augment_data(
-                    measurements=get_mics_gas_data(
-                        sensor_model=DFROBOT_MICS_SENSOR, _dfrobot=dfrobot
-                    ),
+                    measurements=mics_data,
                     sensor_model=DFROBOT_MICS_SENSOR,
                 )
                 logging.info(f"DFRobot MICS sensor values {values}")
